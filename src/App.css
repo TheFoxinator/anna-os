@@ -2,7 +2,7 @@
    LIGHT THEME — Warm editorial, Intelly-inspired
    ============================================ */
 :root {
-  --bg: #EDE8E1;
+  --bg: #F5F0EA;
   --bg-secondary: #E5E0D8;
   --card: #FFFFFF;
   --card-hover: #FEFEFE;
@@ -32,14 +32,14 @@
   --panel-bg: #FAF5ED;
   --panel-border: #DDD8D0;
   --skeleton: rgba(0,0,0,0.04);
-  /* Stat card fills — OPAQUE and BOLD */
-  --card-yellow: #EFE0A0;
+  /* Stat card fills — Intelly-matched soft pastels */
+  --card-yellow: #F2E8C4;
   --card-yellow-text: #5A4A08;
-  --card-pink: #F2BDC8;
+  --card-pink: #F3D1DA;
   --card-pink-text: #7A2840;
-  --card-green: #B8D9B2;
+  --card-green: #C8DFC2;
   --card-green-text: #1D5420;
-  --card-lavender: #C8BBE0;
+  --card-lavender: #D4CCE8;
   --card-lavender-text: #3D2870;
   --card-peach: #F0D4B8;
   --card-peach-text: #6A3A10;
@@ -129,18 +129,20 @@ body {
 
 .page-title {
   font-family: 'DM Serif Display', serif;
-  font-size: 36px;
+  font-size: 32px;
+  font-weight: 400;
   color: var(--text);
   margin-bottom: 4px;
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .page-subtitle {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-secondary);
   margin-bottom: 28px;
-  line-height: 1.5;
+  line-height: 1.6;
+  font-weight: 400;
 }
 
 .section-label {
@@ -383,7 +385,18 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.04);
 }
 
+.stat-card { position: relative; overflow: hidden; }
 .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+.stat-card-deco {
+  position: absolute;
+  right: -4px;
+  bottom: -8px;
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .stat-card-deco { opacity: 0.12; }
 
 [data-theme="dark"] .stat-card {
   box-shadow: none;
@@ -391,10 +404,10 @@ body {
 
 .stat-card .stat-label {
   font-family: 'DM Serif Display', serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 400;
   color: var(--text);
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .stat-card .stat-value {
@@ -714,11 +727,27 @@ textarea.input { min-height: 44px; }
 }
 
 .timeline-dot {
-  width: 10px;
-  height: 10px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   flex-shrink: 0;
-  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  opacity: 0.85;
+}
+
+.timeline-item.active-event {
+  background: #FFF8E1;
+  border-radius: 16px;
+  padding: 12px !important;
+  border: 1px solid #F0E4B8;
+}
+
+[data-theme="dark"] .timeline-item.active-event {
+  background: rgba(255,200,0,0.08);
+  border-color: rgba(255,200,0,0.15);
 }
 
 .timeline-content { flex: 1; }
@@ -955,7 +984,15 @@ textarea.input { min-height: 44px; }
 .cal-header-month {
   font-size: 14px;
   font-weight: 600;
-  color: var(--accent);
+  color: #C45068;
+  background: #FDDFE6;
+  padding: 6px 18px;
+  border-radius: 20px;
+}
+
+[data-theme="dark"] .cal-header-month {
+  color: #FF64A0;
+  background: rgba(255,100,160,0.12);
 }
 
 .cal-nav-btn {
@@ -1019,6 +1056,55 @@ textarea.input { min-height: 44px; }
   padding-right: 4px;
 }
 
+/* Calendar actions row */
+.cal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.cal-add-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--text);
+  color: var(--card);
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  transition: opacity 0.15s;
+}
+
+.cal-add-btn:hover { opacity: 0.85; }
+
+[data-theme="dark"] .cal-add-btn {
+  background: #FFFFFF;
+  color: #09090B;
+}
+
+.cal-action-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all 0.15s;
+}
+
+.cal-action-icon:hover { background: var(--skeleton); }
+
+[data-theme="dark"] .cal-action-icon {
+  border-color: #1F1F28;
+  color: #55556A;
+}
+
 /* Schedule timeline in right panel */
 .rp-schedule-date {
   font-family: 'DM Serif Display', serif;
@@ -1050,8 +1136,8 @@ textarea.input { min-height: 44px; }
 }
 
 .stat-sub-item .stat-sub-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px;
   font-weight: 700;
   color: var(--text);
 }

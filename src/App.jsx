@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, Radar } from "recharts";
 import {
   Home, DollarSign, Dumbbell, Droplets, Clock, Briefcase, Heart, Sprout, CalendarDays, FileText,
-  Settings, Sun, Moon, ChevronLeft, ChevronRight, PanelLeftClose, PanelLeft,
+  Settings, Sun, Moon, ChevronLeft, ChevronRight, ChevronDown, PanelLeftClose, PanelLeft,
   TrendingUp, TrendingDown, ArrowRight, Plus, Check, X, MoreHorizontal,
-  User, Star, Target, Zap, BookOpen, Lightbulb, Send, Coffee,
+  User, Star, Target, Zap, BookOpen, Lightbulb, Send, Coffee, RefreshCw,
   Activity, Scale, Utensils, GlassWater, Flame
 } from "lucide-react";
 import './App.css';
@@ -53,17 +53,17 @@ const HABITS = [
 ];
 
 const DEFAULT_SCHEDULE = [
-  { time: '5:30', label: 'Wake & Stillness', desc: 'No phone. Water. Arrive slowly.', color: '#9b7fa8' },
-  { time: '6:00', label: 'Morning Practice', desc: 'Meditation, movement, altar', color: '#9b7fa8' },
-  { time: '7:00', label: 'Deep Work I', desc: 'Peak energy \u2014 SyncHer, strategy', color: '#E8D44D' },
-  { time: '9:30', label: 'Break', desc: 'Walk, snack, transition ritual', color: '#7fa88a' },
-  { time: '10:00', label: 'Deep Work II', desc: 'Seraya Studio, calls, build', color: '#c4a46b' },
-  { time: '12:00', label: 'Lunch & Rest', desc: 'Nourish. No screens.', color: '#7fa88a' },
-  { time: '13:30', label: 'Creative Block', desc: 'Content, filming, writing', color: '#E8D44D' },
-  { time: '15:30', label: 'Admin & Comms', desc: 'Emails, messages, planning', color: '#8a9fbf' },
-  { time: '17:00', label: 'Movement', desc: 'Workout or long walk', color: '#bf8a8a' },
-  { time: '18:30', label: 'Evening Wind-down', desc: 'Cook, read, altar', color: '#9b7fa8' },
-  { time: '21:00', label: 'Sleep Prep', desc: 'No screens. Legs up wall. Rest.', color: '#5A5A5A' },
+  { time: '5:30', label: 'Wake & Stillness', desc: 'No phone. Water. Arrive slowly.', color: '#9b7fa8', icon: '\u2728' },
+  { time: '6:00', label: 'Morning Practice', desc: 'Meditation, movement, altar', color: '#9b7fa8', icon: '\uD83E\uDDD8' },
+  { time: '7:00', label: 'Deep Work I', desc: 'Peak energy \u2014 SyncHer, strategy', color: '#E8D44D', icon: '\uD83D\uDCA1' },
+  { time: '9:30', label: 'Break', desc: 'Walk, snack, transition ritual', color: '#7fa88a', icon: '\uD83C\uDF3F' },
+  { time: '10:00', label: 'Deep Work II', desc: 'Seraya Studio, calls, build', color: '#c4a46b', icon: '\uD83D\uDCBB' },
+  { time: '12:00', label: 'Lunch & Rest', desc: 'Nourish. No screens.', color: '#7fa88a', icon: '\uD83C\uDF5C' },
+  { time: '13:30', label: 'Creative Block', desc: 'Content, filming, writing', color: '#E8D44D', icon: '\uD83C\uDFA8' },
+  { time: '15:30', label: 'Admin & Comms', desc: 'Emails, messages, planning', color: '#8a9fbf', icon: '\uD83D\uDCE7' },
+  { time: '17:00', label: 'Movement', desc: 'Workout or long walk', color: '#bf8a8a', icon: '\uD83C\uDFCB\uFE0F' },
+  { time: '18:30', label: 'Evening Wind-down', desc: 'Cook, read, altar', color: '#9b7fa8', icon: '\uD83C\uDF19' },
+  { time: '21:00', label: 'Sleep Prep', desc: 'No screens. Legs up wall. Rest.', color: '#5A5A5A', icon: '\uD83D\uDE34' },
 ];
 
 const DEFAULT_TRANSACTIONS = [
@@ -231,6 +231,11 @@ function MiniCalendar() {
             <div key={`w${wi}`} className="cal-week-num">W{weekNum}</div>
           ];
         })}
+      </div>
+      <div className="cal-actions">
+        <button className="cal-add-btn">Add event</button>
+        <button className="cal-action-icon"><RefreshCw size={15} /></button>
+        <button className="cal-action-icon"><FileText size={15} /></button>
       </div>
     </div>
   );
@@ -452,6 +457,14 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
                 <div className="stat-sub-label">Complete</div>
               </div>
             </div>
+            {/* Decorative bar chart */}
+            <svg className="stat-card-deco" width="80" height="70" viewBox="0 0 80 70">
+              <rect x="4" y="30" width="10" height="40" rx="3" fill="currentColor" />
+              <rect x="18" y="15" width="10" height="55" rx="3" fill="currentColor" />
+              <rect x="32" y="40" width="10" height="30" rx="3" fill="currentColor" />
+              <rect x="46" y="8" width="10" height="62" rx="3" fill="currentColor" />
+              <rect x="60" y="22" width="10" height="48" rx="3" fill="currentColor" />
+            </svg>
           </div>
           <div className="stat-card stat-pink">
             <div className="stat-label">Cycle Phase:</div>
@@ -465,6 +478,11 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
                 <div className="stat-sub-label">of {ANNA.cycleLength}</div>
               </div>
             </div>
+            {/* Decorative line chart */}
+            <svg className="stat-card-deco" width="100" height="60" viewBox="0 0 100 60">
+              <path d="M5 45 Q20 20 35 30 Q50 40 65 15 Q80 5 95 25" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              <circle cx="65" cy="15" r="4" fill="currentColor" />
+            </svg>
           </div>
         </div>
         <div className="grid-2 animate-in animate-in-delay-1" style={{ marginBottom: 28 }}>
@@ -484,6 +502,11 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
                 <div className="stat-sub-label">This Month</div>
               </div>
             </div>
+            {/* Decorative abstract blob */}
+            <svg className="stat-card-deco" width="80" height="70" viewBox="0 0 80 70">
+              <ellipse cx="45" cy="40" rx="32" ry="28" fill="currentColor" />
+              <ellipse cx="30" cy="30" rx="20" ry="22" fill="currentColor" opacity="0.5" />
+            </svg>
           </div>
           <div className="stat-card stat-lavender">
             <div className="stat-label">Content Queue:</div>
@@ -501,6 +524,11 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
                 <div className="stat-sub-label">Ideas</div>
               </div>
             </div>
+            {/* Decorative abstract blob */}
+            <svg className="stat-card-deco" width="90" height="70" viewBox="0 0 90 70">
+              <circle cx="50" cy="38" r="28" fill="currentColor" />
+              <circle cx="35" cy="28" r="18" fill="currentColor" opacity="0.5" />
+            </svg>
           </div>
         </div>
 
@@ -588,11 +616,19 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
           <div className="rp-schedule-header">
             <div className="rp-schedule-date">{todayStr}</div>
           </div>
-          <div className="rp-timeline-label" style={{ marginBottom: 12 }}>Today's Timeline</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div style={{ display: 'flex', gap: 16, alignItems: 'baseline' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Time</span>
+              <span className="rp-timeline-label">Today's timeline</span>
+            </div>
+            <span className="pill" style={{ fontSize: 11, padding: '4px 12px' }}>All <ChevronDown size={10} /></span>
+          </div>
           {DEFAULT_SCHEDULE.map((item, i) => (
-            <div key={i} className="timeline-item">
+            <div key={i} className={`timeline-item${i === 3 ? ' active-event' : ''}`}>
               <div className="timeline-time">{item.time}</div>
-              <div className="timeline-dot" style={{ background: item.color }} />
+              <div className="timeline-dot" style={{ background: item.color + '22', color: item.color }}>
+                {item.icon}
+              </div>
               <div className="timeline-content">
                 <div className="timeline-label">{item.label}</div>
                 <div className="timeline-desc">{item.desc}</div>

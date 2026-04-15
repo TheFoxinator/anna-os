@@ -541,10 +541,10 @@ function FinanceView({ wiseConnected }) {
                   <stop offset="100%" stopColor={isDark ? '#FF64A0' : '#E07A5F'} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke={isDark ? '#222228' : '#E8E4DF'} strokeDasharray="3 3" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: isDark ? '#45454F' : '#9B9B9B' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: isDark ? '#45454F' : '#9B9B9B' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: isDark ? '#1A1A1E' : '#fff', border: `1px solid ${isDark ? '#222228' : '#E8E4DF'}`, borderRadius: 12, fontSize: 12 }} />
+              <CartesianGrid stroke={isDark ? '#1F1F28' : '#DDD8D0'} strokeDasharray="3 3" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: isDark ? '#44444F' : '#9A9A9A' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: isDark ? '#44444F' : '#9A9A9A' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: isDark ? '#111114' : '#fff', border: `1px solid ${isDark ? '#1F1F28' : '#DDD8D0'}`, borderRadius: 12, fontSize: 12 }} />
               <Area type="monotone" dataKey="income" stroke={isDark ? '#00E676' : '#2D6A4F'} fill="url(#incGrad)" strokeWidth={2} />
               <Area type="monotone" dataKey="expenses" stroke={isDark ? '#FF64A0' : '#E07A5F'} fill="url(#expGrad)" strokeWidth={2} />
             </AreaChart>
@@ -1135,9 +1135,9 @@ function DevelopmentView() {
           <div className="section-label">Life Balance</div>
           <ResponsiveContainer width="100%" height={260}>
             <RadarChart data={DEV_GOALS}>
-              <PolarGrid stroke={isDark ? '#222228' : '#E8E4DF'} />
-              <PolarAngleAxis dataKey="area" tick={{ fontSize: 12, fill: isDark ? '#78788A' : '#6B6B6B' }} />
-              <Radar dataKey="score" stroke={isDark ? '#00D2FF' : '#E8D44D'} fill={isDark ? '#00D2FF' : '#E8D44D'} fillOpacity={isDark ? 0.1 : 0.2} strokeWidth={2} />
+              <PolarGrid stroke={isDark ? '#1F1F28' : '#DDD8D0'} />
+              <PolarAngleAxis dataKey="area" tick={{ fontSize: 12, fill: isDark ? '#75758A' : '#5C5C5C' }} />
+              <Radar dataKey="score" stroke={isDark ? '#00D2FF' : '#C4A24D'} fill={isDark ? '#00D2FF' : '#C4A24D'} fillOpacity={isDark ? 0.1 : 0.2} strokeWidth={2} />
             </RadarChart>
           </ResponsiveContainer>
         </div>

@@ -1,5 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, Radar } from "recharts";
+import {
+  Home, DollarSign, Dumbbell, Droplets, Clock, Briefcase, Heart, Sprout, CalendarDays, FileText,
+  Settings, Sun, Moon, ChevronLeft, ChevronRight, PanelLeftClose, PanelLeft,
+  TrendingUp, TrendingDown, ArrowRight, Plus, Check, X, MoreHorizontal,
+  User, Star, Target, Zap, BookOpen, Lightbulb, Send, Coffee,
+  Activity, Scale, Utensils, GlassWater, Flame
+} from "lucide-react";
 import './App.css';
 
 /* ===== DATA ===== */
@@ -15,185 +22,130 @@ const getDayOfCycle = () => {
 
 const getCyclePhase = (day) => {
   const d = ((day - 1) % ANNA.cycleLength) + 1;
-  if (d <= 5) return { phase: "Menstrual", moon: "\u{1F311}", color: "#9b7fa8", energy: "Inward & restorative", guidance: "Rest without guilt. Reflect. No output pressure.", schedule: "Minimum viable work. More rest blocks. No forcing.", pastel: "var(--pastel-purple)" };
-  if (d <= 13) return { phase: "Follicular", moon: "\u{1F312}", color: "#7fa88a", energy: "Rising & sharp", guidance: "Start new things. Build. Think strategically.", schedule: "Maximum deep work. Begin new SyncHer modules. Strategy.", pastel: "var(--pastel-green)" };
-  if (d <= 17) return { phase: "Ovulatory", moon: "\u{1F315}", color: "#c4a46b", energy: "Peak & magnetic", guidance: "Be seen. Film everything. Connect and pitch.", schedule: "Film TikToks + YouTube. All calls + collaborations.", pastel: "var(--pastel-yellow)" };
-  return { phase: "Luteal", moon: "\u{1F317}", color: "#a48b6b", energy: "Focused & finishing", guidance: "Complete, edit, wrap up. Protect your energy.", schedule: "Admin, editing, Seraya tasks. Wind down early.", pastel: "var(--pastel-yellow)" };
+  if (d <= 5) return { phase: "Menstrual", color: "#9b7fa8", energy: "Inward & restorative", guidance: "Rest without guilt. Reflect. No output pressure.", workout: "Gentle yoga, walking, stretching", nutrition: "Iron-rich foods, warm soups, magnesium", icon: "\uD83C\uDF11" };
+  if (d <= 13) return { phase: "Follicular", color: "#7fa88a", energy: "Rising & sharp", guidance: "Start new things. Build. Think strategically.", workout: "Strength training, HIIT, try new classes", nutrition: "Light meals, fermented foods, protein focus", icon: "\uD83C\uDF12" };
+  if (d <= 17) return { phase: "Ovulatory", color: "#E8D44D", energy: "Peak & magnetic", guidance: "Be seen. Film everything. Connect and pitch.", workout: "High intensity, group classes, peak performance", nutrition: "Raw vegetables, light grains, anti-inflammatory", icon: "\uD83C\uDF15" };
+  return { phase: "Luteal", color: "#c4a46b", energy: "Focused & finishing", guidance: "Complete, edit, wrap up. Protect your energy.", workout: "Moderate intensity, pilates, swimming", nutrition: "Complex carbs, B-vitamins, dark chocolate", icon: "\uD83C\uDF17" };
+};
+
+const getGreeting = () => {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 17) return "Good afternoon";
+  return "Good evening";
 };
 
 const formatDate = () => new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
 const HABITS = [
-  { id: 'morning_practice', label: 'Morning practice', icon: '\u{1F9D8}', pillar: 'spiritual' },
-  { id: 'no_phone', label: 'No phone before practice', icon: '\u{1F4F5}', pillar: 'structure' },
-  { id: 'movement', label: 'Movement / workout', icon: '\u{1F4AA}', pillar: 'body' },
-  { id: 'water', label: 'Hydration', icon: '\u{1F4A7}', pillar: 'body' },
-  { id: 'syncher_hour', label: '1hr SyncHer work', icon: '\u{1F9EC}', pillar: 'business' },
+  { id: 'morning_practice', label: 'Morning practice', icon: '\uD83E\uDDD8', pillar: 'spiritual' },
+  { id: 'no_phone', label: 'No phone before practice', icon: '\uD83D\uDCF5', pillar: 'structure' },
+  { id: 'movement', label: 'Movement / workout', icon: '\uD83D\uDCAA', pillar: 'body' },
+  { id: 'water', label: 'Hydration (3L)', icon: '\uD83D\uDCA7', pillar: 'body' },
+  { id: 'syncher_hour', label: '1hr SyncHer work', icon: '\uD83E\uDDEC', pillar: 'business' },
   { id: 'creative_out', label: 'One creative output', icon: '\u2728', pillar: 'business' },
-  { id: 'transitions', label: 'Transition rituals', icon: '\u{1F33F}', pillar: 'structure' },
-  { id: 'protected_eve', label: 'Protected evening', icon: '\u{1F319}', pillar: 'structure' },
-  { id: 'no_electronics', label: 'No electronics after 7:30', icon: '\u{1F4F5}', pillar: 'structure' },
-  { id: 'reading', label: 'Reading before bed', icon: '\u{1F4D6}', pillar: 'spiritual' },
-  { id: 'legs_up', label: 'Legs up the wall', icon: '\u{1F9B5}', pillar: 'body' },
-  { id: 'altar', label: 'Altar / spiritual moment', icon: '\u{1F56F}\uFE0F', pillar: 'spiritual' },
+  { id: 'transitions', label: 'Transition rituals', icon: '\uD83C\uDF3F', pillar: 'structure' },
+  { id: 'protected_eve', label: 'Protected evening', icon: '\uD83C\uDF19', pillar: 'structure' },
+  { id: 'no_electronics', label: 'No electronics after 7:30', icon: '\uD83D\uDCF5', pillar: 'structure' },
+  { id: 'reading', label: 'Reading before bed', icon: '\uD83D\uDCD6', pillar: 'spiritual' },
+  { id: 'legs_up', label: 'Legs up the wall', icon: '\uD83E\uDDB5', pillar: 'body' },
+  { id: 'altar', label: 'Altar / spiritual moment', icon: '\uD83D\uDD6F\uFE0F', pillar: 'spiritual' },
 ];
 
-const DUBAI = [
-  { id: 'db1', label: 'Confirm boys handle big furniture', cat: 'Before Burn \u00B7 Apr 23' },
-  { id: 'db2', label: "Book Ruby's Dubai \u2192 Amsterdam flight", cat: 'Before Burn \u00B7 Apr 23' },
-  { id: 'db3', label: 'Start MOCCAE export permit for Ruby', cat: 'Before Burn \u00B7 Apr 23' },
-  { id: 'db4', label: 'Book vet \u2014 Ruby health certificate', cat: 'Before Burn \u00B7 Apr 23' },
-  { id: 'db5', label: 'Storage unit decision: yes / no', cat: 'Before Burn \u00B7 Apr 23' },
-  { id: 'db6', label: 'Communicate Dubai exit to team', cat: 'Before Burn \u00B7 Apr 23' },
-  { id: 'db7', label: 'Pack personal belongings', cat: 'Dubai Sprint \u00B7 May 8\u201321' },
-  { id: 'db8', label: 'Pack altar & sacred objects', cat: 'Dubai Sprint \u00B7 May 8\u201321' },
-  { id: 'db9', label: 'Pack work equipment (laptop, Fujifilm, drives)', cat: 'Dubai Sprint \u00B7 May 8\u201321' },
-  { id: 'db10', label: 'Pack peptide protocol supplies', cat: 'Dubai Sprint \u00B7 May 8\u201321' },
-  { id: 'db11', label: 'Pack all personal documents', cat: 'Dubai Sprint \u00B7 May 8\u201321' },
-  { id: 'db12', label: 'Cancel / transfer Dubai subscriptions', cat: 'Dubai Sprint \u00B7 May 8\u201321' },
-  { id: 'db13', label: 'Notify bank of address change', cat: 'Dubai Sprint \u00B7 May 8\u201321' },
-  { id: 'db14', label: 'Photograph villa condition', cat: 'Dubai Sprint \u00B7 May 8\u201321' },
-  { id: 'db15', label: 'Return keys to landlord', cat: 'Dubai Sprint \u00B7 May 8\u201321' },
-  { id: 'db16', label: 'Amsterdam apartment confirmed & ready', cat: 'Amsterdam Landing' },
-  { id: 'db17', label: 'Altar corner set up first', cat: 'Amsterdam Landing' },
-  { id: 'db18', label: 'Ruby settled \u{1F43E}', cat: 'Amsterdam Landing' },
+const DEFAULT_SCHEDULE = [
+  { time: '5:30', label: 'Wake & Stillness', desc: 'No phone. Water. Arrive slowly.', color: '#9b7fa8' },
+  { time: '6:00', label: 'Morning Practice', desc: 'Meditation, movement, altar', color: '#9b7fa8' },
+  { time: '7:00', label: 'Deep Work I', desc: 'Peak energy \u2014 SyncHer, strategy', color: '#E8D44D' },
+  { time: '9:30', label: 'Break', desc: 'Walk, snack, transition ritual', color: '#7fa88a' },
+  { time: '10:00', label: 'Deep Work II', desc: 'Seraya Studio, calls, build', color: '#c4a46b' },
+  { time: '12:00', label: 'Lunch & Rest', desc: 'Nourish. No screens.', color: '#7fa88a' },
+  { time: '13:30', label: 'Creative Block', desc: 'Content, filming, writing', color: '#E8D44D' },
+  { time: '15:30', label: 'Admin & Comms', desc: 'Emails, messages, planning', color: '#8a9fbf' },
+  { time: '17:00', label: 'Movement', desc: 'Workout or long walk', color: '#bf8a8a' },
+  { time: '18:30', label: 'Evening Wind-down', desc: 'Cook, read, altar', color: '#9b7fa8' },
+  { time: '21:00', label: 'Sleep Prep', desc: 'No screens. Legs up wall. Rest.', color: '#5A5A5A' },
 ];
 
-const DEFAULT_PROJECTS = [
-  {
-    id: 'seraya_studio', name: 'Seraya Studio', emoji: '\u{1FAA8}', color: '#c4a46b',
-    tagline: 'Stone furniture \u2014 build, launch, exit clean', deadline: 'Jul 2026',
-    milestones: [
-      { id: 'ss1', label: 'Website live', done: true },
-      { id: 'ss2', label: 'All 4 products listed', done: true },
-      { id: 'ss3', label: 'Spec sheets complete', done: true },
-      { id: 'ss4', label: 'Instagram presence launched', done: false },
-      { id: 'ss5', label: 'First content posts live', done: false },
-      { id: 'ss6', label: 'Marketing & sales system live', done: false },
-      { id: 'ss7', label: 'First sale \u{1F389}', done: false },
-      { id: 'ss8', label: 'Clean exit from Seraya', done: false },
-    ]
-  },
-  {
-    id: 'syncher', name: 'SyncHer', emoji: '\u{1F9EC}', color: '#8a9fbf',
-    tagline: "Women's hormone health \u2014 the core life's work", deadline: 'Dec 2026',
-    milestones: [
-      { id: 'sy1', label: 'SAGE AI persona finalized', done: true },
-      { id: 'sy2', label: 'Project bible complete', done: true },
-      { id: 'sy3', label: 'Landing page live', done: false },
-      { id: 'sy4', label: 'Kajabi platform set up', done: false },
-      { id: 'sy5', label: 'First digital product built', done: false },
-      { id: 'sy6', label: 'Waitlist 100+ signups', done: false },
-      { id: 'sy7', label: 'First paying customers', done: false },
-    ]
-  },
-  {
-    id: 'brand', name: 'Personal Brand', emoji: '\u{1F3AC}', color: '#bf8a8a',
-    tagline: 'TikTok \u00B7 YouTube \u00B7 Instagram \u2014 be seen', deadline: 'Ongoing',
-    milestones: [
-      { id: 'br1', label: 'First TikTok posted', done: false },
-      { id: 'br2', label: 'Content strategy documented', done: false },
-      { id: 'br3', label: '10 TikToks posted', done: false },
-      { id: 'br4', label: 'First YouTube video', done: false },
-      { id: 'br5', label: 'Content batching system live', done: false },
-      { id: 'br6', label: '1K TikTok followers', done: false },
-    ]
-  },
-  {
-    id: 'geo', name: 'Geographic Transition', emoji: '\u{1F3D4}\uFE0F', color: '#7fa88a',
-    tagline: 'Dubai exit \u2192 Amsterdam \u2192 Zug / Switzerland', deadline: 'May 21',
-    milestones: [
-      { id: 'ge1', label: 'Africa Burn (Apr 24 \u2013 May 3)', done: false },
-      { id: 'ge2', label: 'Dubai exit complete (May 21)', done: false },
-      { id: 'ge3', label: 'Ruby relocated to Amsterdam', done: false },
-      { id: 'ge4', label: 'Settled in Amsterdam', done: false },
-      { id: 'ge5', label: 'Switzerland immigration researched', done: false },
-      { id: 'ge6', label: 'Zug visit / scout', done: false },
-    ]
-  },
-  {
-    id: 'italy', name: 'Italy Opportunity', emoji: '\u{1F1EE}\u{1F1F9}', color: '#a48b6b',
-    tagline: 'European stone market with supplier \u2014 seed stage', deadline: 'Sept 2026',
-    milestones: [
-      { id: 'it1', label: 'Follow-up with stone supplier', done: false },
-      { id: 'it2', label: 'Research Italian stone market', done: false },
-      { id: 'it3', label: 'Visit Italy to explore', done: false },
-      { id: 'it4', label: 'Go / no-go decision', done: false },
-    ]
-  },
+const DEFAULT_TRANSACTIONS = [
+  { id: 't1', name: 'Rent \u2014 Dubai Villa', amount: -8500, currency: 'AED', date: 'Apr 1', icon: '\uD83C\uDFE0', cat: 'Rent' },
+  { id: 't2', name: 'Seraya Studio Revenue', amount: 4200, currency: 'AED', date: 'Apr 3', icon: '\uD83D\uDCB0', cat: 'Income' },
+  { id: 't3', name: 'Carrefour Groceries', amount: -340, currency: 'AED', date: 'Apr 5', icon: '\uD83D\uDED2', cat: 'Food' },
+  { id: 't4', name: 'Freelance Payment', amount: 2800, currency: 'AED', date: 'Apr 7', icon: '\uD83D\uDCBB', cat: 'Income' },
+  { id: 't5', name: 'Gym Membership', amount: -450, currency: 'AED', date: 'Apr 8', icon: '\uD83C\uDFCB\uFE0F', cat: 'Health' },
+  { id: 't6', name: 'Spotify + YouTube', amount: -65, currency: 'AED', date: 'Apr 10', icon: '\uD83C\uDFB5', cat: 'Subscriptions' },
+  { id: 't7', name: 'Uber rides', amount: -180, currency: 'AED', date: 'Apr 12', icon: '\uD83D\uDE95', cat: 'Transport' },
+  { id: 't8', name: 'Peptide supplies', amount: -620, currency: 'AED', date: 'Apr 14', icon: '\uD83D\uDC89', cat: 'Health' },
 ];
 
-const WEEK_PLAN = [
-  { day: 'Mon', focus: 'Planning + Seraya', detail: 'Weekly review, standup, set intentions' },
-  { day: 'Tue', focus: 'Deep Build', detail: 'SyncHer / content / strategic work' },
-  { day: 'Wed', focus: 'Deep Build', detail: 'SyncHer / content / strategic work' },
-  { day: 'Thu', focus: 'Business + Calls', detail: 'Cofounder calls, Seraya admin' },
-  { day: 'Fri', focus: 'Content Creation', detail: 'Filming, batching, creative output' },
-  { day: 'Sat', focus: 'Rest + Spirit', detail: 'Nature, longer practice, no work' },
-  { day: 'Sun', focus: 'Reflection + Reset', detail: 'Weekly review, prep next week' },
+const EXPENSE_CATEGORIES = [
+  { name: 'Rent', value: 8500, color: '#FF6B9D' },
+  { name: 'Food', value: 2100, color: '#00D4FF' },
+  { name: 'Health', value: 1070, color: '#00E676' },
+  { name: 'Transport', value: 800, color: '#FFD740' },
+  { name: 'Subscriptions', value: 450, color: '#7B61FF' },
+  { name: 'Other', value: 680, color: '#FF6B35' },
 ];
 
-const PILLARS = [
-  { id: 'spiritual', emoji: '\u{1F9D8}', name: 'Spiritual Practice', color: '#9b7fa8', desc: 'The operating system. Non-negotiable.', actions: ['Daily practice before screens', 'Altar space everywhere you live', 'Weekly longer session', 'Vipassana annually'], note: 'Drifted during Dubai work year. Rebuilding now. This is the foundation under everything.' },
-  { id: 'heart', emoji: '\u{1F90D}', name: 'Heart & Relationships', color: '#bf8a8a', desc: 'The rewiring. Lean toward those who love freely.', actions: ['Contact grandmother soon', 'Lean in to those who show up', 'Distance from dream-shrinking connections', 'Reconnect with aligned people'], note: 'Root found at Vipassana: unplanned child, mother wound, closed heart as protection. Now: open, receive, love freely.' },
-  { id: 'body', emoji: '\u{1F4AA}', name: 'Body & Health', color: '#7fa88a', desc: 'You know what the body needs. Now live it consistently.', actions: ['Cycle-synced training', 'Nervous system regulation daily', 'Legs up the wall every break', 'Peptide protocol (post-Burn cycle)'], note: 'Workout: mornings preferred, before lunch as backup. Cycle-sync everything.' },
-  { id: 'business', emoji: '\u{1F4BC}', name: 'Business Architecture', color: '#c4a46b', desc: 'Build what lasts. Exit what doesn\'t serve.', actions: ['Seraya Studio \u2192 first sale \u2192 exit', 'SyncHer 1hr daily minimum', 'Italy opportunity: keep warm', 'Switzerland research: don\'t let it slip'], note: '2030 test: does she thank you or resent you for this decision?' },
-  { id: 'structure', emoji: '\u{1F5D3}\uFE0F', name: 'Structure & Rhythm', color: '#8a9fbf', desc: 'No more chaos. Channel the power.', actions: ['Morning practice before phone', 'Transition rituals between blocks', 'Protected evenings \u2014 no electronics', 'Sunday weekly reset'], note: 'Fix: reactive all day + lost transition time \u2192 clear blocks + 10-min transition rituals.' },
+const MONTHLY_DATA = [
+  { month: 'Nov', income: 12000, expenses: 9500 },
+  { month: 'Dec', income: 14500, expenses: 11000 },
+  { month: 'Jan', income: 11000, expenses: 10200 },
+  { month: 'Feb', income: 13000, expenses: 9800 },
+  { month: 'Mar', income: 15200, expenses: 10500 },
+  { month: 'Apr', income: 7000, expenses: 10700 },
 ];
 
-const DAILY_RHYTHM = [
-  { t: '5\u20136 AM', l: 'Wake & Stillness', d: 'No phone. Water. Arrive slowly.', c: '#9b7fa8' },
-  { t: '6\u20137 AM', l: 'Morning Practice', d: 'Meditation, movement, altar', c: '#c4a46b' },
-  { t: '7\u20139:30', l: 'Deep Work I', d: 'Peak energy \u2014 SyncHer, strategy', c: '#bf8a8a' },
-  { t: '9:45\u201312', l: 'Deep Work II', d: 'Seraya Studio, calls, build', c: '#bf8a8a' },
-  { t: '12\u20131:30', l: 'Lunch & Rest', d: 'No screens. Legs up the wall.', c: '#7fa88a' },
-  { t: '1:30\u20133:30', l: 'Light Work', d: 'Email, admin, research', c: '#8a9fbf' },
-  { t: '3:45\u20135:30', l: 'Creative / Body', d: 'Content, movement, play', c: '#7fa88a' },
-  { t: '7:30 PM+', l: 'Protected Evening', d: 'No electronics. Reading. Rest.', c: '#9b7fa8' },
+const FINANCIAL_GOALS = [
+  { id: 'fg1', label: 'Amsterdam Move Fund', current: 12400, target: 25000, color: '#00D4FF' },
+  { id: 'fg2', label: 'Emergency Fund', current: 8200, target: 15000, color: '#00E676' },
+  { id: 'fg3', label: 'SyncHer Launch Budget', current: 3100, target: 5000, color: '#7B61FF' },
 ];
 
-const DEFAULT_FINANCE = {
-  accounts: [
-    { id: 'wise_eur', name: 'Wise EUR', balance: 4250.00, currency: 'EUR', icon: '\u{1F4B6}', color: '#00B3A4' },
-    { id: 'wise_usd', name: 'Wise USD', balance: 1820.50, currency: 'USD', icon: '\u{1F4B5}', color: '#6B4FBB' },
-    { id: 'wio', name: 'Wio Business', balance: 12500.00, currency: 'AED', icon: '\u{1F3E6}', color: '#C4A46B' },
-  ],
-  transactions: [
-    { id: 't1', label: 'Seraya supplier payment', amount: -3200, currency: 'AED', date: 'Apr 14', cat: 'business', icon: '\u{1FAA8}' },
-    { id: 't2', label: 'Freelance income', amount: 1500, currency: 'EUR', date: 'Apr 13', cat: 'income', icon: '\u{1F4B0}' },
-    { id: 't3', label: 'Wise transfer', amount: -500, currency: 'EUR', date: 'Apr 12', cat: 'transfer', icon: '\u{1F4B3}' },
-    { id: 't4', label: 'Gym membership', amount: -89, currency: 'AED', date: 'Apr 10', cat: 'health', icon: '\u{1F4AA}' },
-    { id: 't5', label: 'Domain renewal', amount: -24, currency: 'USD', date: 'Apr 9', cat: 'business', icon: '\u{1F310}' },
-  ],
-};
-
-const CALENDAR_EVENTS = [
-  { hour: 6, name: 'Morning Practice', detail: 'Meditation + movement', color: '#c4a46b', bg: 'var(--pastel-yellow)' },
-  { hour: 9, name: 'SyncHer deep work', detail: 'Landing page copy', color: '#8a9fbf', bg: 'var(--pastel-blue)' },
-  { hour: 11, name: 'Seraya call', detail: 'Supplier follow-up', color: '#c4a46b', bg: 'var(--pastel-peach)' },
-  { hour: 15, name: 'Content block', detail: 'Film + edit', color: '#bf8a8a', bg: 'var(--pastel-pink)' },
+const CONTACTS = [
+  { id: 'c1', name: 'Enrica', group: 'Inner Circle', lastContact: '2026-04-14', frequency: 1, type: 'Partner' },
+  { id: 'c2', name: 'Mum', group: 'Family', lastContact: '2026-04-12', frequency: 7, type: 'Family' },
+  { id: 'c3', name: 'Dad', group: 'Family', lastContact: '2026-04-06', frequency: 14, type: 'Family' },
+  { id: 'c4', name: 'Lena', group: 'Inner Circle', lastContact: '2026-03-28', frequency: 14, type: 'Best Friend' },
+  { id: 'c5', name: 'Sarah K.', group: 'Friends', lastContact: '2026-03-15', frequency: 30, type: 'Friend' },
+  { id: 'c6', name: 'Tom (mentor)', group: 'Professional', lastContact: '2026-03-01', frequency: 30, type: 'Mentor' },
+  { id: 'c7', name: 'Nadia', group: 'Friends', lastContact: '2026-04-10', frequency: 14, type: 'Friend' },
+  { id: 'c8', name: 'Aya (HWH)', group: 'Professional', lastContact: '2026-03-20', frequency: 21, type: 'Colleague' },
 ];
 
-const DEFAULT_GOALS = [
-  { id: 'g1', label: 'Launch SyncHer landing page', deadline: 'May 2026', progress: 30, color: '#8a9fbf', category: '2026 Goals' },
-  { id: 'g2', label: 'First Seraya sale', deadline: 'Jul 2026', progress: 45, color: '#c4a46b', category: '2026 Goals' },
-  { id: 'g3', label: 'Settled in Amsterdam', deadline: 'Jun 2026', progress: 15, color: '#7fa88a', category: '2026 Goals' },
-  { id: 'g4', label: '1K TikTok followers', deadline: 'Oct 2026', progress: 5, color: '#bf8a8a', category: '2026 Goals' },
-  { id: 'g5', label: 'Daily spiritual practice streak (30 days)', deadline: 'May 2026', progress: 60, color: '#9b7fa8', category: 'Habits & Growth' },
-  { id: 'g6', label: 'Complete SyncHer brand bible', deadline: 'Done', progress: 100, color: '#8a9fbf', category: 'Habits & Growth' },
+const PEPTIDE_PROTOCOL = [
+  { name: 'BPC-157', dosage: '250mcg', frequency: 'Daily (AM)', route: 'Subcutaneous', cycle: '30 days on / 14 off', startDate: '2026-04-01', daysLeft: 16, purpose: 'Gut healing, tissue repair' },
+  { name: 'GHK-Cu', dosage: '200mcg', frequency: 'Daily (PM)', route: 'Subcutaneous', cycle: '30 days on / 14 off', startDate: '2026-04-01', daysLeft: 16, purpose: 'Skin, collagen, anti-aging' },
 ];
 
-const VISION_STATEMENTS = [
-  { id: 'v1', text: 'Build a life where the spiritual practice is the operating system \u2014 not an afterthought.', pillar: 'Spiritual' },
-  { id: 'v2', text: 'SyncHer becomes the go-to platform for women who want to live in sync with their cycle.', pillar: 'Business' },
-  { id: 'v3', text: 'Be rooted in Europe by end of 2026 \u2014 Amsterdam first, then Switzerland.', pillar: 'Life' },
-  { id: 'v4', text: '"Does my 2030 self thank me for this decision?" \u2014 the only filter that matters.', pillar: 'Core' },
+const CONTENT_IDEAS = [
+  { id: 'ci1', title: 'Why I track my cycle for productivity', platform: 'TikTok', pillar: 'SyncHer', status: 'idea', priority: 'high' },
+  { id: 'ci2', title: 'Morning routine \u2014 cycle synced edition', platform: 'YouTube', pillar: 'Lifestyle', status: 'idea', priority: 'high' },
+  { id: 'ci3', title: 'Japandi furniture in Dubai apartments', platform: 'Instagram', pillar: 'Seraya', status: 'scheduled', priority: 'medium' },
+  { id: 'ci4', title: 'Peptide protocol for women over 25', platform: 'TikTok', pillar: 'Health', status: 'in_progress', priority: 'high' },
+  { id: 'ci5', title: 'Moving from Dubai to Amsterdam', platform: 'YouTube', pillar: 'Lifestyle', status: 'idea', priority: 'medium' },
+  { id: 'ci6', title: 'Sound healing at Africa Burn', platform: 'Instagram', pillar: 'Spiritual', status: 'idea', priority: 'low' },
+];
+
+const LEARNING = [
+  { id: 'l1', title: 'The Body Keeps the Score', type: 'book', progress: 72, author: 'Bessel van der Kolk' },
+  { id: 'l2', title: 'Building a Second Brain', type: 'book', progress: 100, author: 'Tiago Forte' },
+  { id: 'l3', title: 'Kajabi Course Creation', type: 'course', progress: 25, author: 'Kajabi University' },
+  { id: 'l4', title: 'Advanced Reiki Level III', type: 'course', progress: 60, author: 'HWH Dubai' },
+];
+
+const DEV_GOALS = [
+  { area: 'Career', score: 65 },
+  { area: 'Health', score: 75 },
+  { area: 'Relationships', score: 70 },
+  { area: 'Finance', score: 45 },
+  { area: 'Spiritual', score: 85 },
+  { area: 'Creative', score: 55 },
 ];
 
 /* ===== HELPERS ===== */
 
 function load(key) {
-  try { return localStorage.getItem(key); } catch { return null; }
+  try { const v = localStorage.getItem(key); return v; } catch { return null; }
 }
 
 function save(key, val) {
@@ -219,867 +171,1158 @@ function CircleProgress({ size = 64, stroke = 5, progress = 0, color = 'var(--ac
   );
 }
 
-function reorder(list, startIndex, endIndex) {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
+function getDaysSince(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  d.setHours(0,0,0,0); now.setHours(0,0,0,0);
+  return Math.floor((now - d) / 86400000);
 }
 
-function getCalendarDays(year, month) {
-  const first = new Date(year, month, 1);
-  const last = new Date(year, month + 1, 0);
-  const startDay = (first.getDay() + 6) % 7; // Monday = 0
-  const days = [];
-  // Previous month fill
-  const prevLast = new Date(year, month, 0).getDate();
-  for (let i = startDay - 1; i >= 0; i--) days.push({ d: prevLast - i, current: false });
-  // Current month
-  for (let i = 1; i <= last.getDate(); i++) days.push({ d: i, current: true });
-  // Next month fill
-  const remaining = 42 - days.length;
-  for (let i = 1; i <= remaining; i++) days.push({ d: i, current: false });
-  return days;
+function getContactStatus(contact) {
+  const days = getDaysSince(contact.lastContact);
+  if (days <= contact.frequency) return 'on-track';
+  if (days <= contact.frequency * 1.5) return 'due-soon';
+  return 'overdue';
 }
 
-const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+/* ===== NAV CONFIG ===== */
+
+const NAV = [
+  { group: 'OVERVIEW', items: [
+    { id: 'home', label: 'Home Dashboard', icon: Home },
+  ]},
+  { group: 'LIFE SYSTEMS', items: [
+    { id: 'finance', label: 'Finance', icon: DollarSign },
+    { id: 'health', label: 'Health & Fitness', icon: Dumbbell },
+    { id: 'cycle', label: 'Cycle & Peptides', icon: Droplets },
+    { id: 'rhythm', label: 'Daily Rhythm', icon: Clock },
+    { id: 'business', label: 'Business', icon: Briefcase },
+    { id: 'relationships', label: 'Relationships', icon: Heart },
+    { id: 'development', label: 'Personal Dev', icon: Sprout },
+  ]},
+  { group: 'CONTENT', items: [
+    { id: 'content-cal', label: 'Content Calendar', icon: CalendarDays },
+    { id: 'content-strategy', label: 'Content Strategy', icon: FileText },
+  ]},
+];
 
 /* ===== MAIN APP ===== */
 
-export default function AnnaOS() {
-  const [view, setView] = useState('today');
-  const [theme, setTheme] = useState(() => load('anna:theme') || 'light');
-  const [calOpen, setCalOpen] = useState(true);
-  const [habits, setHabits] = useState({});
-  const [dubai, setDubai] = useState({});
-  const [projects, setProjects] = useState(DEFAULT_PROJECTS);
-  const [weekNotes, setWeekNotes] = useState({});
-  const [intention, setIntention] = useState('');
-  const [finance, setFinance] = useState(DEFAULT_FINANCE);
-  const [loaded, setLoaded] = useState(false);
+export default function App() {
+  const [view, setView] = useState(() => load('anna_view') || 'home');
+  const [theme, setTheme] = useState(() => load('anna_theme') || 'dark');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const dateKey = new Date().toISOString().split('T')[0];
+  // Habits
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const [habits, setHabits] = useState(() => {
+    const saved = load(`habits_${todayKey}`);
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // Cycle
   const cycleDay = getDayOfCycle();
   const cycle = getCyclePhase(cycleDay);
 
-  // Apply theme to document
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    save('anna:theme', theme);
-  }, [theme]);
+  // Finance
+  const [wiseConnected] = useState(false);
 
-  // Load persisted data
-  useEffect(() => {
-    try { const d = load(`anna:habits:${dateKey}`); if (d) setHabits(JSON.parse(d)); } catch {}
-    try { const d = load('anna:dubai'); if (d) setDubai(JSON.parse(d)); } catch {}
-    try { const d = load('anna:weeknotes'); if (d) setWeekNotes(JSON.parse(d)); } catch {}
-    try { const d = load(`anna:intention:${dateKey}`); if (d) setIntention(d); } catch {}
-    try {
-      const d = load('anna:projects');
-      if (d) {
-        const saved = JSON.parse(d);
-        setProjects(prev => prev.map(p => {
-          const sp = saved.find(s => s.id === p.id);
-          if (!sp) return p;
-          return { ...p, milestones: p.milestones.map(m => { const sm = sp.milestones?.find(x => x.id === m.id); return sm ? { ...m, done: sm.done } : m; }) };
-        }));
-      }
-    } catch {}
-    try { const d = load('anna:finance'); if (d) setFinance(JSON.parse(d)); } catch {}
-    setLoaded(true);
-  }, []);
-
-  const toggleHabit = (id) => { const n = { ...habits, [id]: !habits[id] }; setHabits(n); save(`anna:habits:${dateKey}`, n); };
-  const toggleDubai = (id) => { const n = { ...dubai, [id]: !dubai[id] }; setDubai(n); save('anna:dubai', n); };
-  const toggleMilestone = (pid, mid) => {
-    const n = projects.map(p => p.id === pid ? { ...p, milestones: p.milestones.map(m => m.id === mid ? { ...m, done: !m.done } : m) } : p);
-    setProjects(n);
-    save('anna:projects', n.map(p => ({ id: p.id, milestones: p.milestones.map(m => ({ id: m.id, done: m.done })) })));
-  };
-  const saveIntention = (v) => { setIntention(v); save(`anna:intention:${dateKey}`, v); };
-  const saveWeekNote = (day, v) => { const n = { ...weekNotes, [day]: v }; setWeekNotes(n); save('anna:weeknotes', n); };
-
-  const NAV = [
-    { id: 'today', label: 'Today', icon: '\u25C9' },
-    { id: 'week', label: 'Week', icon: '\u25A1' },
-    { id: 'habits', label: 'Habits', icon: '\u25C8' },
-    { id: 'projects', label: 'Projects', icon: '\u25EB' },
-    { id: 'vision', label: 'Vision & Goals', icon: '\u{1F3AF}' },
-    { id: 'finance', label: 'Finance', icon: '\u{1F4B0}' },
-    { id: 'pillars', label: 'Pillars', icon: '\u25E7' },
-    { id: 'checklist', label: 'Dubai Exit', icon: '\u2713' },
-    { id: 'profile', label: 'Profile', icon: '\u25CE' },
-  ];
-
-  if (!loaded) return <div className="loading-screen">ANNA OS</div>;
-
-  return (
-    <div className="app-shell">
-      {/* Sidebar */}
-      <nav className="sidebar">
-        <div className="sidebar-logo">
-          <h1>Anna OS</h1>
-          <span>2026 FOUNDATIONS</span>
-        </div>
-
-        <div className="nav-section-label">Overview</div>
-        {NAV.slice(0, 5).map(n => (
-          <button key={n.id} className={`nav-btn ${view === n.id ? 'active' : ''}`} onClick={() => setView(n.id)}>
-            <span className="nav-icon">{n.icon}</span>
-            <span>{n.label}</span>
-          </button>
-        ))}
-
-        <div className="nav-section-label">Manage</div>
-        {NAV.slice(5).map(n => (
-          <button key={n.id} className={`nav-btn ${view === n.id ? 'active' : ''}`} onClick={() => setView(n.id)}>
-            <span className="nav-icon">{n.icon}</span>
-            <span>{n.label}</span>
-          </button>
-        ))}
-
-        <div className="sidebar-bottom">
-          <div className="cycle-badge" style={{ borderColor: `${cycle.color}30` }}>
-            <div className="moon">{cycle.moon}</div>
-            <div className="phase-name" style={{ color: cycle.color }}>{cycle.phase.toUpperCase()}</div>
-            <div className="day-num">Day {cycleDay}</div>
-          </div>
-          <button className="theme-toggle" onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}>
-            {theme === 'dark' ? '\u2600\uFE0F' : '\u{1F319}'} {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-          </button>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="main-content">
-        {view === 'today' && <TodayView {...{ cycle, cycleDay, intention, saveIntention, habits, toggleHabit }} />}
-        {view === 'week' && <WeekView {...{ weekNotes, saveWeekNote, cycleDay, cycle }} />}
-        {view === 'habits' && <HabitsView {...{ habits, toggleHabit }} />}
-        {view === 'projects' && <ProjectsView {...{ projects, toggleMilestone }} />}
-        {view === 'vision' && <VisionView />}
-        {view === 'finance' && <FinanceView finance={finance} />}
-        {view === 'pillars' && <PillarsView />}
-        {view === 'checklist' && <ChecklistView {...{ dubai, toggleDubai }} />}
-        {view === 'profile' && <ProfileView />}
-      </main>
-
-      {/* Calendar Panel */}
-      <aside className={`calendar-panel ${calOpen ? '' : 'collapsed'}`}>
-        <CalendarPanel />
-      </aside>
-
-      {/* Toggle Calendar Button */}
-      <button className="toggle-panel-btn" onClick={() => setCalOpen(c => !c)}>
-        {calOpen ? '\u{1F4C5} \u2715' : '\u{1F4C5}'}
-      </button>
-    </div>
-  );
-}
-
-/* ===== CALENDAR PANEL ===== */
-
-function CalendarPanel() {
-  const now = new Date();
-  const [month, setMonth] = useState(now.getMonth());
-  const [year, setYear] = useState(now.getFullYear());
-  const today = now.getDate();
-  const isCurrentMonth = month === now.getMonth() && year === now.getFullYear();
-  const days = getCalendarDays(year, month);
-
-  const prev = () => { if (month === 0) { setMonth(11); setYear(y => y - 1); } else setMonth(m => m - 1); };
-  const next = () => { if (month === 11) { setMonth(0); setYear(y => y + 1); } else setMonth(m => m + 1); };
-
-  const timelineHours = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-  const formatHour = (h) => { if (h === 0) return '12 AM'; if (h < 12) return `${h}:00`; if (h === 12) return '12:00'; return `${h - 12}:00`; };
-
-  return (
-    <>
-      <div className="cal-header">
-        <button className="cal-nav-btn" onClick={prev}>{'\u2039'}</button>
-        <h3>{MONTH_NAMES[month]} {year}</h3>
-        <button className="cal-nav-btn" onClick={next}>{'\u203A'}</button>
-      </div>
-      <div className="cal-grid">
-        {['Mo','Tu','We','Th','Fr','Sa','Su'].map(d => <div key={d} className="cal-day-label">{d}</div>)}
-        {days.map((d, i) => (
-          <div key={i} className={`cal-day ${d.current && d.d === today && isCurrentMonth ? 'today' : ''} ${!d.current ? 'other-month' : ''}`}>
-            {d.d}
-          </div>
-        ))}
-      </div>
-
-      <button className="cal-add-event">+ Add event</button>
-
-      <div className="timeline-title">{MONTH_NAMES[now.getMonth()]} {now.getDate()}</div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-        <div className="timeline-date">Today's timeline</div>
-      </div>
-
-      <div className="timeline">
-        {timelineHours.map(h => {
-          const event = CALENDAR_EVENTS.find(e => e.hour === h);
-          return (
-            <div key={h} className="timeline-hour">
-              <div className="timeline-hour-label">{formatHour(h)}</div>
-              {event && (
-                <div className="timeline-event" style={{ background: event.bg, borderLeftColor: event.color, color: event.color }}>
-                  <div className="te-name">{event.name}</div>
-                  <div className="te-detail" style={{ color: 'var(--text-tertiary)' }}>{event.detail}</div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="cal-hint">
-        {'\u{1F4A1}'} Connect Google Calendar for live events. API integration ready {'\u2014'} just add your credentials.
-      </div>
-    </>
-  );
-}
-
-/* ===== TODAY VIEW ===== */
-
-function TodayView({ cycle, cycleDay, intention, saveIntention, habits, toggleHabit }) {
-  const done = HABITS.filter(h => habits[h.id]).length;
-  const hr = new Date().getHours();
-  const greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
-  const pct = Math.round((done / HABITS.length) * 100);
-
-  // Project stats
-  const projectsDone = DEFAULT_PROJECTS.reduce((a, p) => a + p.milestones.filter(m => m.done).length, 0);
-  const projectsTotal = DEFAULT_PROJECTS.reduce((a, p) => a + p.milestones.length, 0);
-  const projectPct = Math.round((projectsDone / projectsTotal) * 100);
-
-  return (
-    <div style={{ maxWidth: 820 }}>
-      {/* Greeting */}
-      <div style={{ marginBottom: 32 }}>
-        <div className="page-title" style={{ fontSize: 36, fontWeight: 700, marginBottom: 6 }}>{greeting}, Anna.</div>
-        <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-          {formatDate()}. {cycle.guidance}
-        </div>
-      </div>
-
-      {/* 2x2 Widget Cards - Intelly style */}
-      <div className="widget-grid">
-        {/* Cycle Widget */}
-        <div className="widget" style={{ background: 'var(--pastel-purple)', color: 'var(--pastel-purple-text)' }}>
-          <div>
-            <div className="widget-header">{cycle.phase} Phase:</div>
-            <div className="widget-stats">
-              <div className="widget-stat-item">
-                <div className="widget-stat-value">{cycle.moon} Day {cycleDay}</div>
-                <div className="widget-stat-label">{cycle.energy}</div>
-              </div>
-            </div>
-          </div>
-          <div className="widget-footer">{'\u2192'} {cycle.schedule}</div>
-        </div>
-
-        {/* Habits Widget */}
-        <div className="widget" style={{ background: 'var(--pastel-green)', color: 'var(--pastel-green-text)' }}>
-          <div>
-            <div className="widget-header">Habits today:</div>
-            <div className="widget-stats">
-              <div className="widget-stat-item">
-                <div className="widget-stat-value">{done} done</div>
-                <div className="widget-stat-label">of {HABITS.length} habits</div>
-              </div>
-              <div className="widget-stat-item">
-                <div className="widget-stat-value">{pct}%</div>
-                <div className="widget-stat-label">complete</div>
-              </div>
-            </div>
-          </div>
-          <div style={{ marginTop: 12 }}>
-            <div className="progress-bar" style={{ height: 6 }}>
-              <div className="progress-fill" style={{ width: `${pct}%`, background: 'var(--pastel-green-text)' }} />
-            </div>
-          </div>
-        </div>
-
-        {/* Projects Widget */}
-        <div className="widget" style={{ background: 'var(--pastel-yellow)', color: 'var(--pastel-yellow-text)' }}>
-          <div>
-            <div className="widget-header">Projects:</div>
-            <div className="widget-stats">
-              <div className="widget-stat-item">
-                <div className="widget-stat-value">5 active</div>
-                <div className="widget-stat-label">projects</div>
-              </div>
-              <div className="widget-stat-item">
-                <div className="widget-stat-value">{projectPct}%</div>
-                <div className="widget-stat-label">milestones done</div>
-              </div>
-            </div>
-          </div>
-          <div className="widget-footer">Seraya Studio focus this week</div>
-        </div>
-
-        {/* Schedule Widget */}
-        <div className="widget" style={{ background: 'var(--pastel-pink)', color: 'var(--pastel-pink-text)' }}>
-          <div>
-            <div className="widget-header">Today's schedule:</div>
-            <div className="widget-stats" style={{ flexDirection: 'column', gap: 6 }}>
-              {CALENDAR_EVENTS.slice(0, 3).map((e, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: e.color, flexShrink: 0 }} />
-                  <span style={{ fontSize: 12 }}>{e.hour < 12 ? e.hour + ':00' : (e.hour - 12 || 12) + ':00'} {'\u2014'} {e.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="widget-footer">{CALENDAR_EVENTS.length} events today</div>
-        </div>
-      </div>
-
-      {/* Intention */}
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>TODAY'S INTENTION</div>
-        <input className="input" placeholder="What matters most today?" value={intention} onChange={e => saveIntention(e.target.value)} style={{ fontFamily: "'Playfair Display', serif", fontSize: 17 }} />
-      </div>
-
-      {/* Habits Quick */}
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
-          <div className="section-tag" style={{ color: 'var(--text-tertiary)', marginBottom: 0 }}>TODAY'S HABITS</div>
-          <span style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 600 }}>{done}/{HABITS.length}</span>
-        </div>
-        <div className="grid-2">
-          {HABITS.map(h => (
-            <button key={h.id} className="habit-btn" onClick={() => toggleHabit(h.id)}>
-              <div className={`check ${habits[h.id] ? 'checked' : ''}`}>{habits[h.id] && '\u2713'}</div>
-              <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--text)' : 'var(--text-secondary)' }}>{h.icon} {h.label}</span>
-            </button>
-          ))}
-        </div>
-        <div className="progress-bar" style={{ marginTop: 14, height: 6 }}>
-          <div className="progress-fill" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #c4a46b, #dbb87a)' }} />
-        </div>
-      </div>
-
-      {/* Daily Rhythm */}
-      <div className="card">
-        <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>DAILY RHYTHM</div>
-        {DAILY_RHYTHM.map((r, i) => (
-          <div key={i} className="rhythm-item">
-            <div className="rhythm-time">{r.t}</div>
-            <div className="rhythm-dot" style={{ background: r.c }} />
-            <div className="rhythm-info">
-              <div className="rhythm-label">{r.l}</div>
-              <div className="rhythm-desc">{r.d}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ===== WEEK VIEW ===== */
-
-function WeekView({ weekNotes, saveWeekNote, cycleDay, cycle }) {
-  const todayIdx = (() => { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; })();
-  return (
-    <div style={{ maxWidth: 760 }}>
-      <div className="page-title">This Week</div>
-      <div className="page-subtitle">{cycle.moon} {cycle.phase} {'\u00B7'} Day {cycleDay} {'\u2014'} {cycle.schedule}</div>
-      <div style={{ display: 'grid', gap: 10 }}>
-        {WEEK_PLAN.map((d, i) => (
-          <div key={d.day} className="card" style={{ borderLeft: i === todayIdx ? '3px solid var(--accent)' : '3px solid transparent' }}>
-            <div style={{ display: 'flex', gap: 16 }}>
-              <div style={{ width: 40, flexShrink: 0 }}>
-                <div style={{ fontSize: 12, color: i === todayIdx ? 'var(--accent)' : 'var(--text-secondary)', fontWeight: 600 }}>{d.day}</div>
-                {i === todayIdx && <div style={{ fontSize: 9, color: 'var(--accent)', letterSpacing: '0.07em', marginTop: 2 }}>TODAY</div>}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 14, color: 'var(--text)', marginBottom: 2, fontWeight: 500 }}>{d.focus}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>{d.detail}</div>
-                <textarea className="input" placeholder="Notes\u2026" value={weekNotes[d.day] || ''} onChange={e => saveWeekNote(d.day, e.target.value)} style={{ minHeight: 36, fontSize: 12 }} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ===== HABITS VIEW ===== */
-
-function HabitsView({ habits, toggleHabit }) {
-  const done = HABITS.filter(h => habits[h.id]).length;
-  const pct = Math.round((done / HABITS.length) * 100);
-  const groups = [
-    { key: 'spiritual', label: 'SPIRITUAL', color: '#9b7fa8' },
-    { key: 'body', label: 'BODY', color: '#7fa88a' },
-    { key: 'structure', label: 'STRUCTURE', color: '#8a9fbf' },
-    { key: 'business', label: 'BUSINESS', color: '#c4a46b' },
-  ];
-  return (
-    <div style={{ maxWidth: 700 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 28 }}>
-        <CircleProgress size={100} stroke={7} progress={pct} color="var(--accent)">
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{pct}%</div>
-            <div style={{ fontSize: 9, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>today</div>
-          </div>
-        </CircleProgress>
-        <div>
-          <div className="page-title">Daily Habits</div>
-          <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{done} of {HABITS.length} complete {'\u00B7'} {HABITS.length - done} remaining</div>
-        </div>
-      </div>
-
-      {/* Group rings overview */}
-      <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-        {groups.map(g => {
-          const items = HABITS.filter(h => h.pillar === g.key);
-          const groupDone = items.filter(h => habits[h.id]).length;
-          const gPct = Math.round((groupDone / items.length) * 100);
-          return (
-            <div key={g.key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
-              <CircleProgress size={52} stroke={4} progress={gPct} color={g.color}>
-                <span style={{ fontSize: 12, fontWeight: 700, color: g.color }}>{groupDone}</span>
-              </CircleProgress>
-              <span style={{ fontSize: 9, color: g.color, fontWeight: 600, letterSpacing: '0.06em' }}>{g.label}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {groups.map(g => {
-        const items = HABITS.filter(h => h.pillar === g.key);
-        const groupDone = items.filter(h => habits[h.id]).length;
-        return (
-          <div key={g.key} className="card" style={{ marginBottom: 12, borderLeft: `3px solid ${g.color}` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-              <div className="section-tag" style={{ color: g.color, marginBottom: 0 }}>{g.label}</div>
-              <span style={{ fontSize: 12, color: g.color, fontWeight: 600 }}>{groupDone}/{items.length}</span>
-            </div>
-            <DragDropContext onDragEnd={() => {}}>
-              <Droppable droppableId={g.key}>
-                {(provided) => (
-                  <div ref={provided.innerRef} {...provided.droppableProps}>
-                    {items.map((h, idx) => (
-                      <Draggable key={h.id} draggableId={h.id} index={idx}>
-                        {(provided, snapshot) => (
-                          <div ref={provided.innerRef} {...provided.draggableProps}
-                            style={{ ...provided.draggableProps.style, marginBottom: 2, borderRadius: 10, background: snapshot.isDragging ? 'var(--skeleton)' : 'transparent' }}>
-                            <button className="habit-btn" onClick={() => toggleHabit(h.id)} style={{ position: 'relative' }}>
-                              <span {...provided.dragHandleProps} style={{ cursor: 'grab', color: 'var(--text-tertiary)', fontSize: 10, userSelect: 'none', padding: '0 2px' }}>{'\u2630'}</span>
-                              <div className={`check ${habits[h.id] ? 'checked' : ''}`} style={{ borderColor: habits[h.id] ? g.color : undefined, background: habits[h.id] ? g.color : undefined }}>
-                                {habits[h.id] && '\u2713'}
-                              </div>
-                              <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--text)' : 'var(--text-secondary)', flex: 1 }}>{h.icon} {h.label}</span>
-                              {habits[h.id] && <span style={{ fontSize: 10, color: g.color }}>{'\u2713'} Done</span>}
-                            </button>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* ===== PROJECTS VIEW ===== */
-
-function ProjectsView({ projects, toggleMilestone }) {
-  const [expanded, setExpanded] = useState(null);
-  return (
-    <div style={{ maxWidth: 820 }}>
-      <div className="page-title">Projects</div>
-      <div className="page-subtitle">2026 build map {'\u2014'} click a project to expand milestones</div>
-
-      {/* Overview ring row */}
-      <div style={{ display: 'flex', gap: 20, marginBottom: 28, flexWrap: 'wrap' }}>
-        {projects.map(p => {
-          const done = p.milestones.filter(m => m.done).length;
-          const pct = Math.round((done / p.milestones.length) * 100);
-          return (
-            <button key={p.id} onClick={() => setExpanded(expanded === p.id ? null : p.id)}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", opacity: expanded && expanded !== p.id ? 0.4 : 1, transition: 'opacity 0.2s' }}>
-              <CircleProgress size={72} stroke={5} progress={pct} color={p.color}>
-                <span style={{ fontSize: 16, fontWeight: 700, color: p.color }}>{pct}%</span>
-              </CircleProgress>
-              <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 500, textAlign: 'center', maxWidth: 80 }}>{p.name}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Project cards */}
-      <div style={{ display: 'grid', gap: 14 }}>
-        {projects.map(p => {
-          const done = p.milestones.filter(m => m.done).length;
-          const pct = Math.round((done / p.milestones.length) * 100);
-          const open = expanded === p.id;
-          return (
-            <div key={p.id} className="card" style={{ borderLeft: open ? `3px solid ${p.color}` : '3px solid transparent' }}>
-              <button style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }} onClick={() => setExpanded(open ? null : p.id)}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 10 }}>
-                  <CircleProgress size={52} stroke={4} progress={pct} color={p.color}>
-                    <span style={{ fontSize: 20 }}>{p.emoji}</span>
-                  </CircleProgress>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: p.color, fontWeight: 600 }}>{p.name}</div>
-                    <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{p.tagline}</div>
-                  </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: 20, fontWeight: 700, color: p.color }}>{pct}%</div>
-                    <div style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>{'\u2197\uFE0F'} {p.deadline}</div>
-                  </div>
-                </div>
-                <div className="progress-bar" style={{ height: 6 }}>
-                  <div className="progress-fill" style={{ width: `${pct}%`, background: p.color }} />
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 8 }}>{done}/{p.milestones.length} milestones {'\u00B7'} {open ? '\u25B2 collapse' : '\u25BC expand'}</div>
-              </button>
-              {open && (
-                <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
-                  <div className="grid-2">
-                    {p.milestones.map(m => (
-                      <button key={m.id} className="habit-btn" style={{ padding: '8px 10px' }} onClick={() => toggleMilestone(p.id, m.id)}>
-                        <div className={`check ${m.done ? 'checked' : ''}`} style={{ width: 20, height: 20, borderColor: m.done ? p.color : undefined, background: m.done ? p.color : undefined }}>
-                          {m.done && <span style={{ fontSize: 10 }}>{'\u2713'}</span>}
-                        </div>
-                        <span style={{ fontSize: 13, color: m.done ? 'var(--text-tertiary)' : 'var(--text)', textDecoration: m.done ? 'line-through' : 'none' }}>{m.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-/* ===== FINANCE VIEW ===== */
-
-function FinanceView({ finance }) {
-  const totalEUR = finance.accounts.find(a => a.id === 'wise_eur')?.balance || 0;
-  const totalUSD = finance.accounts.find(a => a.id === 'wise_usd')?.balance || 0;
-  const totalAED = finance.accounts.find(a => a.id === 'wio')?.balance || 0;
-
-  return (
-    <div style={{ maxWidth: 760 }}>
-      <div className="page-title">Finance</div>
-      <div className="page-subtitle">Account balances & recent transactions</div>
-
-      {/* Account Cards */}
-      <div className="grid-3" style={{ marginBottom: 20 }}>
-        {finance.accounts.map(a => (
-          <div key={a.id} className="stat-card card-colored" style={{ background: `${a.color}12`, border: `1px solid ${a.color}20` }}>
-            <div className="stat-label" style={{ color: a.color }}>{a.icon} {a.name}</div>
-            <div className="stat-value" style={{ color: a.color }}>{a.currency === 'EUR' ? '\u20AC' : a.currency === 'USD' ? '$' : 'AED '}{a.balance.toLocaleString('en', { minimumFractionDigits: 2 })}</div>
-            <div className="stat-sub" style={{ color: a.color }}>Current balance</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Total Overview */}
-      <div className="card" style={{ marginBottom: 16, borderLeft: '3px solid var(--accent)' }}>
-        <div className="section-tag" style={{ color: 'var(--accent)' }}>TOTAL OVERVIEW</div>
-        <div className="grid-3">
-          <div className="pill">
-            <div className="pill-label">EUR Balance</div>
-            <div className="pill-value" style={{ fontWeight: 500 }}>{'\u20AC'}{totalEUR.toLocaleString('en', { minimumFractionDigits: 2 })}</div>
-          </div>
-          <div className="pill">
-            <div className="pill-label">USD Balance</div>
-            <div className="pill-value" style={{ fontWeight: 500 }}>${totalUSD.toLocaleString('en', { minimumFractionDigits: 2 })}</div>
-          </div>
-          <div className="pill">
-            <div className="pill-label">AED Balance</div>
-            <div className="pill-value" style={{ fontWeight: 500 }}>AED {totalAED.toLocaleString('en', { minimumFractionDigits: 2 })}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Recent Transactions */}
-      <div className="card" style={{ marginBottom: 16 }}>
-        <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>RECENT TRANSACTIONS</div>
-        {finance.transactions.map(tx => (
-          <div key={tx.id} className="transaction-row">
-            <div className="tx-icon" style={{ background: 'var(--skeleton)' }}>{tx.icon}</div>
-            <div className="tx-info">
-              <div className="tx-label">{tx.label}</div>
-              <div className="tx-date">{tx.date} {'\u00B7'} {tx.cat}</div>
-            </div>
-            <div className={`tx-amount ${tx.amount > 0 ? 'positive' : 'negative'}`}>
-              {tx.amount > 0 ? '+' : ''}{tx.currency === 'EUR' ? '\u20AC' : tx.currency === 'USD' ? '$' : 'AED '}{Math.abs(tx.amount).toLocaleString()}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* API Connection Note */}
-      <div className="card" style={{ background: 'var(--skeleton)', border: 'none', boxShadow: 'none' }}>
-        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7 }}>
-          {'\u{1F4A1}'} <strong>Connect your accounts:</strong> Wise API is available for live balances. Wio requires manual entry for now. Balances shown above are placeholder data {'\u2014'} update them in the Finance settings once API keys are configured.
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ===== PILLARS VIEW ===== */
-
-function PillarsView() {
-  return (
-    <div style={{ maxWidth: 700 }}>
-      <div className="page-title">Five Pillars</div>
-      <div className="page-subtitle">2026 Foundation Year {'\u2014'} the structure under everything</div>
-      <div style={{ display: 'grid', gap: 14 }}>
-        {PILLARS.map(p => (
-          <div key={p.id} className="card" style={{ borderLeft: `3px solid ${p.color}` }}>
-            <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
-              <span style={{ fontSize: 24 }}>{p.emoji}</span>
-              <div>
-                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 19, color: p.color, fontWeight: 500 }}>{p.name}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>{p.desc}</div>
-              </div>
-            </div>
-            <div className="grid-2" style={{ gap: 6, marginBottom: 12 }}>
-              {p.actions.map((a, i) => (
-                <div key={i} style={{ fontSize: 12, color: 'var(--text-secondary)', padding: '8px 10px', background: 'var(--skeleton)', borderRadius: 8, borderLeft: `2px solid ${p.color}40` }}>{a}</div>
-              ))}
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', fontStyle: 'italic', borderTop: '1px solid var(--border)', paddingTop: 10, lineHeight: 1.7 }}>{p.note}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ===== CHECKLIST VIEW ===== */
-
-function ChecklistView({ dubai, toggleDubai }) {
-  const cats = [...new Set(DUBAI.map(d => d.cat))];
-  const done = DUBAI.filter(d => dubai[d.id]).length;
-  const pct = Math.round((done / DUBAI.length) * 100);
-  return (
-    <div style={{ maxWidth: 620 }}>
-      <div className="page-title">Dubai Exit</div>
-      <div className="page-subtitle">Out by May 21, 2026 {'\u00B7'} Back in Dubai May 8</div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 24 }}>
-        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 40, color: 'var(--accent)', lineHeight: 1, fontWeight: 500 }}>{pct}%</div>
-        <div style={{ flex: 1 }}>
-          <div className="progress-bar" style={{ height: 6 }}>
-            <div className="progress-fill" style={{ width: `${pct}%`, background: 'linear-gradient(90deg,#c4a46b,#dbb87a)' }} />
-          </div>
-          <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 5 }}>{done} of {DUBAI.length} complete</div>
-        </div>
-      </div>
-      {cats.map(cat => (
-        <div key={cat} className="card" style={{ marginBottom: 12 }}>
-          <div className="section-tag" style={{ color: 'var(--accent)' }}>{cat.toUpperCase()}</div>
-          {DUBAI.filter(d => d.cat === cat).map(item => (
-            <button key={item.id} className="habit-btn" onClick={() => toggleDubai(item.id)}>
-              <div className={`check ${dubai[item.id] ? 'checked' : ''}`}>{dubai[item.id] && '\u2713'}</div>
-              <span style={{ fontSize: 13, color: dubai[item.id] ? 'var(--text-tertiary)' : 'var(--text)', textDecoration: dubai[item.id] ? 'line-through' : 'none' }}>{item.label}</span>
-            </button>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* ===== PROFILE VIEW ===== */
-
-function ProfileView() {
-  return (
-    <div style={{ maxWidth: 700 }}>
-      <div className="page-title">Anna</div>
-      <div className="page-subtitle">The full picture</div>
-
-      <div className="card" style={{ marginBottom: 14, borderLeft: '3px solid var(--accent)' }}>
-        <div className="section-tag" style={{ color: 'var(--accent)' }}>HUMAN DESIGN</div>
-        <div className="grid-2" style={{ marginBottom: 12 }}>
-          {[['Type','Manifesting Generator'],['Profile','4/1 \u2014 Opportunist / Investigator'],['Authority','Emotional Solar Plexus'],['Strategy','Respond \u2014 wait for the sacral yes']].map(([k,v]) => (
-            <div key={k} className="pill"><div className="pill-label">{k}</div><div className="pill-value">{v}</div></div>
-          ))}
-        </div>
-        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7, fontStyle: 'italic' }}>The 4/1 MG needs depth before breadth. Your foundation must be real, not decorative. You only flourish when you respond {'\u2014'} not force.</div>
-      </div>
-
-      <div className="card" style={{ marginBottom: 14, borderLeft: '3px solid #9b7fa8' }}>
-        <div className="section-tag" style={{ color: '#9b7fa8' }}>ASTROLOGY {'\u2014'} Born 25 Sept 1995, 12:45 PM {'\u00B7'} Rohrbach-Berg</div>
-        <div className="grid-3" style={{ marginBottom: 12 }}>
-          {[
-            ['Sun \u264E','Libra'],['Moon \u264E','Libra'],['Rising \u2650','Sagittarius'],
-            ['Venus \u264E','Libra'],['Mercury \u264E','Libra'],['Mars \u264F','Scorpio'],
-            ['Jupiter \u2650','Sagittarius'],['Midheaven \u264E','Libra'],['Pluto \u264F','Scorpio'],
-          ].map(([k,v]) => (
-            <div key={k} className="pill" style={{ textAlign: 'center' }}><div className="pill-label">{k}</div><div className="pill-value">{v}</div></div>
-          ))}
-        </div>
-        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7, fontStyle: 'italic' }}>
-          Quadruple Libra {'\u2014'} beauty, balance, harmony are the core operating system. Jupiter in Sagittarius conjunct Ascendant: expansion and philosophy written into how you enter every room.
-        </div>
-      </div>
-
-      <div className="card" style={{ marginBottom: 14, borderLeft: '3px solid var(--accent)' }}>
-        <div className="section-tag" style={{ color: 'var(--accent)' }}>2026 COSMIC FRAMEWORK</div>
-        <div className="grid-2" style={{ marginBottom: 12 }}>
-          {[
-            ['Personal Year','8 \u2014 Power & Harvest','Claim authority. Financial abundance.'],
-            ['Universal Year','1 \u2014 New Terrain','Build on fresh ground'],
-            ['Chinese Year','Wood Horse','Momentum, bold steps'],
-            ['Synthesis','Power + Structure','Step into authority. Be seen.'],
-          ].map(([k,v,n]) => (
-            <div key={k} className="pill"><div className="pill-label">{k}</div><div className="pill-value" style={{ color: 'var(--accent)', marginBottom: 2 }}>{v}</div><div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{n}</div></div>
-          ))}
-        </div>
-        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7, fontStyle: 'italic', borderTop: '1px solid var(--border)', paddingTop: 10 }}>Year 8 is the harvest year {'\u2014'} you've been planting. The filter: "Does my 2030 self thank me for this decision?"</div>
-      </div>
-
-      <div className="card" style={{ borderLeft: '3px solid var(--text-tertiary)' }}>
-        <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>THE WOMAN</div>
-        <div className="grid-2" style={{ marginBottom: 14 }}>
-          {[['Base','Dubai \u2192 Amsterdam \u2192 Zug'],['Partner','Enrica'],['Companion','Ruby the dachshund \u{1F43E}'],['Passport','Austrian (EU citizen)'],['Teaching','Sound healing at HWH Dubai'],['Trained in','PT \u00B7 Yoga \u00B7 Reiki \u00B7 Somatic \u00B7 Meditation'],['Vipassanas','5 completed'],['Facilitating','Africa Burn Apr 2026']].map(([k,v]) => (
-            <div key={k} className="pill"><div className="pill-label">{k}</div><div className="pill-value">{v}</div></div>
-          ))}
-        </div>
-        <div style={{ padding: 14, background: 'var(--accent-soft)', borderRadius: 10, borderLeft: '2px solid var(--accent)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.75, fontStyle: 'italic' }}>
-          "Women run on 28-day cycles, not 24-hour cycles." {'\u2014'} The core message and the spine of everything.
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function VisionView() {
-  const [goals, setGoals] = useState(() => {
-    const saved = load('anna_goals');
-    return saved ? JSON.parse(saved) : DEFAULT_GOALS;
+  // Contacts
+  const [contacts, setContacts] = useState(() => {
+    const saved = load('anna_contacts');
+    return saved ? JSON.parse(saved) : CONTACTS;
   });
 
-  const updateGoalProgress = (id, delta) => {
-    setGoals(prev => {
-      const next = prev.map(g => g.id === id ? { ...g, progress: Math.max(0, Math.min(100, g.progress + delta)) } : g);
-      save('anna_goals', next);
+  // Intention
+  const [intention, setIntention] = useState(() => load(`intention_${todayKey}`) || '');
+
+  useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
+  useEffect(() => { save('anna_view', view); }, [view]);
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(t);
+  }, []);
+
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    save('anna_theme', next);
+  };
+
+  const toggleHabit = (id) => {
+    setHabits(prev => {
+      const next = { ...prev, [id]: !prev[id] };
+      save(`habits_${todayKey}`, next);
       return next;
     });
   };
 
-  const categories = [...new Set(goals.map(g => g.category))];
-  const overallProgress = goals.length ? Math.round(goals.reduce((s, g) => s + g.progress, 0) / goals.length) : 0;
-  const completed = goals.filter(g => g.progress === 100).length;
+  const saveIntention = (val) => {
+    setIntention(val);
+    save(`intention_${todayKey}`, val);
+  };
 
-  const pillarIcons = { Spiritual: '\u2728', Business: '\uD83D\uDE80', Life: '\uD83C\uDF0D', Core: '\uD83D\uDC8E' };
-  const pillarColors = { Spiritual: '#9b7fa8', Business: '#8a9fbf', Life: '#7fa88a', Core: '#c4a46b' };
+  const markContacted = (id) => {
+    setContacts(prev => {
+      const next = prev.map(c => c.id === id ? { ...c, lastContact: todayKey } : c);
+      save('anna_contacts', next);
+      return next;
+    });
+  };
+
+  const habitsCompleted = HABITS.filter(h => habits[h.id]).length;
+
+  if (loading) {
+    return (
+      <div className="loading-screen">
+        <h1>Anna OS</h1>
+        <p>LOADING</p>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ maxWidth: 900 }}>
-      <div className="page-title">Vision & Goals</div>
-      <div className="page-subtitle">The north star and the milestones</div>
+    <div className="app-shell">
+      {/* Sidebar */}
+      <nav className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-logo">
+          <h1>Anna OS</h1>
+          <button className="sidebar-collapse-btn" onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
+            {sidebarCollapsed ? <PanelLeft size={18} /> : <PanelLeftClose size={18} />}
+          </button>
+        </div>
 
-      {/* Vision Statements */}
-      <div className="card" style={{ marginBottom: 18, borderLeft: '3px solid var(--accent)' }}>
-        <div className="section-tag" style={{ color: 'var(--accent)' }}>VISION</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-          {VISION_STATEMENTS.map(v => (
-            <div key={v.id} style={{
-              padding: 16, borderRadius: 12, background: 'var(--accent-soft)',
-              borderLeft: `3px solid ${pillarColors[v.pillar] || 'var(--accent)'}`,
-              display: 'flex', flexDirection: 'column', gap: 8
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, color: pillarColors[v.pillar], textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                <span>{pillarIcons[v.pillar] || '\u2728'}</span> {v.pillar}
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {NAV.map(group => (
+            <div key={group.group}>
+              <div className="nav-group-label">{group.group}</div>
+              {group.items.map(item => {
+                const Icon = item.icon;
+                return (
+                  <button key={item.id} className={`nav-btn ${view === item.id ? 'active' : ''}`}
+                    onClick={() => setView(item.id)}>
+                    <span className="nav-icon"><Icon size={18} /></span>
+                    <span className="nav-label">{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        <div className="sidebar-bottom">
+          <button className="theme-toggle" onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+            <span className="nav-label">{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+          </button>
+        </div>
+
+        <div className="sidebar-user">
+          <div className="sidebar-avatar">AF</div>
+          <div>
+            <div className="sidebar-user-name">Anna Fox</div>
+            <div className="sidebar-user-role">Founder & Creator</div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="main-content" key={view}>
+        <div className="animate-in">
+          {view === 'home' && <HomeView cycle={cycle} cycleDay={cycleDay} habits={habits} habitsCompleted={habitsCompleted} toggleHabit={toggleHabit} intention={intention} saveIntention={saveIntention} contacts={contacts} />}
+          {view === 'finance' && <FinanceView wiseConnected={wiseConnected} />}
+          {view === 'health' && <HealthView habits={habits} habitsCompleted={habitsCompleted} toggleHabit={toggleHabit} />}
+          {view === 'cycle' && <CycleView cycle={cycle} cycleDay={cycleDay} />}
+          {view === 'rhythm' && <RhythmView habits={habits} habitsCompleted={habitsCompleted} toggleHabit={toggleHabit} />}
+          {view === 'business' && <BusinessView />}
+          {view === 'relationships' && <RelationshipsView contacts={contacts} markContacted={markContacted} />}
+          {view === 'development' && <DevelopmentView />}
+          {view === 'content-cal' && <ContentCalendarView />}
+          {view === 'content-strategy' && <ContentStrategyView />}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+/* ===== HOME DASHBOARD ===== */
+
+function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, intention, saveIntention, contacts }) {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const overdue = contacts.filter(c => getContactStatus(c) === 'overdue');
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      {/* Greeting */}
+      <div style={{ marginBottom: 28 }}>
+        <div className="page-title">{getGreeting()}, Anna.</div>
+        <div className="page-subtitle" style={{ marginBottom: 8 }}>
+          {formatDate()} {'\u00B7'} {cycle.phase} Phase (Day {((cycleDay - 1) % ANNA.cycleLength) + 1}) {'\u00B7'} {habitsCompleted}/{HABITS.length} habits done
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontStyle: 'italic' }}>{cycle.guidance}</div>
+      </div>
+
+      {/* Quick Stats */}
+      <div className="grid-4 animate-in" style={{ marginBottom: 20 }}>
+        <div className={`stat-card card-hover ${isDark ? 'card-gradient-cyan' : 'card-yellow'}`} style={{ background: isDark ? undefined : 'var(--card-yellow)' }}>
+          <div className="stat-label" style={{ color: isDark ? '#00D4FF' : 'var(--card-yellow-text)' }}>Habits Today</div>
+          <div className="stat-value" style={{ color: isDark ? '#00D4FF' : 'var(--card-yellow-text)' }}>{habitsCompleted}/{HABITS.length}</div>
+          <div className="stat-change" style={{ color: isDark ? '#00D4FF' : 'var(--card-yellow-text)' }}>
+            {Math.round(habitsCompleted / HABITS.length * 100)}% complete
+          </div>
+        </div>
+        <div className={`stat-card card-hover ${isDark ? 'card-gradient-pink' : 'card-pink'}`} style={{ background: isDark ? undefined : 'var(--card-pink)' }}>
+          <div className="stat-label" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>Cycle Phase</div>
+          <div className="stat-value" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)', fontSize: 22 }}>{cycle.icon} {cycle.phase}</div>
+          <div className="stat-change" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>
+            Day {((cycleDay - 1) % ANNA.cycleLength) + 1} of {ANNA.cycleLength}
+          </div>
+        </div>
+        <div className={`stat-card card-hover ${isDark ? 'card-gradient-green' : 'card-green'}`} style={{ background: isDark ? undefined : 'var(--card-green)' }}>
+          <div className="stat-label" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>Balance</div>
+          <div className="stat-value" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>AED 24.2K</div>
+          <div className="stat-change" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>
+            <TrendingUp size={14} /> +3.2% this month
+          </div>
+        </div>
+        <div className={`stat-card card-hover ${isDark ? 'card-gradient-gold' : 'card-peach'}`} style={{ background: isDark ? undefined : 'var(--card-peach)' }}>
+          <div className="stat-label" style={{ color: isDark ? '#FFD740' : 'var(--card-peach-text)' }}>Content Queue</div>
+          <div className="stat-value" style={{ color: isDark ? '#FFD740' : 'var(--card-peach-text)' }}>3</div>
+          <div className="stat-change" style={{ color: isDark ? '#FFD740' : 'var(--card-peach-text)' }}>pieces scheduled this week</div>
+        </div>
+      </div>
+
+      {/* Two-column layout */}
+      <div className="grid-2" style={{ gap: 20 }}>
+        {/* Left column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Intention */}
+          <div className="card animate-in animate-in-delay-1">
+            <div className="section-label">Today's Intention</div>
+            <input className="input" placeholder="What matters most today?" value={intention}
+              onChange={e => saveIntention(e.target.value)} />
+          </div>
+
+          {/* Today's Habits */}
+          <div className="card animate-in animate-in-delay-2">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div className="section-label" style={{ marginBottom: 0 }}>Today's Habits</div>
+              <div className="stat-number" style={{ fontSize: 13, color: 'var(--accent)' }}>{habitsCompleted}/{HABITS.length}</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {HABITS.map(h => (
+                <button key={h.id} className="habit-btn" onClick={() => toggleHabit(h.id)}>
+                  <div className={`check ${habits[h.id] ? 'checked' : ''}`}>
+                    {habits[h.id] && <Check size={13} />}
+                  </div>
+                  <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--text-tertiary)' : 'var(--text)', textDecoration: habits[h.id] ? 'line-through' : 'none' }}>
+                    {h.icon} {h.label}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Reach Out */}
+          {overdue.length > 0 && (
+            <div className="card animate-in animate-in-delay-3" style={{ borderLeft: '3px solid var(--warning)' }}>
+              <div className="section-label" style={{ color: 'var(--warning)' }}>Reach Out To</div>
+              {overdue.slice(0, 3).map(c => (
+                <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{c.name}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{getDaysSince(c.lastContact)} days ago {'\u00B7'} {c.type}</div>
+                  </div>
+                  <button className="btn btn-ghost" style={{ fontSize: 11, padding: '6px 10px' }}>
+                    <Send size={12} /> Reached out
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Schedule */}
+          <div className="card animate-in animate-in-delay-1">
+            <div className="section-label">Today's Schedule</div>
+            <div>
+              {DEFAULT_SCHEDULE.slice(0, 6).map((item, i) => (
+                <div key={i} className="timeline-item">
+                  <div className="timeline-time">{item.time}</div>
+                  <div className="timeline-dot" style={{ background: item.color }} />
+                  <div className="timeline-content">
+                    <div className="timeline-label">{item.label}</div>
+                    <div className="timeline-desc">{item.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Mini Finance */}
+          <div className="card animate-in animate-in-delay-2">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div className="section-label" style={{ marginBottom: 0 }}>Recent Transactions</div>
+              <button className="btn btn-ghost" style={{ fontSize: 11, padding: '4px 8px' }}>View all <ArrowRight size={12} /></button>
+            </div>
+            {DEFAULT_TRANSACTIONS.slice(0, 4).map(tx => (
+              <div key={tx.id} className="transaction-row">
+                <div className="tx-icon">{tx.icon}</div>
+                <div className="tx-info">
+                  <div className="tx-label">{tx.name}</div>
+                  <div className="tx-date">{tx.date}</div>
+                </div>
+                <div className={`tx-amount ${tx.amount > 0 ? 'positive' : 'negative'}`}>
+                  {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()} {tx.currency}
+                </div>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.65, fontStyle: 'italic', fontFamily: "'Playfair Display', serif" }}>
-                "{v.text}"
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== FINANCE ===== */
+
+function FinanceView({ wiseConnected }) {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      <div className="page-title">Finance</div>
+      <div className="page-subtitle">Your financial overview and goals</div>
+
+      {/* Stats row */}
+      <div className="grid-4" style={{ marginBottom: 20 }}>
+        <div className={`stat-card ${isDark ? 'card-gradient-green' : 'card-green'}`}>
+          <div className="stat-label" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>Total Balance</div>
+          <div className="stat-value" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>AED 24,200</div>
+          <div className="stat-change" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}><TrendingUp size={14} /> +3.2%</div>
+        </div>
+        <div className={`stat-card ${isDark ? 'card-gradient-cyan' : 'card-blue'}`}>
+          <div className="stat-label" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}>Monthly Income</div>
+          <div className="stat-value" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}>AED 7,000</div>
+          <div className="stat-change" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}><TrendingDown size={14} /> -54% vs Mar</div>
+        </div>
+        <div className={`stat-card ${isDark ? 'card-gradient-pink' : 'card-pink'}`}>
+          <div className="stat-label" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>Monthly Expenses</div>
+          <div className="stat-value" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>AED 10,700</div>
+          <div className="stat-change" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}><TrendingUp size={14} /> +2%</div>
+        </div>
+        <div className={`stat-card ${isDark ? 'card-gradient-gold' : 'card-yellow'}`}>
+          <div className="stat-label" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>Savings Rate</div>
+          <div className="stat-value" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>18%</div>
+          <div className="stat-change" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>Target: 30%</div>
+        </div>
+      </div>
+
+      <div className="grid-2" style={{ gap: 20, marginBottom: 20 }}>
+        {/* Income vs Expenses Chart */}
+        <div className="card">
+          <div className="section-label">Income vs Expenses</div>
+          <ResponsiveContainer width="100%" height={220}>
+            <AreaChart data={MONTHLY_DATA}>
+              <defs>
+                <linearGradient id="incGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={isDark ? '#00E676' : '#4CAF50'} stopOpacity={0.3} />
+                  <stop offset="100%" stopColor={isDark ? '#00E676' : '#4CAF50'} stopOpacity={0} />
+                </linearGradient>
+                <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={isDark ? '#FF6B9D' : '#E53935'} stopOpacity={0.3} />
+                  <stop offset="100%" stopColor={isDark ? '#FF6B9D' : '#E53935'} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke={isDark ? '#2A2A2A' : '#E8E4DF'} strokeDasharray="3 3" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: isDark ? '#5A5A5A' : '#9B9B9B' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: isDark ? '#5A5A5A' : '#9B9B9B' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: isDark ? '#1A1A1A' : '#fff', border: `1px solid ${isDark ? '#2A2A2A' : '#E8E4DF'}`, borderRadius: 12, fontSize: 12 }} />
+              <Area type="monotone" dataKey="income" stroke={isDark ? '#00E676' : '#4CAF50'} fill="url(#incGrad)" strokeWidth={2} />
+              <Area type="monotone" dataKey="expenses" stroke={isDark ? '#FF6B9D' : '#E53935'} fill="url(#expGrad)" strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Expense Categories */}
+        <div className="card">
+          <div className="section-label">Expense Breakdown</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+            <ResponsiveContainer width={160} height={160}>
+              <PieChart>
+                <Pie data={EXPENSE_CATEGORIES} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} dataKey="value">
+                  {EXPENSE_CATEGORIES.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {EXPENSE_CATEGORIES.map(cat => (
+                <div key={cat.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 3, background: cat.color }} />
+                    <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{cat.name}</span>
+                  </div>
+                  <span className="stat-number" style={{ fontSize: 12, color: 'var(--text)' }}>{cat.value.toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid-2" style={{ gap: 20 }}>
+        {/* Transactions */}
+        <div className="card">
+          <div className="section-label">Recent Transactions</div>
+          {DEFAULT_TRANSACTIONS.map(tx => (
+            <div key={tx.id} className="transaction-row">
+              <div className="tx-icon">{tx.icon}</div>
+              <div className="tx-info">
+                <div className="tx-label">{tx.name}</div>
+                <div className="tx-date">{tx.date}</div>
+              </div>
+              <div className={`tx-amount ${tx.amount > 0 ? 'positive' : 'negative'}`}>
+                {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()} {tx.currency}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Financial Goals */}
+        <div className="card">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div className="section-label" style={{ marginBottom: 0 }}>Financial Goals</div>
+            <button className="btn btn-ghost" style={{ fontSize: 11, padding: '4px 8px' }}><Plus size={12} /> Add</button>
+          </div>
+          {FINANCIAL_GOALS.map(goal => {
+            const pct = Math.round(goal.current / goal.target * 100);
+            return (
+              <div key={goal.id} style={{ marginBottom: 20 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{goal.label}</span>
+                  <span className="stat-number" style={{ fontSize: 12, color: goal.color }}>{pct}%</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${pct}%`, background: goal.color }} />
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                  <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>AED {goal.current.toLocaleString()}</span>
+                  <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>AED {goal.target.toLocaleString()}</span>
+                </div>
+              </div>
+            );
+          })}
+
+          {!wiseConnected && (
+            <div style={{ marginTop: 16, padding: 16, borderRadius: 12, background: 'var(--accent-soft)', border: '1px dashed var(--accent)', textAlign: 'center' }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--accent)', marginBottom: 6 }}>Connect Wise Account</div>
+              <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 10 }}>Sync real balances and transactions</div>
+              <button className="btn btn-primary" style={{ fontSize: 12, padding: '8px 16px' }}>
+                <DollarSign size={14} /> Connect to Wise
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== HEALTH & FITNESS ===== */
+
+function HealthView({ habits, habitsCompleted, toggleHabit }) {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const cycleDay = getDayOfCycle();
+  const cycle = getCyclePhase(cycleDay);
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      <div className="page-title">Health & Fitness</div>
+      <div className="page-subtitle">Track your body, movement, and nutrition</div>
+
+      {/* Hero stats */}
+      <div className="grid-4" style={{ marginBottom: 20 }}>
+        <div className={`stat-card ${isDark ? 'card-gradient-pink' : 'card-pink'}`}>
+          <div className="stat-label" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}><Flame size={14} /> Calories Burned</div>
+          <div className="stat-value" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>1,875</div>
+          <div className="stat-change" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>kcal today</div>
+        </div>
+        <div className={`stat-card ${isDark ? 'card-gradient-green' : 'card-green'}`}>
+          <div className="stat-label" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}><Utensils size={14} /> Calories In</div>
+          <div className="stat-value" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>1,420</div>
+          <div className="stat-change" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>of 1,800 target</div>
+        </div>
+        <div className={`stat-card ${isDark ? 'card-gradient-cyan' : 'card-blue'}`}>
+          <div className="stat-label" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}><Activity size={14} /> Steps</div>
+          <div className="stat-value" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}>5,201</div>
+          <div className="stat-change" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}>of 8,500 goal</div>
+        </div>
+        <div className={`stat-card ${isDark ? 'card-gradient-gold' : 'card-yellow'}`}>
+          <div className="stat-label" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}><GlassWater size={14} /> Water</div>
+          <div className="stat-value" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>1.8L</div>
+          <div className="stat-change" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>of 3L goal</div>
+        </div>
+      </div>
+
+      <div className="grid-2" style={{ gap: 20, marginBottom: 20 }}>
+        {/* Steps progress */}
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          <CircleProgress size={120} stroke={8} progress={Math.round(5201/8500*100)} color={isDark ? '#00D4FF' : '#2A4C7A'}>
+            <div style={{ textAlign: 'center' }}>
+              <div className="stat-number" style={{ fontSize: 22, color: 'var(--text)' }}>5,201</div>
+              <div style={{ fontSize: 10, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>steps</div>
+            </div>
+          </CircleProgress>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 6 }}>Daily Steps</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>61% of your 8,500 step goal</div>
+            <div className="progress-bar" style={{ width: 200 }}>
+              <div className="progress-fill" style={{ width: '61%', background: isDark ? '#00D4FF' : '#2A4C7A' }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Workout recommendation */}
+        <div className="card" style={{ borderLeft: `3px solid ${cycle.color}` }}>
+          <div className="section-label" style={{ color: cycle.color }}>Cycle-Synced Workout</div>
+          <div style={{ fontSize: 16, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 6 }}>
+            {cycle.phase} Phase Recommendation
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>{cycle.workout}</div>
+          <div className="pill" style={{ background: `${cycle.color}20`, color: cycle.color }}>{cycle.energy}</div>
+        </div>
+      </div>
+
+      <div className="grid-2" style={{ gap: 20, marginBottom: 20 }}>
+        {/* Macros */}
+        <div className="card">
+          <div className="section-label">Macros Today</div>
+          <div style={{ display: 'flex', gap: 24, justifyContent: 'center' }}>
+            {[
+              { label: 'Protein', current: 85, target: 120, color: isDark ? '#FF6B9D' : '#E53935' },
+              { label: 'Carbs', current: 145, target: 200, color: isDark ? '#00D4FF' : '#2196F3' },
+              { label: 'Fat', current: 52, target: 65, color: isDark ? '#FFD740' : '#FF9800' },
+            ].map(m => (
+              <div key={m.label} style={{ textAlign: 'center' }}>
+                <CircleProgress size={72} stroke={5} progress={Math.round(m.current/m.target*100)} color={m.color}>
+                  <span className="stat-number" style={{ fontSize: 14, color: 'var(--text)' }}>{m.current}g</span>
+                </CircleProgress>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 6 }}>{m.label}</div>
+                <div style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>of {m.target}g</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Weight tracker */}
+        <div className="card">
+          <div className="section-label">Weight Progress</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+            <Scale size={20} style={{ color: 'var(--text-tertiary)' }} />
+            <div>
+              <div className="stat-number" style={{ fontSize: 22, color: 'var(--text)' }}>58.2 kg</div>
+              <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>Goal: 57.0 kg</div>
+            </div>
+          </div>
+          <div className="progress-bar" style={{ marginBottom: 8 }}>
+            <div className="progress-fill" style={{ width: '75%', background: isDark ? '#00E676' : '#4CAF50' }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-tertiary)' }}>
+            <span>Start: 60.5 kg</span>
+            <span>75% to goal</span>
+            <span>Goal: 57.0 kg</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Health habits */}
+      <div className="card">
+        <div className="section-label">Health Habits</div>
+        <div className="grid-3">
+          {HABITS.filter(h => h.pillar === 'body').map(h => (
+            <button key={h.id} className="habit-btn" onClick={() => toggleHabit(h.id)} style={{ background: habits[h.id] ? 'var(--accent-soft)' : 'var(--skeleton)', borderRadius: 12, padding: '12px 14px' }}>
+              <div className={`check ${habits[h.id] ? 'checked' : ''}`}>
+                {habits[h.id] && <Check size={13} />}
+              </div>
+              <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--accent)' : 'var(--text)' }}>{h.icon} {h.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== CYCLE SYNCING & PEPTIDES ===== */
+
+function CycleView({ cycle, cycleDay }) {
+  const d = ((cycleDay - 1) % ANNA.cycleLength) + 1;
+  const phases = [
+    { name: 'Menstrual', days: '1\u20135', color: '#9b7fa8', icon: '\uD83C\uDF11', active: d <= 5 },
+    { name: 'Follicular', days: '6\u201313', color: '#7fa88a', icon: '\uD83C\uDF12', active: d > 5 && d <= 13 },
+    { name: 'Ovulatory', days: '14\u201317', color: '#E8D44D', icon: '\uD83C\uDF15', active: d > 13 && d <= 17 },
+    { name: 'Luteal', days: '18\u201329', color: '#c4a46b', icon: '\uD83C\uDF17', active: d > 17 },
+  ];
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      <div className="page-title">Cycle Syncing & Peptides</div>
+      <div className="page-subtitle">Align your life with your biology</div>
+
+      {/* Cycle phase cards */}
+      <div className="grid-4" style={{ marginBottom: 24 }}>
+        {phases.map(p => (
+          <div key={p.name} className={`cycle-phase-card card ${p.active ? 'active' : ''}`}
+            style={{ borderLeft: `4px solid ${p.color}`, opacity: p.active ? 1 : 0.6 }}>
+            <div style={{ fontSize: 28, marginBottom: 8 }}>{p.icon}</div>
+            <div style={{ fontSize: 16, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Days {p.days}</div>
+            {p.active && <div className="pill" style={{ marginTop: 8, background: `${p.color}20`, color: p.color, fontSize: 11 }}>Current Phase</div>}
+          </div>
+        ))}
+      </div>
+
+      {/* Current phase detail */}
+      <div className="card" style={{ marginBottom: 20, borderLeft: `4px solid ${cycle.color}` }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+          <CircleProgress size={80} stroke={6} progress={Math.round(d / ANNA.cycleLength * 100)} color={cycle.color}>
+            <div style={{ textAlign: 'center' }}>
+              <div className="stat-number" style={{ fontSize: 20, color: 'var(--text)' }}>{d}</div>
+              <div style={{ fontSize: 9, color: 'var(--text-tertiary)' }}>DAY</div>
+            </div>
+          </CircleProgress>
+          <div>
+            <div style={{ fontSize: 22, fontFamily: "'DM Serif Display', serif", color: 'var(--text)' }}>{cycle.phase} Phase</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{cycle.energy}</div>
+          </div>
+        </div>
+        <div className="grid-3" style={{ gap: 12 }}>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--skeleton)' }}>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-tertiary)', marginBottom: 6 }}>Guidance</div>
+            <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6 }}>{cycle.guidance}</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--skeleton)' }}>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-tertiary)', marginBottom: 6 }}>Workout</div>
+            <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6 }}>{cycle.workout}</div>
+          </div>
+          <div style={{ padding: 14, borderRadius: 12, background: 'var(--skeleton)' }}>
+            <div style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-tertiary)', marginBottom: 6 }}>Nutrition</div>
+            <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.6 }}>{cycle.nutrition}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Peptide Protocol */}
+      <div className="section-label">Peptide Protocol</div>
+      <div className="grid-2" style={{ gap: 16 }}>
+        {PEPTIDE_PROTOCOL.map((p, i) => (
+          <div key={i} className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div>
+                <div style={{ fontSize: 18, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)' }}>{p.name}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>{p.purpose}</div>
+              </div>
+              <div className="pill" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>{p.daysLeft}d left</div>
+            </div>
+            <div className="grid-2" style={{ gap: 10 }}>
+              {[['Dosage', p.dosage], ['Frequency', p.frequency], ['Route', p.route], ['Cycle', p.cycle]].map(([k, v]) => (
+                <div key={k} style={{ padding: 10, borderRadius: 10, background: 'var(--skeleton)' }}>
+                  <div style={{ fontSize: 10, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 3 }}>{k}</div>
+                  <div style={{ fontSize: 13, color: 'var(--text)', fontWeight: 500 }}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ===== DAILY RHYTHM ===== */
+
+function RhythmView({ habits, habitsCompleted, toggleHabit }) {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+  // Adherence data (simulated)
+  const weekAdherence = [85, 70, 90, 65, 80, 75, 0]; // Mon-Sun
+  const avgAdherence = Math.round(weekAdherence.filter(v => v > 0).reduce((a,b) => a+b, 0) / weekAdherence.filter(v => v > 0).length);
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      <div className="page-title">Daily Rhythm</div>
+      <div className="page-subtitle">Structure your day with intention</div>
+
+      <div className="grid-2" style={{ gap: 20, marginBottom: 20 }}>
+        {/* Schedule */}
+        <div className="card">
+          <div className="section-label">Today's Schedule</div>
+          {DEFAULT_SCHEDULE.map((item, i) => (
+            <div key={i} className="timeline-item">
+              <div className="timeline-time">{item.time}</div>
+              <div className="timeline-dot" style={{ background: item.color }} />
+              <div className="timeline-content">
+                <div className="timeline-label">{item.label}</div>
+                <div className="timeline-desc">{item.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Routines + Adherence */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          {/* Morning routine */}
+          <div className="card">
+            <div className="section-label">Morning Routine</div>
+            {HABITS.filter(h => ['morning_practice', 'no_phone', 'water', 'movement'].includes(h.id)).map(h => (
+              <button key={h.id} className="habit-btn" onClick={() => toggleHabit(h.id)}>
+                <div className={`check ${habits[h.id] ? 'checked' : ''}`}>{habits[h.id] && <Check size={13} />}</div>
+                <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--text-tertiary)' : 'var(--text)', textDecoration: habits[h.id] ? 'line-through' : 'none' }}>
+                  {h.icon} {h.label}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Evening routine */}
+          <div className="card">
+            <div className="section-label">Evening Routine</div>
+            {HABITS.filter(h => ['protected_eve', 'no_electronics', 'reading', 'legs_up', 'altar'].includes(h.id)).map(h => (
+              <button key={h.id} className="habit-btn" onClick={() => toggleHabit(h.id)}>
+                <div className={`check ${habits[h.id] ? 'checked' : ''}`}>{habits[h.id] && <Check size={13} />}</div>
+                <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--text-tertiary)' : 'var(--text)', textDecoration: habits[h.id] ? 'line-through' : 'none' }}>
+                  {h.icon} {h.label}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Adherence */}
+          <div className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <div className="section-label" style={{ marginBottom: 0 }}>Weekly Adherence</div>
+              <div className="stat-number" style={{ fontSize: 20, color: 'var(--accent)' }}>{avgAdherence}%</div>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {['M','T','W','T','F','S','S'].map((day, i) => (
+                <div key={i} style={{ flex: 1, textAlign: 'center' }}>
+                  <div style={{
+                    height: 48, borderRadius: 8, marginBottom: 4,
+                    background: weekAdherence[i] === 0 ? 'var(--skeleton)' :
+                      weekAdherence[i] >= 80 ? (isDark ? 'rgba(0,230,118,0.3)' : 'rgba(76,175,80,0.3)') :
+                      weekAdherence[i] >= 60 ? (isDark ? 'rgba(255,215,64,0.3)' : 'rgba(255,152,0,0.3)') :
+                      (isDark ? 'rgba(255,82,82,0.3)' : 'rgba(229,57,53,0.3)'),
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 11, fontWeight: 600, color: 'var(--text)'
+                  }}>
+                    {weekAdherence[i] > 0 ? `${weekAdherence[i]}%` : '\u2014'}
+                  </div>
+                  <div style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>{day}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== BUSINESS ===== */
+
+function BusinessView() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+  const businesses = [
+    { name: 'Seraya Studio', tagline: 'Japandi stone furniture \u2014 Dubai to global', status: 'Active', color: '#c4a46b', emoji: '\uD83E\uDEA8', revenue: 'AED 4,200/mo', milestones: 3, totalMilestones: 8 },
+    { name: 'SyncHer', tagline: 'Cycle-syncing wellness platform for women', status: 'Building', color: '#8a9fbf', emoji: '\uD83E\uDDEC', revenue: 'Pre-revenue', milestones: 2, totalMilestones: 7 },
+    { name: 'Personal Brand', tagline: 'TikTok \u00B7 YouTube \u00B7 Instagram', status: 'Planning', color: '#bf8a8a', emoji: '\uD83C\uDFAC', revenue: 'Pre-revenue', milestones: 0, totalMilestones: 6 },
+  ];
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      <div className="page-title">Business Architecture</div>
+      <div className="page-subtitle">Your ventures and their progress</div>
+
+      <div className="grid-3" style={{ marginBottom: 24 }}>
+        {businesses.map(b => (
+          <div key={b.name} className="card card-hover" style={{ borderLeft: `4px solid ${b.color}` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div style={{ fontSize: 28 }}>{b.emoji}</div>
+              <div className="pill" style={{ background: `${b.color}20`, color: b.color }}>{b.status}</div>
+            </div>
+            <div style={{ fontSize: 18, fontFamily: "'DM Serif Display', serif", fontWeight: 400, color: 'var(--text)', marginBottom: 4 }}>{b.name}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 16 }}>{b.tagline}</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <span className="stat-number" style={{ fontSize: 14, color: b.color }}>{b.revenue}</span>
+              <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{b.milestones}/{b.totalMilestones} milestones</span>
+            </div>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${Math.round(b.milestones/b.totalMilestones*100)}%`, background: b.color }} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Key tools */}
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div className="section-label">Tools & Platforms</div>
+        <div className="grid-4" style={{ gap: 10 }}>
+          {[
+            { name: 'Kajabi', desc: 'SyncHer courses', color: '#7B61FF' },
+            { name: 'Shopify', desc: 'Seraya e-commerce', color: '#00E676' },
+            { name: 'Figma', desc: 'Design & branding', color: '#FF6B9D' },
+            { name: 'Notion', desc: 'Knowledge base', color: '#F0F0F0' },
+            { name: 'CapCut', desc: 'Video editing', color: '#00D4FF' },
+            { name: 'Canva', desc: 'Social graphics', color: '#00BCD4' },
+            { name: 'Vercel', desc: 'Web hosting', color: '#F0F0F0' },
+            { name: 'Wise', desc: 'Banking & FX', color: '#00E676' },
+          ].map(t => (
+            <div key={t.name} style={{ padding: 12, borderRadius: 12, background: 'var(--skeleton)', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: t.color }} />
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{t.name}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{t.desc}</div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Overall Progress */}
-      <div className="card" style={{ marginBottom: 18, display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
-        <CircleProgress size={100} stroke={7} progress={overallProgress} color="var(--accent)">
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)' }}>{overallProgress}%</div>
-            <div style={{ fontSize: 9, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>overall</div>
+      {/* Q2 Goals */}
+      <div className="card">
+        <div className="section-label">Q2 2026 Goals</div>
+        {[
+          { label: 'First Seraya sale', progress: 45, color: '#c4a46b' },
+          { label: 'SyncHer landing page live', progress: 30, color: '#8a9fbf' },
+          { label: 'First 10 TikToks posted', progress: 0, color: '#bf8a8a' },
+          { label: 'Amsterdam move complete', progress: 15, color: '#7fa88a' },
+        ].map((g, i) => (
+          <div key={i} style={{ marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{g.label}</span>
+              <span className="stat-number" style={{ fontSize: 12, color: g.color }}>{g.progress}%</span>
+            </div>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${g.progress}%`, background: g.color }} />
+            </div>
           </div>
-        </CircleProgress>
-        <div style={{ flex: 1, minWidth: 180 }}>
-          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', marginBottom: 4 }}>
-            {completed} of {goals.length} completed
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ===== RELATIONSHIPS & CRM ===== */
+
+function RelationshipsView({ contacts, markContacted }) {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const groups = [...new Set(contacts.map(c => c.group))];
+  const statusColors = { 'on-track': isDark ? '#00E676' : '#4CAF50', 'due-soon': isDark ? '#FFD740' : '#FF9800', 'overdue': isDark ? '#FF5252' : '#E53935' };
+
+  const sorted = [...contacts].sort((a, b) => {
+    const order = { overdue: 0, 'due-soon': 1, 'on-track': 2 };
+    return order[getContactStatus(a)] - order[getContactStatus(b)];
+  });
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      <div className="page-title">Relationships</div>
+      <div className="page-subtitle">Stay connected with the people who matter</div>
+
+      {/* Group overview */}
+      <div className="grid-4" style={{ marginBottom: 24 }}>
+        {groups.map(g => {
+          const groupContacts = contacts.filter(c => c.group === g);
+          const overdue = groupContacts.filter(c => getContactStatus(c) === 'overdue').length;
+          return (
+            <div key={g} className="card card-hover">
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{g}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 8 }}>{groupContacts.length} contacts</div>
+              {overdue > 0 && <div className="pill" style={{ background: isDark ? 'rgba(255,82,82,0.1)' : 'rgba(229,57,53,0.1)', color: statusColors['overdue'], fontSize: 11 }}>{overdue} overdue</div>}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Touchpoint tracker */}
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div className="section-label" style={{ marginBottom: 0 }}>Touchpoint Tracker</div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <div className="pill" style={{ fontSize: 10, gap: 4 }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: statusColors['on-track'] }} /> On track</div>
+            <div className="pill" style={{ fontSize: 10, gap: 4 }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: statusColors['due-soon'] }} /> Due soon</div>
+            <div className="pill" style={{ fontSize: 10, gap: 4 }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: statusColors['overdue'] }} /> Overdue</div>
           </div>
-          <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-            Keep going. Every percentage point is a step closer to the life you're building.
-          </div>
-          <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
-            {categories.map(cat => {
-              const catGoals = goals.filter(g => g.category === cat);
-              const catProg = Math.round(catGoals.reduce((s, g) => s + g.progress, 0) / catGoals.length);
-              return (
-                <div key={cat} style={{ padding: '4px 10px', borderRadius: 20, background: 'var(--accent-soft)', fontSize: 11, color: 'var(--text-secondary)', fontWeight: 500 }}>
-                  {cat} {'\u00B7'} {catProg}%
+        </div>
+        {sorted.map(c => {
+          const status = getContactStatus(c);
+          const days = getDaysSince(c.lastContact);
+          return (
+            <div key={c.id} className="contact-row" style={{ borderBottom: '1px solid var(--border)' }}>
+              <div className="contact-avatar" style={{ background: `${statusColors[status]}20`, color: statusColors[status] }}>
+                {c.name[0]}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{c.name}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{c.type} {'\u00B7'} {c.group}</div>
+              </div>
+              <div style={{ textAlign: 'right', marginRight: 12 }}>
+                <div style={{ fontSize: 12, color: statusColors[status], fontWeight: 500 }}>
+                  {days === 0 ? 'Today' : days === 1 ? 'Yesterday' : `${days}d ago`}
                 </div>
-              );
-            })}
-          </div>
+                <div style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>Every {c.frequency}d</div>
+              </div>
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: statusColors[status] }} />
+              {status !== 'on-track' && (
+                <button className="btn btn-ghost" style={{ fontSize: 11, padding: '6px 10px' }} onClick={() => markContacted(c.id)}>
+                  <Check size={12} /> Done
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ===== PERSONAL DEVELOPMENT ===== */
+
+function DevelopmentView() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      <div className="page-title">Personal Development</div>
+      <div className="page-subtitle">Grow intentionally across all areas of life</div>
+
+      <div className="grid-2" style={{ gap: 20, marginBottom: 20 }}>
+        {/* Life Balance Radar */}
+        <div className="card">
+          <div className="section-label">Life Balance</div>
+          <ResponsiveContainer width="100%" height={260}>
+            <RadarChart data={DEV_GOALS}>
+              <PolarGrid stroke={isDark ? '#2A2A2A' : '#E8E4DF'} />
+              <PolarAngleAxis dataKey="area" tick={{ fontSize: 12, fill: isDark ? '#8A8A8A' : '#6B6B6B' }} />
+              <Radar dataKey="score" stroke={isDark ? '#00D4FF' : '#E8D44D'} fill={isDark ? '#00D4FF' : '#E8D44D'} fillOpacity={0.2} strokeWidth={2} />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Goals per area */}
+        <div className="card">
+          <div className="section-label">Goals by Area</div>
+          {DEV_GOALS.map(g => (
+            <div key={g.area} style={{ marginBottom: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{g.area}</span>
+                <span className="stat-number" style={{ fontSize: 12, color: 'var(--accent)' }}>{g.score}%</span>
+              </div>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: `${g.score}%`, background: g.score >= 70 ? 'var(--success)' : g.score >= 50 ? 'var(--warning)' : 'var(--danger)' }} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Goals by Category */}
-      {categories.map(cat => (
-        <div key={cat} style={{ marginBottom: 18 }}>
-          <div style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-tertiary)', marginBottom: 10, paddingLeft: 4 }}>{cat}</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {goals.filter(g => g.category === cat).map(goal => (
-              <div key={goal.id} className="card" style={{
-                display: 'flex', alignItems: 'center', gap: 16, padding: '14px 18px',
-                borderLeft: `3px solid ${goal.color}`,
-                opacity: goal.progress === 100 ? 0.65 : 1
-              }}>
-                <CircleProgress size={52} stroke={4} progress={goal.progress} color={goal.color}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: goal.color }}>{goal.progress}%</span>
-                </CircleProgress>
-                <div style={{ flex: 1 }}>
-                  <div style={{
-                    fontSize: 14, fontWeight: 600, color: 'var(--text-primary)',
-                    textDecoration: goal.progress === 100 ? 'line-through' : 'none'
-                  }}>{goal.label}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 2 }}>
-                    {goal.deadline === 'Done' ? '\u2705 Completed' : `Target: ${goal.deadline}`}
+      <div className="grid-2" style={{ gap: 20, marginBottom: 20 }}>
+        {/* Learning */}
+        <div className="card">
+          <div className="section-label">Learning Tracker</div>
+          {LEARNING.map(item => (
+            <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
+              <CircleProgress size={44} stroke={3} progress={item.progress} color={item.progress === 100 ? 'var(--success)' : 'var(--accent)'}>
+                <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--text)' }}>{item.progress}%</span>
+              </CircleProgress>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{item.title}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{item.author} {'\u00B7'} {item.type}</div>
+              </div>
+              {item.progress === 100 && <div className="pill" style={{ background: isDark ? 'rgba(0,230,118,0.1)' : 'rgba(76,175,80,0.1)', color: 'var(--success)', fontSize: 10 }}>Done</div>}
+            </div>
+          ))}
+        </div>
+
+        {/* Journal */}
+        <div className="card">
+          <div className="section-label">Weekly Reflection</div>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 6 }}>What went well this week?</div>
+            <textarea className="input" rows={2} placeholder="Reflect on your wins..." />
+          </div>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 6 }}>What could be better?</div>
+            <textarea className="input" rows={2} placeholder="Areas for growth..." />
+          </div>
+          <div>
+            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 6 }}>Gratitude</div>
+            <textarea className="input" rows={2} placeholder="Three things you're grateful for..." />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== CONTENT CALENDAR ===== */
+
+function ContentCalendarView() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const platformColors = { TikTok: '#FF6B9D', YouTube: '#FF5252', Instagram: '#7B61FF', Blog: '#00D4FF' };
+  const statusLabels = { idea: 'Idea', in_progress: 'In Progress', scheduled: 'Scheduled', published: 'Published' };
+
+  const grouped = { idea: [], in_progress: [], scheduled: [], published: [] };
+  CONTENT_IDEAS.forEach(c => { if (grouped[c.status]) grouped[c.status].push(c); });
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      <div className="page-title">Content Calendar</div>
+      <div className="page-subtitle">Plan, create, and publish your content</div>
+
+      {/* Kanban */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
+        {Object.entries(grouped).map(([status, items]) => (
+          <div key={status} className="kanban-column">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-tertiary)' }}>
+                {statusLabels[status]}
+              </div>
+              <div className="pill" style={{ padding: '2px 8px', fontSize: 11 }}>{items.length}</div>
+            </div>
+            {items.map(item => (
+              <div key={item.id} className="kanban-card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                  <div className="pill" style={{ background: `${platformColors[item.platform]}20`, color: platformColors[item.platform], fontSize: 10, padding: '3px 8px' }}>
+                    {item.platform}
                   </div>
+                  {item.priority === 'high' && <Star size={14} style={{ color: isDark ? '#FFD740' : '#FF9800' }} />}
                 </div>
-                {goal.progress < 100 && (
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button onClick={() => updateGoalProgress(goal.id, -10)}
-                      style={{ width: 28, height: 28, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      −
-                    </button>
-                    <button onClick={() => updateGoalProgress(goal.id, 10)}
-                      style={{ width: 28, height: 28, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      +
-                    </button>
-                  </div>
-                )}
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', lineHeight: 1.4 }}>{item.title}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{item.pillar}</div>
+              </div>
+            ))}
+            <button style={{ width: '100%', padding: 10, borderRadius: 10, border: '1px dashed var(--border)', background: 'transparent', color: 'var(--text-tertiary)', cursor: 'pointer', fontSize: 12, fontFamily: "'DM Sans', sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 4 }}>
+              <Plus size={14} /> Add
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Platform stats */}
+      <div className="card">
+        <div className="section-label">Platform Overview</div>
+        <div className="grid-4">
+          {[
+            { name: 'TikTok', followers: 0, posts: 0, color: '#FF6B9D' },
+            { name: 'YouTube', followers: 0, posts: 0, color: '#FF5252' },
+            { name: 'Instagram', followers: 245, posts: 12, color: '#7B61FF' },
+            { name: 'Blog/Newsletter', followers: 0, posts: 0, color: '#00D4FF' },
+          ].map(p => (
+            <div key={p.name} style={{ padding: 14, borderRadius: 12, background: 'var(--skeleton)', borderLeft: `3px solid ${p.color}` }}>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
+              <div className="stat-number" style={{ fontSize: 18, color: p.color }}>{p.followers}</div>
+              <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>followers {'\u00B7'} {p.posts} posts</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== CONTENT STRATEGY ===== */
+
+function ContentStrategyView() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+  const pillars = [
+    { name: 'Cycle Syncing / SyncHer', desc: 'Educate women about cycle-synced living', color: '#8a9fbf', ideas: 4 },
+    { name: 'Lifestyle & Wellness', desc: 'Morning routines, rituals, habits, peptides', color: '#9b7fa8', ideas: 3 },
+    { name: 'Seraya Studio', desc: 'Behind the scenes of building a furniture brand', color: '#c4a46b', ideas: 2 },
+    { name: 'Spiritual Practice', desc: 'Sound healing, meditation, Vipassana, altar work', color: '#7fa88a', ideas: 2 },
+  ];
+
+  return (
+    <div style={{ maxWidth: 1100 }}>
+      <div className="page-title">Content Strategy</div>
+      <div className="page-subtitle">Your content pillars, audience, and idea bank</div>
+
+      {/* Content Pillars */}
+      <div className="section-label">Content Pillars</div>
+      <div className="grid-2" style={{ marginBottom: 24, gap: 16 }}>
+        {pillars.map(p => (
+          <div key={p.name} className="card card-hover" style={{ borderLeft: `4px solid ${p.color}` }}>
+            <div style={{ fontSize: 16, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 10 }}>{p.desc}</div>
+            <div className="pill" style={{ background: `${p.color}20`, color: p.color }}>{p.ideas} ideas</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid-2" style={{ gap: 20, marginBottom: 20 }}>
+        {/* Target Audience */}
+        <div className="card">
+          <div className="section-label">Target Audience</div>
+          {[
+            { persona: 'Health-conscious women 25\u201338', desc: 'Interested in cycle syncing, holistic wellness, hormonal health' },
+            { persona: 'Aspiring entrepreneurs', desc: 'Women building brands while prioritizing well-being' },
+            { persona: 'Spiritual seekers', desc: 'Sound healing, meditation, conscious living' },
+          ].map((a, i) => (
+            <div key={i} style={{ padding: 14, borderRadius: 12, background: 'var(--skeleton)', marginBottom: 8 }}>
+              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>{a.persona}</div>
+              <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{a.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Brand Voice */}
+        <div className="card">
+          <div className="section-label">Brand Voice</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[
+              { trait: 'Warm & Grounded', desc: 'Speak like a wise friend, not a guru' },
+              { trait: 'Educational', desc: 'Lead with science, back with experience' },
+              { trait: 'Empowering', desc: 'You have the answers \u2014 I help you find them' },
+              { trait: 'Minimal & Intentional', desc: 'Less noise, more signal' },
+            ].map((v, i) => (
+              <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--accent)', marginTop: 6, flexShrink: 0 }} />
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{v.trait}</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{v.desc}</div>
+                </div>
               </div>
             ))}
           </div>
         </div>
-      ))}
+      </div>
+
+      {/* Idea Bank */}
+      <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div className="section-label" style={{ marginBottom: 0 }}>Idea Bank</div>
+          <button className="btn btn-primary" style={{ fontSize: 12, padding: '8px 14px' }}><Plus size={14} /> Add Idea</button>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {CONTENT_IDEAS.map(idea => (
+            <div key={idea.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderRadius: 12, background: 'var(--skeleton)' }}>
+              {idea.priority === 'high' && <Star size={14} style={{ color: isDark ? '#FFD740' : '#FF9800', flexShrink: 0 }} />}
+              {idea.priority === 'medium' && <Star size={14} style={{ color: 'var(--text-tertiary)', flexShrink: 0 }} />}
+              {idea.priority === 'low' && <div style={{ width: 14 }} />}
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{idea.title}</div>
+              </div>
+              <div className="pill" style={{ fontSize: 10, padding: '3px 8px' }}>{idea.platform}</div>
+              <div className="pill" style={{ fontSize: 10, padding: '3px 8px' }}>{idea.pillar}</div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

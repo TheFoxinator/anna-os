@@ -78,12 +78,12 @@ const DEFAULT_TRANSACTIONS = [
 ];
 
 const EXPENSE_CATEGORIES = [
-  { name: 'Rent', value: 8500, color: '#FF6B9D' },
-  { name: 'Food', value: 2100, color: '#00D4FF' },
-  { name: 'Health', value: 1070, color: '#00E676' },
-  { name: 'Transport', value: 800, color: '#FFD740' },
-  { name: 'Subscriptions', value: 450, color: '#7B61FF' },
-  { name: 'Other', value: 680, color: '#FF6B35' },
+  { name: 'Rent', value: 8500, color: '#E07A5F' },
+  { name: 'Food', value: 2100, color: '#457B9D' },
+  { name: 'Health', value: 1070, color: '#2D6A4F' },
+  { name: 'Transport', value: 800, color: '#E9C46A' },
+  { name: 'Subscriptions', value: 450, color: '#7B68EE' },
+  { name: 'Other', value: 680, color: '#F4845F' },
 ];
 
 const MONTHLY_DATA = [
@@ -364,32 +364,26 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
       </div>
 
       {/* Quick Stats */}
-      <div className="grid-4 animate-in" style={{ marginBottom: 20 }}>
-        <div className={`stat-card card-hover ${isDark ? 'card-gradient-cyan' : 'card-yellow'}`} style={{ background: isDark ? undefined : 'var(--card-yellow)' }}>
-          <div className="stat-label" style={{ color: isDark ? '#00D4FF' : 'var(--card-yellow-text)' }}>Habits Today</div>
-          <div className="stat-value" style={{ color: isDark ? '#00D4FF' : 'var(--card-yellow-text)' }}>{habitsCompleted}/{HABITS.length}</div>
-          <div className="stat-change" style={{ color: isDark ? '#00D4FF' : 'var(--card-yellow-text)' }}>
-            {Math.round(habitsCompleted / HABITS.length * 100)}% complete
-          </div>
+      <div className="grid-4 animate-in" style={{ marginBottom: 24 }}>
+        <div className="stat-card stat-yellow">
+          <div className="stat-label">Habits Today</div>
+          <div className="stat-value">{habitsCompleted}/{HABITS.length}</div>
+          <div className="stat-change">{Math.round(habitsCompleted / HABITS.length * 100)}% complete</div>
         </div>
-        <div className={`stat-card card-hover ${isDark ? 'card-gradient-pink' : 'card-pink'}`} style={{ background: isDark ? undefined : 'var(--card-pink)' }}>
-          <div className="stat-label" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>Cycle Phase</div>
-          <div className="stat-value" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)', fontSize: 22 }}>{cycle.icon} {cycle.phase}</div>
-          <div className="stat-change" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>
-            Day {((cycleDay - 1) % ANNA.cycleLength) + 1} of {ANNA.cycleLength}
-          </div>
+        <div className="stat-card stat-pink">
+          <div className="stat-label">Cycle Phase</div>
+          <div className="stat-value" style={{ fontSize: 24 }}>{cycle.icon} {cycle.phase}</div>
+          <div className="stat-change">Day {((cycleDay - 1) % ANNA.cycleLength) + 1} of {ANNA.cycleLength}</div>
         </div>
-        <div className={`stat-card card-hover ${isDark ? 'card-gradient-green' : 'card-green'}`} style={{ background: isDark ? undefined : 'var(--card-green)' }}>
-          <div className="stat-label" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>Balance</div>
-          <div className="stat-value" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>AED 24.2K</div>
-          <div className="stat-change" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>
-            <TrendingUp size={14} /> +3.2% this month
-          </div>
+        <div className="stat-card stat-green">
+          <div className="stat-label">Balance</div>
+          <div className="stat-value">AED 24.2K</div>
+          <div className="stat-change"><TrendingUp size={14} /> +3.2% this month</div>
         </div>
-        <div className={`stat-card card-hover ${isDark ? 'card-gradient-gold' : 'card-peach'}`} style={{ background: isDark ? undefined : 'var(--card-peach)' }}>
-          <div className="stat-label" style={{ color: isDark ? '#FFD740' : 'var(--card-peach-text)' }}>Content Queue</div>
-          <div className="stat-value" style={{ color: isDark ? '#FFD740' : 'var(--card-peach-text)' }}>3</div>
-          <div className="stat-change" style={{ color: isDark ? '#FFD740' : 'var(--card-peach-text)' }}>pieces scheduled this week</div>
+        <div className="stat-card stat-lavender">
+          <div className="stat-label">Content Queue</div>
+          <div className="stat-value">3</div>
+          <div className="stat-change">pieces scheduled this week</div>
         </div>
       </div>
 
@@ -405,7 +399,7 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
           </div>
 
           {/* Today's Habits */}
-          <div className="card animate-in animate-in-delay-2">
+          <div className="card card-tint-yellow animate-in animate-in-delay-2">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div className="section-label" style={{ marginBottom: 0 }}>Today's Habits</div>
               <div className="stat-number" style={{ fontSize: 13, color: 'var(--accent)' }}>{habitsCompleted}/{HABITS.length}</div>
@@ -426,8 +420,8 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
 
           {/* Reach Out */}
           {overdue.length > 0 && (
-            <div className="card animate-in animate-in-delay-3" style={{ borderLeft: '3px solid var(--warning)' }}>
-              <div className="section-label" style={{ color: 'var(--warning)' }}>Reach Out To</div>
+            <div className="card card-tint-pink animate-in animate-in-delay-3">
+              <div className="section-label" style={{ color: '#E07A5F' }}>Reach Out To</div>
               {overdue.slice(0, 3).map(c => (
                 <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
                   <div>
@@ -498,26 +492,26 @@ function FinanceView({ wiseConnected }) {
       <div className="page-subtitle">Your financial overview and goals</div>
 
       {/* Stats row */}
-      <div className="grid-4" style={{ marginBottom: 20 }}>
-        <div className={`stat-card ${isDark ? 'card-gradient-green' : 'card-green'}`}>
-          <div className="stat-label" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>Total Balance</div>
-          <div className="stat-value" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>AED 24,200</div>
-          <div className="stat-change" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}><TrendingUp size={14} /> +3.2%</div>
+      <div className="grid-4" style={{ marginBottom: 24 }}>
+        <div className="stat-card stat-yellow">
+          <div className="stat-label">Total Balance</div>
+          <div className="stat-value">AED 24,200</div>
+          <div className="stat-change"><TrendingUp size={14} /> +3.2%</div>
         </div>
-        <div className={`stat-card ${isDark ? 'card-gradient-cyan' : 'card-blue'}`}>
-          <div className="stat-label" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}>Monthly Income</div>
-          <div className="stat-value" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}>AED 7,000</div>
-          <div className="stat-change" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}><TrendingDown size={14} /> -54% vs Mar</div>
+        <div className="stat-card stat-green">
+          <div className="stat-label">Monthly Income</div>
+          <div className="stat-value">AED 7,000</div>
+          <div className="stat-change"><TrendingDown size={14} /> -54% vs Mar</div>
         </div>
-        <div className={`stat-card ${isDark ? 'card-gradient-pink' : 'card-pink'}`}>
-          <div className="stat-label" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>Monthly Expenses</div>
-          <div className="stat-value" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>AED 10,700</div>
-          <div className="stat-change" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}><TrendingUp size={14} /> +2%</div>
+        <div className="stat-card stat-pink">
+          <div className="stat-label">Monthly Expenses</div>
+          <div className="stat-value">AED 10,700</div>
+          <div className="stat-change"><TrendingUp size={14} /> +2%</div>
         </div>
-        <div className={`stat-card ${isDark ? 'card-gradient-gold' : 'card-yellow'}`}>
-          <div className="stat-label" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>Savings Rate</div>
-          <div className="stat-value" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>18%</div>
-          <div className="stat-change" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>Target: 30%</div>
+        <div className="stat-card stat-lavender">
+          <div className="stat-label">Savings Rate</div>
+          <div className="stat-value">18%</div>
+          <div className="stat-change">Target: 30%</div>
         </div>
       </div>
 
@@ -529,20 +523,20 @@ function FinanceView({ wiseConnected }) {
             <AreaChart data={MONTHLY_DATA}>
               <defs>
                 <linearGradient id="incGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={isDark ? '#00E676' : '#4CAF50'} stopOpacity={0.3} />
-                  <stop offset="100%" stopColor={isDark ? '#00E676' : '#4CAF50'} stopOpacity={0} />
+                  <stop offset="0%" stopColor={isDark ? '#00E676' : '#2D6A4F'} stopOpacity={0.3} />
+                  <stop offset="100%" stopColor={isDark ? '#00E676' : '#2D6A4F'} stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={isDark ? '#FF6B9D' : '#E53935'} stopOpacity={0.3} />
-                  <stop offset="100%" stopColor={isDark ? '#FF6B9D' : '#E53935'} stopOpacity={0} />
+                  <stop offset="0%" stopColor={isDark ? '#FF6B9D' : '#E07A5F'} stopOpacity={0.3} />
+                  <stop offset="100%" stopColor={isDark ? '#FF6B9D' : '#E07A5F'} stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid stroke={isDark ? '#2A2A2A' : '#E8E4DF'} strokeDasharray="3 3" />
               <XAxis dataKey="month" tick={{ fontSize: 11, fill: isDark ? '#5A5A5A' : '#9B9B9B' }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fontSize: 11, fill: isDark ? '#5A5A5A' : '#9B9B9B' }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: isDark ? '#1A1A1A' : '#fff', border: `1px solid ${isDark ? '#2A2A2A' : '#E8E4DF'}`, borderRadius: 12, fontSize: 12 }} />
-              <Area type="monotone" dataKey="income" stroke={isDark ? '#00E676' : '#4CAF50'} fill="url(#incGrad)" strokeWidth={2} />
-              <Area type="monotone" dataKey="expenses" stroke={isDark ? '#FF6B9D' : '#E53935'} fill="url(#expGrad)" strokeWidth={2} />
+              <Area type="monotone" dataKey="income" stroke={isDark ? '#00E676' : '#2D6A4F'} fill="url(#incGrad)" strokeWidth={2} />
+              <Area type="monotone" dataKey="expenses" stroke={isDark ? '#FF6B9D' : '#E07A5F'} fill="url(#expGrad)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -644,26 +638,26 @@ function HealthView({ habits, habitsCompleted, toggleHabit }) {
       <div className="page-subtitle">Track your body, movement, and nutrition</div>
 
       {/* Hero stats */}
-      <div className="grid-4" style={{ marginBottom: 20 }}>
-        <div className={`stat-card ${isDark ? 'card-gradient-pink' : 'card-pink'}`}>
-          <div className="stat-label" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}><Flame size={14} /> Calories Burned</div>
-          <div className="stat-value" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>1,875</div>
-          <div className="stat-change" style={{ color: isDark ? '#FF6B9D' : 'var(--card-pink-text)' }}>kcal today</div>
+      <div className="grid-4" style={{ marginBottom: 24 }}>
+        <div className="stat-card stat-pink">
+          <div className="stat-label"><Flame size={14} /> Calories Burned</div>
+          <div className="stat-value">1,875</div>
+          <div className="stat-change">kcal today</div>
         </div>
-        <div className={`stat-card ${isDark ? 'card-gradient-green' : 'card-green'}`}>
-          <div className="stat-label" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}><Utensils size={14} /> Calories In</div>
-          <div className="stat-value" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>1,420</div>
-          <div className="stat-change" style={{ color: isDark ? '#00E676' : 'var(--card-green-text)' }}>of 1,800 target</div>
+        <div className="stat-card stat-green">
+          <div className="stat-label"><Utensils size={14} /> Calories In</div>
+          <div className="stat-value">1,420</div>
+          <div className="stat-change">of 1,800 target</div>
         </div>
-        <div className={`stat-card ${isDark ? 'card-gradient-cyan' : 'card-blue'}`}>
-          <div className="stat-label" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}><Activity size={14} /> Steps</div>
-          <div className="stat-value" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}>5,201</div>
-          <div className="stat-change" style={{ color: isDark ? '#00D4FF' : 'var(--card-blue-text)' }}>of 8,500 goal</div>
+        <div className="stat-card stat-blue">
+          <div className="stat-label"><Activity size={14} /> Steps</div>
+          <div className="stat-value">5,201</div>
+          <div className="stat-change">of 8,500 goal</div>
         </div>
-        <div className={`stat-card ${isDark ? 'card-gradient-gold' : 'card-yellow'}`}>
-          <div className="stat-label" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}><GlassWater size={14} /> Water</div>
-          <div className="stat-value" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>1.8L</div>
-          <div className="stat-change" style={{ color: isDark ? '#FFD740' : 'var(--card-yellow-text)' }}>of 3L goal</div>
+        <div className="stat-card stat-yellow">
+          <div className="stat-label"><GlassWater size={14} /> Water</div>
+          <div className="stat-value">1.8L</div>
+          <div className="stat-change">of 3L goal</div>
         </div>
       </div>
 
@@ -686,7 +680,7 @@ function HealthView({ habits, habitsCompleted, toggleHabit }) {
         </div>
 
         {/* Workout recommendation */}
-        <div className="card" style={{ borderLeft: `3px solid ${cycle.color}` }}>
+        <div className="card">
           <div className="section-label" style={{ color: cycle.color }}>Cycle-Synced Workout</div>
           <div style={{ fontSize: 16, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 6 }}>
             {cycle.phase} Phase Recommendation
@@ -702,9 +696,9 @@ function HealthView({ habits, habitsCompleted, toggleHabit }) {
           <div className="section-label">Macros Today</div>
           <div style={{ display: 'flex', gap: 24, justifyContent: 'center' }}>
             {[
-              { label: 'Protein', current: 85, target: 120, color: isDark ? '#FF6B9D' : '#E53935' },
-              { label: 'Carbs', current: 145, target: 200, color: isDark ? '#00D4FF' : '#2196F3' },
-              { label: 'Fat', current: 52, target: 65, color: isDark ? '#FFD740' : '#FF9800' },
+              { label: 'Protein', current: 85, target: 120, color: isDark ? '#FF6B9D' : '#E07A5F' },
+              { label: 'Carbs', current: 145, target: 200, color: isDark ? '#00D4FF' : '#457B9D' },
+              { label: 'Fat', current: 52, target: 65, color: isDark ? '#FFD740' : '#E9C46A' },
             ].map(m => (
               <div key={m.label} style={{ textAlign: 'center' }}>
                 <CircleProgress size={72} stroke={5} progress={Math.round(m.current/m.target*100)} color={m.color}>
@@ -776,7 +770,7 @@ function CycleView({ cycle, cycleDay }) {
       <div className="grid-4" style={{ marginBottom: 24 }}>
         {phases.map(p => (
           <div key={p.name} className={`cycle-phase-card card ${p.active ? 'active' : ''}`}
-            style={{ borderLeft: `4px solid ${p.color}`, opacity: p.active ? 1 : 0.6 }}>
+            style={{ opacity: p.active ? 1 : 0.5 }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>{p.icon}</div>
             <div style={{ fontSize: 16, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Days {p.days}</div>
@@ -786,7 +780,7 @@ function CycleView({ cycle, cycleDay }) {
       </div>
 
       {/* Current phase detail */}
-      <div className="card" style={{ marginBottom: 20, borderLeft: `4px solid ${cycle.color}` }}>
+      <div className="card" style={{ marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
           <CircleProgress size={80} stroke={6} progress={Math.round(d / ANNA.cycleLength * 100)} color={cycle.color}>
             <div style={{ textAlign: 'center' }}>
@@ -910,13 +904,14 @@ function RhythmView({ habits, habitsCompleted, toggleHabit }) {
               {['M','T','W','T','F','S','S'].map((day, i) => (
                 <div key={i} style={{ flex: 1, textAlign: 'center' }}>
                   <div style={{
-                    height: 48, borderRadius: 8, marginBottom: 4,
+                    height: 48, borderRadius: 12, marginBottom: 4,
                     background: weekAdherence[i] === 0 ? 'var(--skeleton)' :
-                      weekAdherence[i] >= 80 ? (isDark ? 'rgba(0,230,118,0.3)' : 'rgba(76,175,80,0.3)') :
-                      weekAdherence[i] >= 60 ? (isDark ? 'rgba(255,215,64,0.3)' : 'rgba(255,152,0,0.3)') :
-                      (isDark ? 'rgba(255,82,82,0.3)' : 'rgba(229,57,53,0.3)'),
+                      weekAdherence[i] >= 90 ? (isDark ? 'rgba(0,230,118,0.35)' : '#2D6A4F') :
+                      weekAdherence[i] >= 70 ? (isDark ? 'rgba(0,230,118,0.22)' : '#43A047') :
+                      weekAdherence[i] >= 50 ? (isDark ? 'rgba(255,215,64,0.25)' : '#E9C46A') :
+                      (isDark ? 'rgba(255,82,82,0.25)' : '#E07A5F'),
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 600, color: 'var(--text)'
+                    fontSize: 11, fontWeight: 600, color: weekAdherence[i] >= 70 && !isDark ? '#FFFFFF' : 'var(--text)'
                   }}>
                     {weekAdherence[i] > 0 ? `${weekAdherence[i]}%` : '\u2014'}
                   </div>
@@ -937,9 +932,9 @@ function BusinessView() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
   const businesses = [
-    { name: 'Seraya Studio', tagline: 'Japandi stone furniture \u2014 Dubai to global', status: 'Active', color: '#c4a46b', emoji: '\uD83E\uDEA8', revenue: 'AED 4,200/mo', milestones: 3, totalMilestones: 8 },
-    { name: 'SyncHer', tagline: 'Cycle-syncing wellness platform for women', status: 'Building', color: '#8a9fbf', emoji: '\uD83E\uDDEC', revenue: 'Pre-revenue', milestones: 2, totalMilestones: 7 },
-    { name: 'Personal Brand', tagline: 'TikTok \u00B7 YouTube \u00B7 Instagram', status: 'Planning', color: '#bf8a8a', emoji: '\uD83C\uDFAC', revenue: 'Pre-revenue', milestones: 0, totalMilestones: 6 },
+    { name: 'Seraya Studio', tagline: 'Japandi stone furniture \u2014 Dubai to global', status: 'Active', color: '#C4A35A', emoji: '\uD83E\uDEA8', revenue: 'AED 4,200/mo', milestones: 3, totalMilestones: 8, statusBg: '#E8F5E4', statusText: '#2D6A4F' },
+    { name: 'SyncHer', tagline: 'Cycle-syncing wellness platform for women', status: 'Building', color: '#457B9D', emoji: '\uD83E\uDDEC', revenue: 'Pre-revenue', milestones: 2, totalMilestones: 7, statusBg: '#E0EEFB', statusText: '#457B9D' },
+    { name: 'Personal Brand', tagline: 'TikTok \u00B7 YouTube \u00B7 Instagram', status: 'Planning', color: '#E07A5F', emoji: '\uD83C\uDFAC', revenue: 'Pre-revenue', milestones: 0, totalMilestones: 6, statusBg: '#FDF6D8', statusText: '#B8941A' },
   ];
 
   return (
@@ -949,10 +944,12 @@ function BusinessView() {
 
       <div className="grid-3" style={{ marginBottom: 24 }}>
         {businesses.map(b => (
-          <div key={b.name} className="card card-hover" style={{ borderLeft: `4px solid ${b.color}` }}>
+          <div key={b.name} className="card" style={{ overflow: 'hidden', padding: 0 }}>
+            <div style={{ height: 4, background: b.color }} />
+            <div style={{ padding: 28 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div style={{ fontSize: 28 }}>{b.emoji}</div>
-              <div className="pill" style={{ background: `${b.color}20`, color: b.color }}>{b.status}</div>
+              <div className="pill" style={{ background: b.statusBg, color: b.statusText }}>{b.status}</div>
             </div>
             <div style={{ fontSize: 18, fontFamily: "'DM Serif Display', serif", fontWeight: 400, color: 'var(--text)', marginBottom: 4 }}>{b.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 16 }}>{b.tagline}</div>
@@ -962,6 +959,7 @@ function BusinessView() {
             </div>
             <div className="progress-bar">
               <div className="progress-fill" style={{ width: `${Math.round(b.milestones/b.totalMilestones*100)}%`, background: b.color }} />
+            </div>
             </div>
           </div>
         ))}
@@ -1021,7 +1019,9 @@ function BusinessView() {
 function RelationshipsView({ contacts, markContacted }) {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const groups = [...new Set(contacts.map(c => c.group))];
-  const statusColors = { 'on-track': isDark ? '#00E676' : '#4CAF50', 'due-soon': isDark ? '#FFD740' : '#FF9800', 'overdue': isDark ? '#FF5252' : '#E53935' };
+  const statusColors = { 'on-track': '#43A047', 'due-soon': '#F9A825', 'overdue': '#E53935' };
+  const avatarColors = ['#F5C6D0', '#C5E6C0', '#B8D4E8', '#D4C5F0', '#F5E6A3', '#F4C4A0'];
+  const avatarTextColors = ['#7A2840', '#1D5420', '#1A3C5A', '#3D2870', '#5A4A08', '#6A3A10'];
 
   const sorted = [...contacts].sort((a, b) => {
     const order = { overdue: 0, 'due-soon': 1, 'on-track': 2 };
@@ -1039,10 +1039,10 @@ function RelationshipsView({ contacts, markContacted }) {
           const groupContacts = contacts.filter(c => c.group === g);
           const overdue = groupContacts.filter(c => getContactStatus(c) === 'overdue').length;
           return (
-            <div key={g} className="card card-hover">
+            <div key={g} className="card">
               <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{g}</div>
               <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 8 }}>{groupContacts.length} contacts</div>
-              {overdue > 0 && <div className="pill" style={{ background: isDark ? 'rgba(255,82,82,0.1)' : 'rgba(229,57,53,0.1)', color: statusColors['overdue'], fontSize: 11 }}>{overdue} overdue</div>}
+              {overdue > 0 && <div className="pill" style={{ background: isDark ? 'rgba(255,82,82,0.12)' : '#FDE8EE', color: '#E53935', fontSize: 11 }}>{overdue} overdue</div>}
             </div>
           );
         })}
@@ -1053,17 +1053,18 @@ function RelationshipsView({ contacts, markContacted }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
           <div className="section-label" style={{ marginBottom: 0 }}>Touchpoint Tracker</div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <div className="pill" style={{ fontSize: 10, gap: 4 }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: statusColors['on-track'] }} /> On track</div>
-            <div className="pill" style={{ fontSize: 10, gap: 4 }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: statusColors['due-soon'] }} /> Due soon</div>
-            <div className="pill" style={{ fontSize: 10, gap: 4 }}><div style={{ width: 8, height: 8, borderRadius: '50%', background: statusColors['overdue'] }} /> Overdue</div>
+            <div className="pill" style={{ fontSize: 10, gap: 4 }}><div className="status-dot on-track" style={{ width: 8, height: 8 }} /> On track</div>
+            <div className="pill" style={{ fontSize: 10, gap: 4 }}><div className="status-dot due-soon" style={{ width: 8, height: 8 }} /> Due soon</div>
+            <div className="pill" style={{ fontSize: 10, gap: 4 }}><div className="status-dot overdue" style={{ width: 8, height: 8 }} /> Overdue</div>
           </div>
         </div>
-        {sorted.map(c => {
+        {sorted.map((c, ci) => {
           const status = getContactStatus(c);
           const days = getDaysSince(c.lastContact);
+          const avatarIdx = ci % avatarColors.length;
           return (
             <div key={c.id} className="contact-row" style={{ borderBottom: '1px solid var(--border)' }}>
-              <div className="contact-avatar" style={{ background: `${statusColors[status]}20`, color: statusColors[status] }}>
+              <div className="contact-avatar" style={{ background: isDark ? `${avatarColors[avatarIdx]}30` : avatarColors[avatarIdx], color: avatarTextColors[avatarIdx] }}>
                 {c.name[0]}
               </div>
               <div style={{ flex: 1 }}>
@@ -1071,12 +1072,12 @@ function RelationshipsView({ contacts, markContacted }) {
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{c.type} {'\u00B7'} {c.group}</div>
               </div>
               <div style={{ textAlign: 'right', marginRight: 12 }}>
-                <div style={{ fontSize: 12, color: statusColors[status], fontWeight: 500 }}>
+                <div style={{ fontSize: 12, color: statusColors[status], fontWeight: 600 }}>
                   {days === 0 ? 'Today' : days === 1 ? 'Yesterday' : `${days}d ago`}
                 </div>
                 <div style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>Every {c.frequency}d</div>
               </div>
-              <div style={{ width: 10, height: 10, borderRadius: '50%', background: statusColors[status] }} />
+              <div className={`status-dot ${status}`} />
               {status !== 'on-track' && (
                 <button className="btn btn-ghost" style={{ fontSize: 11, padding: '6px 10px' }} onClick={() => markContacted(c.id)}>
                   <Check size={12} /> Done
@@ -1173,8 +1174,9 @@ function DevelopmentView() {
 
 function ContentCalendarView() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const platformColors = { TikTok: '#FF6B9D', YouTube: '#FF5252', Instagram: '#7B61FF', Blog: '#00D4FF' };
+  const platformBadges = { TikTok: 'badge-tiktok', YouTube: 'badge-youtube', Instagram: 'badge-instagram', Blog: 'badge-blog' };
   const statusLabels = { idea: 'Idea', in_progress: 'In Progress', scheduled: 'Scheduled', published: 'Published' };
+  const kanbanHeaders = { idea: 'kanban-header-idea', in_progress: 'kanban-header-progress', scheduled: 'kanban-header-scheduled', published: 'kanban-header-published' };
 
   const grouped = { idea: [], in_progress: [], scheduled: [], published: [] };
   CONTENT_IDEAS.forEach(c => { if (grouped[c.status]) grouped[c.status].push(c); });
@@ -1188,8 +1190,8 @@ function ContentCalendarView() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 24 }}>
         {Object.entries(grouped).map(([status, items]) => (
           <div key={status} className="kanban-column">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-tertiary)' }}>
+            <div className={kanbanHeaders[status]} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-tertiary)' }}>
                 {statusLabels[status]}
               </div>
               <div className="pill" style={{ padding: '2px 8px', fontSize: 11 }}>{items.length}</div>
@@ -1197,7 +1199,7 @@ function ContentCalendarView() {
             {items.map(item => (
               <div key={item.id} className="kanban-card">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                  <div className="pill" style={{ background: `${platformColors[item.platform]}20`, color: platformColors[item.platform], fontSize: 10, padding: '3px 8px' }}>
+                  <div className={`pill ${platformBadges[item.platform] || ''}`} style={{ fontSize: 10, padding: '3px 10px' }}>
                     {item.platform}
                   </div>
                   {item.priority === 'high' && <Star size={14} style={{ color: isDark ? '#FFD740' : '#FF9800' }} />}
@@ -1223,7 +1225,7 @@ function ContentCalendarView() {
             { name: 'Instagram', followers: 245, posts: 12, color: '#7B61FF' },
             { name: 'Blog/Newsletter', followers: 0, posts: 0, color: '#00D4FF' },
           ].map(p => (
-            <div key={p.name} style={{ padding: 14, borderRadius: 12, background: 'var(--skeleton)', borderLeft: `3px solid ${p.color}` }}>
+            <div key={p.name} style={{ padding: 16, borderRadius: 14, background: 'var(--skeleton)' }}>
               <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
               <div className="stat-number" style={{ fontSize: 18, color: p.color }}>{p.followers}</div>
               <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>followers {'\u00B7'} {p.posts} posts</div>
@@ -1256,10 +1258,13 @@ function ContentStrategyView() {
       <div className="section-label">Content Pillars</div>
       <div className="grid-2" style={{ marginBottom: 24, gap: 16 }}>
         {pillars.map(p => (
-          <div key={p.name} className="card card-hover" style={{ borderLeft: `4px solid ${p.color}` }}>
+          <div key={p.name} className="card" style={{ overflow: 'hidden', padding: 0 }}>
+            <div style={{ height: 4, background: p.color }} />
+            <div style={{ padding: 28 }}>
             <div style={{ fontSize: 16, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 10 }}>{p.desc}</div>
             <div className="pill" style={{ background: `${p.color}20`, color: p.color }}>{p.ideas} ideas</div>
+            </div>
           </div>
         ))}
       </div>

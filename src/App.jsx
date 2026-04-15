@@ -167,10 +167,10 @@ const DEFAULT_FINANCE = {
 };
 
 const CALENDAR_EVENTS = [
-  { time: '06:00', name: 'Morning Practice', detail: 'Meditation + movement', color: '#c4a46b' },
-  { time: '09:00', name: 'SyncHer deep work', detail: 'Landing page copy', color: '#8a9fbf' },
-  { time: '11:00', name: 'Seraya call', detail: 'Supplier follow-up', color: '#c4a46b' },
-  { time: '15:00', name: 'Content block', detail: 'Film + edit', color: '#bf8a8a' },
+  { hour: 6, name: 'Morning Practice', detail: 'Meditation + movement', color: '#c4a46b', bg: 'var(--pastel-yellow)' },
+  { hour: 9, name: 'SyncHer deep work', detail: 'Landing page copy', color: '#8a9fbf', bg: 'var(--pastel-blue)' },
+  { hour: 11, name: 'Seraya call', detail: 'Supplier follow-up', color: '#c4a46b', bg: 'var(--pastel-peach)' },
+  { hour: 15, name: 'Content block', detail: 'Film + edit', color: '#bf8a8a', bg: 'var(--pastel-pink)' },
 ];
 
 /* ===== HELPERS ===== */
@@ -344,6 +344,9 @@ function CalendarPanel() {
   const prev = () => { if (month === 0) { setMonth(11); setYear(y => y - 1); } else setMonth(m => m - 1); };
   const next = () => { if (month === 11) { setMonth(0); setYear(y => y + 1); } else setMonth(m => m + 1); };
 
+  const timelineHours = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+  const formatHour = (h) => { if (h === 0) return '12 AM'; if (h < 12) return `${h}:00`; if (h === 12) return '12:00'; return `${h - 12}:00`; };
+
   return (
     <>
       <div className="cal-header">
@@ -360,20 +363,32 @@ function CalendarPanel() {
         ))}
       </div>
 
-      <div className="cal-events-title">Today's schedule</div>
-      {CALENDAR_EVENTS.map((e, i) => (
-        <div key={i} className="cal-event">
-          <div className="cal-event-time">{e.time}</div>
-          <div className="cal-event-dot" style={{ background: e.color }} />
-          <div className="cal-event-info">
-            <div className="event-name">{e.name}</div>
-            <div className="event-detail">{e.detail}</div>
-          </div>
-        </div>
-      ))}
+      <button className="cal-add-event">+ Add event</button>
 
-      <div style={{ marginTop: 20, padding: '12px 14px', background: 'var(--skeleton)', borderRadius: 10, fontSize: 11, color: 'var(--text-tertiary)', lineHeight: 1.6 }}>
-        {'\u{1F4A1}'} Connect Google Calendar for live events. Go to Settings to set up.
+      <div className="timeline-title">{MONTH_NAMES[now.getMonth()]} {now.getDate()}</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+        <div className="timeline-date">Today's timeline</div>
+      </div>
+
+      <div className="timeline">
+        {timelineHours.map(h => {
+          const event = CALENDAR_EVENTS.find(e => e.hour === h);
+          return (
+            <div key={h} className="timeline-hour">
+              <div className="timeline-hour-label">{formatHour(h)}</div>
+              {event && (
+                <div className="timeline-event" style={{ background: event.bg, borderLeftColor: event.color, color: event.color }}>
+                  <div className="te-name">{event.name}</div>
+                  <div className="te-detail" style={{ color: 'var(--text-tertiary)' }}>{event.detail}</div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="cal-hint">
+        {'\u{1F4A1}'} Connect Google Calendar for live events. API integration ready {'\u2014'} just add your credentials.
       </div>
     </>
   );
@@ -383,65 +398,120 @@ function CalendarPanel() {
 
 function TodayView({ cycle, cycleDay, intention, saveIntention, habits, toggleHabit }) {
   const done = HABITS.filter(h => habits[h.id]).length;
-  const h = new Date().getHours();
-  const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const hr = new Date().getHours();
+  const greeting = hr < 12 ? 'Good morning' : hr < 17 ? 'Good afternoon' : 'Good evening';
+  const pct = Math.round((done / HABITS.length) * 100);
+
+  // Project stats
+  const projectsDone = DEFAULT_PROJECTS.reduce((a, p) => a + p.milestones.filter(m => m.done).length, 0);
+  const projectsTotal = DEFAULT_PROJECTS.reduce((a, p) => a + p.milestones.length, 0);
+  const projectPct = Math.round((projectsDone / projectsTotal) * 100);
 
   return (
-    <div style={{ maxWidth: 760 }}>
+    <div style={{ maxWidth: 820 }}>
       {/* Greeting */}
-      <div style={{ marginBottom: 28 }}>
-        <div className="page-title" style={{ fontSize: 34 }}>{greeting}, Anna.</div>
-        <div className="page-subtitle" style={{ marginBottom: 0 }}>{formatDate()}</div>
-      </div>
-
-      {/* Stat Cards Row */}
-      <div className="grid-3" style={{ marginBottom: 16 }}>
-        <div className="stat-card card-colored" style={{ background: cycle.pastel }}>
-          <div className="stat-label" style={{ color: cycle.color }}>{cycle.phase} Phase</div>
-          <div className="stat-value" style={{ color: cycle.color }}>{cycle.moon} Day {cycleDay}</div>
-          <div className="stat-sub" style={{ color: cycle.color }}>{cycle.energy}</div>
-        </div>
-        <div className="stat-card card-colored" style={{ background: 'var(--pastel-green)' }}>
-          <div className="stat-label" style={{ color: '#7fa88a' }}>Habits Today</div>
-          <div className="stat-value" style={{ color: '#7fa88a' }}>{done}/{HABITS.length}</div>
-          <div className="stat-sub" style={{ color: '#7fa88a' }}>{done === HABITS.length ? 'All done!' : `${HABITS.length - done} remaining`}</div>
-        </div>
-        <div className="stat-card card-colored" style={{ background: 'var(--pastel-pink)' }}>
-          <div className="stat-label" style={{ color: '#bf8a8a' }}>Projects Active</div>
-          <div className="stat-value" style={{ color: '#bf8a8a' }}>5</div>
-          <div className="stat-sub" style={{ color: '#bf8a8a' }}>Seraya focus this week</div>
+      <div style={{ marginBottom: 32 }}>
+        <div className="page-title" style={{ fontSize: 36, marginBottom: 6 }}>{greeting}, Anna.</div>
+        <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          {formatDate()}. {cycle.guidance}
         </div>
       </div>
 
-      {/* Cycle Guidance */}
-      <div className="card" style={{ marginBottom: 14, borderLeft: `3px solid ${cycle.color}` }}>
-        <div className="section-tag" style={{ color: cycle.color }}>CYCLE GUIDANCE</div>
-        <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.7, marginBottom: 6 }}>{cycle.guidance}</div>
-        <div style={{ fontSize: 11, color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{'\u2192'} {cycle.schedule}</div>
+      {/* 2x2 Widget Cards - Intelly style */}
+      <div className="widget-grid">
+        {/* Cycle Widget */}
+        <div className="widget" style={{ background: 'var(--pastel-purple)', color: 'var(--pastel-purple-text)' }}>
+          <div>
+            <div className="widget-header">{cycle.phase} Phase:</div>
+            <div className="widget-stats">
+              <div className="widget-stat-item">
+                <div className="widget-stat-value">{cycle.moon} Day {cycleDay}</div>
+                <div className="widget-stat-label">{cycle.energy}</div>
+              </div>
+            </div>
+          </div>
+          <div className="widget-footer">{'\u2192'} {cycle.schedule}</div>
+        </div>
+
+        {/* Habits Widget */}
+        <div className="widget" style={{ background: 'var(--pastel-green)', color: 'var(--pastel-green-text)' }}>
+          <div>
+            <div className="widget-header">Habits today:</div>
+            <div className="widget-stats">
+              <div className="widget-stat-item">
+                <div className="widget-stat-value">{done} done</div>
+                <div className="widget-stat-label">of {HABITS.length} habits</div>
+              </div>
+              <div className="widget-stat-item">
+                <div className="widget-stat-value">{pct}%</div>
+                <div className="widget-stat-label">complete</div>
+              </div>
+            </div>
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <div className="progress-bar" style={{ height: 6 }}>
+              <div className="progress-fill" style={{ width: `${pct}%`, background: 'var(--pastel-green-text)' }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Projects Widget */}
+        <div className="widget" style={{ background: 'var(--pastel-yellow)', color: 'var(--pastel-yellow-text)' }}>
+          <div>
+            <div className="widget-header">Projects:</div>
+            <div className="widget-stats">
+              <div className="widget-stat-item">
+                <div className="widget-stat-value">5 active</div>
+                <div className="widget-stat-label">projects</div>
+              </div>
+              <div className="widget-stat-item">
+                <div className="widget-stat-value">{projectPct}%</div>
+                <div className="widget-stat-label">milestones done</div>
+              </div>
+            </div>
+          </div>
+          <div className="widget-footer">Seraya Studio focus this week</div>
+        </div>
+
+        {/* Schedule Widget */}
+        <div className="widget" style={{ background: 'var(--pastel-pink)', color: 'var(--pastel-pink-text)' }}>
+          <div>
+            <div className="widget-header">Today's schedule:</div>
+            <div className="widget-stats" style={{ flexDirection: 'column', gap: 6 }}>
+              {CALENDAR_EVENTS.slice(0, 3).map((e, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: e.color, flexShrink: 0 }} />
+                  <span style={{ fontSize: 12 }}>{e.hour < 12 ? e.hour + ':00' : (e.hour - 12 || 12) + ':00'} {'\u2014'} {e.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="widget-footer">{CALENDAR_EVENTS.length} events today</div>
+        </div>
       </div>
 
       {/* Intention */}
-      <div className="card" style={{ marginBottom: 14 }}>
+      <div className="card" style={{ marginBottom: 16 }}>
         <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>TODAY'S INTENTION</div>
-        <input className="input" placeholder="What matters most today?" value={intention} onChange={e => saveIntention(e.target.value)} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 16 }} />
+        <input className="input" placeholder="What matters most today?" value={intention} onChange={e => saveIntention(e.target.value)} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 17 }} />
       </div>
 
       {/* Habits Quick */}
-      <div className="card" style={{ marginBottom: 14 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
           <div className="section-tag" style={{ color: 'var(--text-tertiary)', marginBottom: 0 }}>TODAY'S HABITS</div>
-          <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500 }}>{done}/{HABITS.length}</span>
+          <span style={{ fontSize: 13, color: 'var(--accent)', fontWeight: 600 }}>{done}/{HABITS.length}</span>
         </div>
         <div className="grid-2">
           {HABITS.map(h => (
             <button key={h.id} className="habit-btn" onClick={() => toggleHabit(h.id)}>
               <div className={`check ${habits[h.id] ? 'checked' : ''}`}>{habits[h.id] && '\u2713'}</div>
-              <span style={{ fontSize: 12, color: habits[h.id] ? 'var(--text)' : 'var(--text-secondary)' }}>{h.icon} {h.label}</span>
+              <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--text)' : 'var(--text-secondary)' }}>{h.icon} {h.label}</span>
             </button>
           ))}
         </div>
-        <div className="progress-bar" style={{ marginTop: 12, height: 5 }}>
-          <div className="progress-fill" style={{ width: `${(done/HABITS.length)*100}%`, background: 'linear-gradient(90deg, #c4a46b, #dbb87a)' }} />
+        <div className="progress-bar" style={{ marginTop: 14, height: 6 }}>
+          <div className="progress-fill" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #c4a46b, #dbb87a)' }} />
         </div>
       </div>
 

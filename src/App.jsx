@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import './App.css';
 
 /* ===== DATA ===== */
@@ -173,6 +174,22 @@ const CALENDAR_EVENTS = [
   { hour: 15, name: 'Content block', detail: 'Film + edit', color: '#bf8a8a', bg: 'var(--pastel-pink)' },
 ];
 
+const DEFAULT_GOALS = [
+  { id: 'g1', label: 'Launch SyncHer landing page', deadline: 'May 2026', progress: 30, color: '#8a9fbf', category: '2026 Goals' },
+  { id: 'g2', label: 'First Seraya sale', deadline: 'Jul 2026', progress: 45, color: '#c4a46b', category: '2026 Goals' },
+  { id: 'g3', label: 'Settled in Amsterdam', deadline: 'Jun 2026', progress: 15, color: '#7fa88a', category: '2026 Goals' },
+  { id: 'g4', label: '1K TikTok followers', deadline: 'Oct 2026', progress: 5, color: '#bf8a8a', category: '2026 Goals' },
+  { id: 'g5', label: 'Daily spiritual practice streak (30 days)', deadline: 'May 2026', progress: 60, color: '#9b7fa8', category: 'Habits & Growth' },
+  { id: 'g6', label: 'Complete SyncHer brand bible', deadline: 'Done', progress: 100, color: '#8a9fbf', category: 'Habits & Growth' },
+];
+
+const VISION_STATEMENTS = [
+  { id: 'v1', text: 'Build a life where the spiritual practice is the operating system \u2014 not an afterthought.', pillar: 'Spiritual' },
+  { id: 'v2', text: 'SyncHer becomes the go-to platform for women who want to live in sync with their cycle.', pillar: 'Business' },
+  { id: 'v3', text: 'Be rooted in Europe by end of 2026 \u2014 Amsterdam first, then Switzerland.', pillar: 'Life' },
+  { id: 'v4', text: '"Does my 2030 self thank me for this decision?" \u2014 the only filter that matters.', pillar: 'Core' },
+];
+
 /* ===== HELPERS ===== */
 
 function load(key) {
@@ -181,6 +198,32 @@ function load(key) {
 
 function save(key, val) {
   try { localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val)); } catch {}
+}
+
+function CircleProgress({ size = 64, stroke = 5, progress = 0, color = 'var(--accent)', children }) {
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (progress / 100) * circ;
+  return (
+    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--skeleton)" strokeWidth={stroke} />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke}
+          strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+          style={{ transition: 'stroke-dashoffset 0.6s ease' }} />
+      </svg>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function reorder(list, startIndex, endIndex) {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+  return result;
 }
 
 function getCalendarDays(year, month) {
@@ -261,6 +304,7 @@ export default function AnnaOS() {
     { id: 'week', label: 'Week', icon: '\u25A1' },
     { id: 'habits', label: 'Habits', icon: '\u25C8' },
     { id: 'projects', label: 'Projects', icon: '\u25EB' },
+    { id: 'vision', label: 'Vision & Goals', icon: '\u{1F3AF}' },
     { id: 'finance', label: 'Finance', icon: '\u{1F4B0}' },
     { id: 'pillars', label: 'Pillars', icon: '\u25E7' },
     { id: 'checklist', label: 'Dubai Exit', icon: '\u2713' },
@@ -279,7 +323,7 @@ export default function AnnaOS() {
         </div>
 
         <div className="nav-section-label">Overview</div>
-        {NAV.slice(0, 4).map(n => (
+        {NAV.slice(0, 5).map(n => (
           <button key={n.id} className={`nav-btn ${view === n.id ? 'active' : ''}`} onClick={() => setView(n.id)}>
             <span className="nav-icon">{n.icon}</span>
             <span>{n.label}</span>
@@ -287,7 +331,7 @@ export default function AnnaOS() {
         ))}
 
         <div className="nav-section-label">Manage</div>
-        {NAV.slice(4).map(n => (
+        {NAV.slice(5).map(n => (
           <button key={n.id} className={`nav-btn ${view === n.id ? 'active' : ''}`} onClick={() => setView(n.id)}>
             <span className="nav-icon">{n.icon}</span>
             <span>{n.label}</span>
@@ -312,6 +356,7 @@ export default function AnnaOS() {
         {view === 'week' && <WeekView {...{ weekNotes, saveWeekNote, cycleDay, cycle }} />}
         {view === 'habits' && <HabitsView {...{ habits, toggleHabit }} />}
         {view === 'projects' && <ProjectsView {...{ projects, toggleMilestone }} />}
+        {view === 'vision' && <VisionView />}
         {view === 'finance' && <FinanceView finance={finance} />}
         {view === 'pillars' && <PillarsView />}
         {view === 'checklist' && <ChecklistView {...{ dubai, toggleDubai }} />}
@@ -493,7 +538,7 @@ function TodayView({ cycle, cycleDay, intention, saveIntention, habits, toggleHa
       {/* Intention */}
       <div className="card" style={{ marginBottom: 16 }}>
         <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>TODAY'S INTENTION</div>
-        <input className="input" placeholder="What matters most today?" value={intention} onChange={e => saveIntention(e.target.value)} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 17 }} />
+        <input className="input" placeholder="What matters most today?" value={intention} onChange={e => saveIntention(e.target.value)} style={{ fontFamily: "'Playfair Display', serif", fontSize: 17 }} />
       </div>
 
       {/* Habits Quick */}
@@ -566,36 +611,80 @@ function WeekView({ weekNotes, saveWeekNote, cycleDay, cycle }) {
 
 function HabitsView({ habits, toggleHabit }) {
   const done = HABITS.filter(h => habits[h.id]).length;
+  const pct = Math.round((done / HABITS.length) * 100);
   const groups = [
-    { key: 'spiritual', label: 'SPIRITUAL', color: '#9b7fa8', pastel: 'var(--pastel-purple)' },
-    { key: 'body', label: 'BODY', color: '#7fa88a', pastel: 'var(--pastel-green)' },
-    { key: 'structure', label: 'STRUCTURE', color: '#8a9fbf', pastel: 'var(--pastel-blue)' },
-    { key: 'business', label: 'BUSINESS', color: '#c4a46b', pastel: 'var(--pastel-yellow)' },
+    { key: 'spiritual', label: 'SPIRITUAL', color: '#9b7fa8' },
+    { key: 'body', label: 'BODY', color: '#7fa88a' },
+    { key: 'structure', label: 'STRUCTURE', color: '#8a9fbf' },
+    { key: 'business', label: 'BUSINESS', color: '#c4a46b' },
   ];
   return (
-    <div style={{ maxWidth: 620 }}>
-      <div className="page-title">Daily Habits</div>
-      <div className="page-subtitle">{done} of {HABITS.length} complete today</div>
-      <div className="progress-bar" style={{ height: 6, marginBottom: 24 }}>
-        <div className="progress-fill" style={{ width: `${(done/HABITS.length)*100}%`, background: 'linear-gradient(90deg,#c4a46b,#dbb87a)' }} />
+    <div style={{ maxWidth: 700 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 28 }}>
+        <CircleProgress size={100} stroke={7} progress={pct} color="var(--accent)">
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>{pct}%</div>
+            <div style={{ fontSize: 9, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>today</div>
+          </div>
+        </CircleProgress>
+        <div>
+          <div className="page-title">Daily Habits</div>
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{done} of {HABITS.length} complete {'\u00B7'} {HABITS.length - done} remaining</div>
+        </div>
       </div>
+
+      {/* Group rings overview */}
+      <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
+        {groups.map(g => {
+          const items = HABITS.filter(h => h.pillar === g.key);
+          const groupDone = items.filter(h => habits[h.id]).length;
+          const gPct = Math.round((groupDone / items.length) * 100);
+          return (
+            <div key={g.key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1 }}>
+              <CircleProgress size={52} stroke={4} progress={gPct} color={g.color}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: g.color }}>{groupDone}</span>
+              </CircleProgress>
+              <span style={{ fontSize: 9, color: g.color, fontWeight: 600, letterSpacing: '0.06em' }}>{g.label}</span>
+            </div>
+          );
+        })}
+      </div>
+
       {groups.map(g => {
         const items = HABITS.filter(h => h.pillar === g.key);
         const groupDone = items.filter(h => habits[h.id]).length;
         return (
           <div key={g.key} className="card" style={{ marginBottom: 12, borderLeft: `3px solid ${g.color}` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
               <div className="section-tag" style={{ color: g.color, marginBottom: 0 }}>{g.label}</div>
-              <span style={{ fontSize: 11, color: g.color }}>{groupDone}/{items.length}</span>
+              <span style={{ fontSize: 12, color: g.color, fontWeight: 600 }}>{groupDone}/{items.length}</span>
             </div>
-            {items.map(h => (
-              <button key={h.id} className="habit-btn" onClick={() => toggleHabit(h.id)}>
-                <div className={`check ${habits[h.id] ? 'checked' : ''}`} style={{ borderColor: habits[h.id] ? g.color : undefined, background: habits[h.id] ? g.color : undefined }}>
-                  {habits[h.id] && '\u2713'}
-                </div>
-                <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--text)' : 'var(--text-secondary)' }}>{h.icon} {h.label}</span>
-              </button>
-            ))}
+            <DragDropContext onDragEnd={() => {}}>
+              <Droppable droppableId={g.key}>
+                {(provided) => (
+                  <div ref={provided.innerRef} {...provided.droppableProps}>
+                    {items.map((h, idx) => (
+                      <Draggable key={h.id} draggableId={h.id} index={idx}>
+                        {(provided, snapshot) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps}
+                            style={{ ...provided.draggableProps.style, marginBottom: 2, borderRadius: 10, background: snapshot.isDragging ? 'var(--skeleton)' : 'transparent' }}>
+                            <button className="habit-btn" onClick={() => toggleHabit(h.id)} style={{ position: 'relative' }}>
+                              <span {...provided.dragHandleProps} style={{ cursor: 'grab', color: 'var(--text-tertiary)', fontSize: 10, userSelect: 'none', padding: '0 2px' }}>{'\u2630'}</span>
+                              <div className={`check ${habits[h.id] ? 'checked' : ''}`} style={{ borderColor: habits[h.id] ? g.color : undefined, background: habits[h.id] ? g.color : undefined }}>
+                                {habits[h.id] && '\u2713'}
+                              </div>
+                              <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--text)' : 'var(--text-secondary)', flex: 1 }}>{h.icon} {h.label}</span>
+                              {habits[h.id] && <span style={{ fontSize: 10, color: g.color }}>{'\u2713'} Done</span>}
+                            </button>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         );
       })}
@@ -608,44 +697,63 @@ function HabitsView({ habits, toggleHabit }) {
 function ProjectsView({ projects, toggleMilestone }) {
   const [expanded, setExpanded] = useState(null);
   return (
-    <div style={{ maxWidth: 760 }}>
+    <div style={{ maxWidth: 820 }}>
       <div className="page-title">Projects</div>
-      <div className="page-subtitle">2026 build map {'\u2014'} click to expand milestones</div>
+      <div className="page-subtitle">2026 build map {'\u2014'} click a project to expand milestones</div>
+
+      {/* Overview ring row */}
+      <div style={{ display: 'flex', gap: 20, marginBottom: 28, flexWrap: 'wrap' }}>
+        {projects.map(p => {
+          const done = p.milestones.filter(m => m.done).length;
+          const pct = Math.round((done / p.milestones.length) * 100);
+          return (
+            <button key={p.id} onClick={() => setExpanded(expanded === p.id ? null : p.id)}
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans',sans-serif", opacity: expanded && expanded !== p.id ? 0.4 : 1, transition: 'opacity 0.2s' }}>
+              <CircleProgress size={72} stroke={5} progress={pct} color={p.color}>
+                <span style={{ fontSize: 16, fontWeight: 700, color: p.color }}>{pct}%</span>
+              </CircleProgress>
+              <span style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 500, textAlign: 'center', maxWidth: 80 }}>{p.name}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Project cards */}
       <div style={{ display: 'grid', gap: 14 }}>
         {projects.map(p => {
           const done = p.milestones.filter(m => m.done).length;
           const pct = Math.round((done / p.milestones.length) * 100);
           const open = expanded === p.id;
           return (
-            <div key={p.id} className="card">
+            <div key={p.id} className="card" style={{ borderLeft: open ? `3px solid ${p.color}` : '3px solid transparent' }}>
               <button style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }} onClick={() => setExpanded(open ? null : p.id)}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ fontSize: 22 }}>{p.emoji}</span>
-                    <div>
-                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, color: p.color, fontWeight: 500 }}>{p.name}</div>
-                      <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{p.tagline}</div>
-                    </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 10 }}>
+                  <CircleProgress size={52} stroke={4} progress={pct} color={p.color}>
+                    <span style={{ fontSize: 20 }}>{p.emoji}</span>
+                  </CircleProgress>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, color: p.color, fontWeight: 600 }}>{p.name}</div>
+                    <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{p.tagline}</div>
                   </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: 12 }}>
-                    <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, color: p.color, lineHeight: 1, fontWeight: 500 }}>{pct}%</div>
-                    <div style={{ fontSize: 10, color: 'var(--text-tertiary)', marginTop: 2 }}>{'\u2197\uFE0F'} {p.deadline}</div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <div style={{ fontSize: 20, fontWeight: 700, color: p.color }}>{pct}%</div>
+                    <div style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>{'\u2197\uFE0F'} {p.deadline}</div>
                   </div>
                 </div>
-                <div className="progress-bar">
+                <div className="progress-bar" style={{ height: 6 }}>
                   <div className="progress-fill" style={{ width: `${pct}%`, background: p.color }} />
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 6 }}>{done}/{p.milestones.length} milestones {'\u00B7'} {open ? '\u25B2 collapse' : '\u25BC expand'}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 8 }}>{done}/{p.milestones.length} milestones {'\u00B7'} {open ? '\u25B2 collapse' : '\u25BC expand'}</div>
               </button>
               {open && (
                 <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
                   <div className="grid-2">
                     {p.milestones.map(m => (
-                      <button key={m.id} className="habit-btn" style={{ padding: '7px 8px' }} onClick={() => toggleMilestone(p.id, m.id)}>
-                        <div className={`check ${m.done ? 'checked' : ''}`} style={{ width: 18, height: 18, borderColor: m.done ? p.color : undefined, background: m.done ? p.color : undefined }}>
-                          {m.done && <span style={{ fontSize: 9 }}>{'\u2713'}</span>}
+                      <button key={m.id} className="habit-btn" style={{ padding: '8px 10px' }} onClick={() => toggleMilestone(p.id, m.id)}>
+                        <div className={`check ${m.done ? 'checked' : ''}`} style={{ width: 20, height: 20, borderColor: m.done ? p.color : undefined, background: m.done ? p.color : undefined }}>
+                          {m.done && <span style={{ fontSize: 10 }}>{'\u2713'}</span>}
                         </div>
-                        <span style={{ fontSize: 12, color: m.done ? 'var(--text-tertiary)' : 'var(--text)', textDecoration: m.done ? 'line-through' : 'none' }}>{m.label}</span>
+                        <span style={{ fontSize: 13, color: m.done ? 'var(--text-tertiary)' : 'var(--text)', textDecoration: m.done ? 'line-through' : 'none' }}>{m.label}</span>
                       </button>
                     ))}
                   </div>
@@ -741,7 +849,7 @@ function PillarsView() {
             <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
               <span style={{ fontSize: 24 }}>{p.emoji}</span>
               <div>
-                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, color: p.color, fontWeight: 500 }}>{p.name}</div>
+                <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 19, color: p.color, fontWeight: 500 }}>{p.name}</div>
                 <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>{p.desc}</div>
               </div>
             </div>
@@ -769,7 +877,7 @@ function ChecklistView({ dubai, toggleDubai }) {
       <div className="page-title">Dubai Exit</div>
       <div className="page-subtitle">Out by May 21, 2026 {'\u00B7'} Back in Dubai May 8</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 24 }}>
-        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 40, color: 'var(--accent)', lineHeight: 1, fontWeight: 500 }}>{pct}%</div>
+        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 40, color: 'var(--accent)', lineHeight: 1, fontWeight: 500 }}>{pct}%</div>
         <div style={{ flex: 1 }}>
           <div className="progress-bar" style={{ height: 6 }}>
             <div className="progress-fill" style={{ width: `${pct}%`, background: 'linear-gradient(90deg,#c4a46b,#dbb87a)' }} />
@@ -852,6 +960,126 @@ function ProfileView() {
           "Women run on 28-day cycles, not 24-hour cycles." {'\u2014'} The core message and the spine of everything.
         </div>
       </div>
+    </div>
+  );
+}
+
+function VisionView() {
+  const [goals, setGoals] = useState(() => {
+    const saved = load('anna_goals');
+    return saved ? JSON.parse(saved) : DEFAULT_GOALS;
+  });
+
+  const updateGoalProgress = (id, delta) => {
+    setGoals(prev => {
+      const next = prev.map(g => g.id === id ? { ...g, progress: Math.max(0, Math.min(100, g.progress + delta)) } : g);
+      save('anna_goals', next);
+      return next;
+    });
+  };
+
+  const categories = [...new Set(goals.map(g => g.category))];
+  const overallProgress = goals.length ? Math.round(goals.reduce((s, g) => s + g.progress, 0) / goals.length) : 0;
+  const completed = goals.filter(g => g.progress === 100).length;
+
+  const pillarIcons = { Spiritual: '\u2728', Business: '\uD83D\uDE80', Life: '\uD83C\uDF0D', Core: '\uD83D\uDC8E' };
+  const pillarColors = { Spiritual: '#9b7fa8', Business: '#8a9fbf', Life: '#7fa88a', Core: '#c4a46b' };
+
+  return (
+    <div style={{ maxWidth: 900 }}>
+      <div className="page-title">Vision & Goals</div>
+      <div className="page-subtitle">The north star and the milestones</div>
+
+      {/* Vision Statements */}
+      <div className="card" style={{ marginBottom: 18, borderLeft: '3px solid var(--accent)' }}>
+        <div className="section-tag" style={{ color: 'var(--accent)' }}>VISION</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+          {VISION_STATEMENTS.map(v => (
+            <div key={v.id} style={{
+              padding: 16, borderRadius: 12, background: 'var(--accent-soft)',
+              borderLeft: `3px solid ${pillarColors[v.pillar] || 'var(--accent)'}`,
+              display: 'flex', flexDirection: 'column', gap: 8
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, color: pillarColors[v.pillar], textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <span>{pillarIcons[v.pillar] || '\u2728'}</span> {v.pillar}
+              </div>
+              <div style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.65, fontStyle: 'italic', fontFamily: "'Playfair Display', serif" }}>
+                "{v.text}"
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Overall Progress */}
+      <div className="card" style={{ marginBottom: 18, display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+        <CircleProgress size={100} stroke={7} progress={overallProgress} color="var(--accent)">
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 22, fontWeight: 700, fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)' }}>{overallProgress}%</div>
+            <div style={{ fontSize: 9, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>overall</div>
+          </div>
+        </CircleProgress>
+        <div style={{ flex: 1, minWidth: 180 }}>
+          <div style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Playfair Display', serif", color: 'var(--text-primary)', marginBottom: 4 }}>
+            {completed} of {goals.length} completed
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+            Keep going. Every percentage point is a step closer to the life you're building.
+          </div>
+          <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+            {categories.map(cat => {
+              const catGoals = goals.filter(g => g.category === cat);
+              const catProg = Math.round(catGoals.reduce((s, g) => s + g.progress, 0) / catGoals.length);
+              return (
+                <div key={cat} style={{ padding: '4px 10px', borderRadius: 20, background: 'var(--accent-soft)', fontSize: 11, color: 'var(--text-secondary)', fontWeight: 500 }}>
+                  {cat} {'\u00B7'} {catProg}%
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Goals by Category */}
+      {categories.map(cat => (
+        <div key={cat} style={{ marginBottom: 18 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-tertiary)', marginBottom: 10, paddingLeft: 4 }}>{cat}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {goals.filter(g => g.category === cat).map(goal => (
+              <div key={goal.id} className="card" style={{
+                display: 'flex', alignItems: 'center', gap: 16, padding: '14px 18px',
+                borderLeft: `3px solid ${goal.color}`,
+                opacity: goal.progress === 100 ? 0.65 : 1
+              }}>
+                <CircleProgress size={52} stroke={4} progress={goal.progress} color={goal.color}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: goal.color }}>{goal.progress}%</span>
+                </CircleProgress>
+                <div style={{ flex: 1 }}>
+                  <div style={{
+                    fontSize: 14, fontWeight: 600, color: 'var(--text-primary)',
+                    textDecoration: goal.progress === 100 ? 'line-through' : 'none'
+                  }}>{goal.label}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 2 }}>
+                    {goal.deadline === 'Done' ? '\u2705 Completed' : `Target: ${goal.deadline}`}
+                  </div>
+                </div>
+                {goal.progress < 100 && (
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button onClick={() => updateGoalProgress(goal.id, -10)}
+                      style={{ width: 28, height: 28, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      −
+                    </button>
+                    <button onClick={() => updateGoalProgress(goal.id, 10)}
+                      style={{ width: 28, height: 28, borderRadius: '50%', border: '1px solid var(--border)', background: 'var(--surface)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      +
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

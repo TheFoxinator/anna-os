@@ -145,7 +145,7 @@ body {
 }
 
 .sidebar-logo h1 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Playfair Display', serif;
   font-size: 22px;
   font-weight: 700;
   color: var(--sidebar-accent);
@@ -295,7 +295,7 @@ body {
 
 /* ===== TYPOGRAPHY ===== */
 .page-title {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Playfair Display', serif;
   font-size: 32px;
   font-weight: 600;
   color: var(--text);
@@ -406,7 +406,7 @@ textarea.input { min-height: 44px; }
 }
 
 .cal-header h3 {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Playfair Display', serif;
   font-size: 20px;
   font-weight: 600;
   color: var(--pastel-green-text);
@@ -651,7 +651,7 @@ textarea.input { min-height: 44px; }
   justify-content: center;
   height: 100vh;
   background: var(--bg);
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Playfair Display', serif;
   color: var(--accent);
   letter-spacing: 0.25em;
   font-size: 15px;

@@ -53,18 +53,23 @@ const HABITS = [
 ];
 
 const DEFAULT_SCHEDULE = [
-  { time: '5:30', label: 'Wake & Stillness', desc: 'No phone. Water. Arrive slowly.', color: '#9b7fa8', icon: '\u2728' },
-  { time: '6:00', label: 'Morning Practice', desc: 'Meditation, movement, altar', color: '#9b7fa8', icon: '\uD83E\uDDD8' },
-  { time: '7:00', label: 'Deep Work I', desc: 'Peak energy \u2014 SyncHer, strategy', color: '#E8D44D', icon: '\uD83D\uDCA1' },
-  { time: '9:30', label: 'Break', desc: 'Walk, snack, transition ritual', color: '#7fa88a', icon: '\uD83C\uDF3F' },
-  { time: '10:00', label: 'Deep Work II', desc: 'Seraya Studio, calls, build', color: '#c4a46b', icon: '\uD83D\uDCBB' },
-  { time: '12:00', label: 'Lunch & Rest', desc: 'Nourish. No screens.', color: '#7fa88a', icon: '\uD83C\uDF5C' },
-  { time: '13:30', label: 'Creative Block', desc: 'Content, filming, writing', color: '#E8D44D', icon: '\uD83C\uDFA8' },
-  { time: '15:30', label: 'Admin & Comms', desc: 'Emails, messages, planning', color: '#8a9fbf', icon: '\uD83D\uDCE7' },
-  { time: '17:00', label: 'Movement', desc: 'Workout or long walk', color: '#bf8a8a', icon: '\uD83C\uDFCB\uFE0F' },
-  { time: '18:30', label: 'Evening Wind-down', desc: 'Cook, read, altar', color: '#9b7fa8', icon: '\uD83C\uDF19' },
-  { time: '21:00', label: 'Sleep Prep', desc: 'No screens. Legs up wall. Rest.', color: '#5A5A5A', icon: '\uD83D\uDE34' },
+  { time: '5:30', label: 'Wake & Stillness', desc: 'No phone. Water. Arrive slowly.', color: '#9b7fa8', iconType: 'sun' },
+  { time: '6:00', label: 'Morning Practice', desc: 'Meditation, movement, altar', color: '#9b7fa8', iconType: 'heart' },
+  { time: '7:00', label: 'Deep Work I', desc: 'Peak energy \u2014 SyncHer, strategy', color: '#E8D44D', iconType: 'zap' },
+  { time: '9:30', label: 'Break', desc: 'Walk, snack, transition ritual', color: '#7fa88a', iconType: 'coffee' },
+  { time: '10:00', label: 'Deep Work II', desc: 'Seraya Studio, calls, build', color: '#c4a46b', iconType: 'briefcase' },
+  { time: '12:00', label: 'Lunch & Rest', desc: 'Nourish. No screens.', color: '#7fa88a', iconType: 'utensils' },
+  { time: '13:30', label: 'Creative Block', desc: 'Content, filming, writing', color: '#E8D44D', iconType: 'lightbulb' },
+  { time: '15:30', label: 'Admin & Comms', desc: 'Emails, messages, planning', color: '#8a9fbf', iconType: 'send' },
+  { time: '17:00', label: 'Movement', desc: 'Workout or long walk', color: '#bf8a8a', iconType: 'activity' },
+  { time: '18:30', label: 'Evening Wind-down', desc: 'Cook, read, altar', color: '#9b7fa8', iconType: 'moon' },
+  { time: '21:00', label: 'Sleep Prep', desc: 'No screens. Legs up wall. Rest.', color: '#5A5A5A', iconType: 'moon' },
 ];
+
+const SCHEDULE_ICONS = {
+  sun: Sun, heart: Heart, zap: Zap, coffee: Coffee, briefcase: Briefcase,
+  utensils: Utensils, lightbulb: Lightbulb, send: Send, activity: Activity, moon: Moon,
+};
 
 const DEFAULT_TRANSACTIONS = [
   { id: 't1', name: 'Rent \u2014 Dubai Villa', amount: -8500, currency: 'AED', date: 'Apr 1', icon: '\uD83C\uDFE0', cat: 'Rent' },
@@ -623,18 +628,24 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
             </div>
             <span className="pill" style={{ fontSize: 11, padding: '4px 12px' }}>All <ChevronDown size={10} /></span>
           </div>
-          {DEFAULT_SCHEDULE.map((item, i) => (
-            <div key={i} className={`timeline-item${i === 3 ? ' active-event' : ''}`}>
-              <div className="timeline-time">{item.time}</div>
-              <div className="timeline-dot" style={{ background: item.color + '22', color: item.color }}>
-                {item.icon}
+          {DEFAULT_SCHEDULE.map((item, i) => {
+            const IconComp = SCHEDULE_ICONS[item.iconType] || Zap;
+            return (
+              <div key={i} className={`timeline-item${i === 3 ? ' active-event' : ''}`}>
+                <div className="timeline-time">{item.time}</div>
+                <div className="timeline-dot" style={{ background: item.color + '18', color: item.color }}>
+                  <IconComp size={18} />
+                </div>
+                <div className="timeline-content">
+                  <div className="timeline-label">{item.label}</div>
+                  <div className="timeline-desc">{item.desc}</div>
+                </div>
               </div>
-              <div className="timeline-content">
-                <div className="timeline-label">{item.label}</div>
-                <div className="timeline-desc">{item.desc}</div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
+          <button className="cal-add-btn" style={{ width: '100%', marginTop: 12, background: 'var(--text)', color: 'var(--card)' }}>
+            View all details
+          </button>
         </div>
       </div>
     </div>
@@ -832,7 +843,7 @@ function HealthView({ habits, habitsCompleted, toggleHabit }) {
             </div>
           </CircleProgress>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 6 }}>Daily Steps</div>
+            <div style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Playfair Display', serif", color: 'var(--text)', marginBottom: 6 }}>Daily Steps</div>
             <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>61% of your 8,500 step goal</div>
             <div className="progress-bar" style={{ width: 200 }}>
               <div className="progress-fill" style={{ width: '61%', background: isDark ? '#00D2FF' : '#2A4C7A' }} />
@@ -843,7 +854,7 @@ function HealthView({ habits, habitsCompleted, toggleHabit }) {
         {/* Workout recommendation */}
         <div className="card">
           <div className="section-label" style={{ color: cycle.color }}>Cycle-Synced Workout</div>
-          <div style={{ fontSize: 16, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 6 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, fontFamily: "'Playfair Display', serif", color: 'var(--text)', marginBottom: 6 }}>
             {cycle.phase} Phase Recommendation
           </div>
           <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>{cycle.workout}</div>
@@ -933,7 +944,7 @@ function CycleView({ cycle, cycleDay }) {
           <div key={p.name} className={`cycle-phase-card card ${p.active ? 'active' : ''}`}
             style={{ opacity: p.active ? 1 : 0.5 }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>{p.icon}</div>
-            <div style={{ fontSize: 16, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
+            <div style={{ fontSize: 16, fontWeight: 600, fontFamily: "'Playfair Display', serif", color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>Days {p.days}</div>
             {p.active && <div className="pill" style={{ marginTop: 8, background: `${p.color}20`, color: p.color, fontSize: 11 }}>Current Phase</div>}
           </div>
@@ -950,7 +961,7 @@ function CycleView({ cycle, cycleDay }) {
             </div>
           </CircleProgress>
           <div>
-            <div style={{ fontSize: 22, fontFamily: "'DM Serif Display', serif", color: 'var(--text)' }}>{cycle.phase} Phase</div>
+            <div style={{ fontSize: 22, fontFamily: "'Playfair Display', serif", color: 'var(--text)' }}>{cycle.phase} Phase</div>
             <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>{cycle.energy}</div>
           </div>
         </div>
@@ -977,7 +988,7 @@ function CycleView({ cycle, cycleDay }) {
           <div key={i} className="card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
-                <div style={{ fontSize: 18, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)' }}>{p.name}</div>
+                <div style={{ fontSize: 18, fontWeight: 600, fontFamily: "'Playfair Display', serif", color: 'var(--text)' }}>{p.name}</div>
                 <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>{p.purpose}</div>
               </div>
               <div className="pill" style={{ background: 'var(--accent-soft)', color: 'var(--accent)' }}>{p.daysLeft}d left</div>
@@ -1124,7 +1135,7 @@ function BusinessView() {
               <div style={{ fontSize: 28 }}>{b.emoji}</div>
               <div className="pill" style={{ background: b.statusBg, color: b.statusText, border: b.statusBorder !== 'transparent' ? `1px solid ${b.statusBorder}` : 'none' }}>{b.status}</div>
             </div>
-            <div style={{ fontSize: 18, fontFamily: "'DM Serif Display', serif", fontWeight: 400, color: 'var(--text)', marginBottom: 4 }}>{b.name}</div>
+            <div style={{ fontSize: 18, fontFamily: "'Playfair Display', serif", fontWeight: 400, color: 'var(--text)', marginBottom: 4 }}>{b.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 16 }}>{b.tagline}</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <span className="stat-number" style={{ fontSize: 14, color: b.color }}>{b.revenue}</span>
@@ -1440,7 +1451,7 @@ function ContentStrategyView() {
           <div key={p.name} className="card" style={{ overflow: 'hidden', padding: 0 }}>
             <div style={{ height: 4, background: p.color }} />
             <div style={{ padding: 28 }}>
-            <div style={{ fontSize: 16, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
+            <div style={{ fontSize: 16, fontFamily: "'Playfair Display', serif", color: 'var(--text)', marginBottom: 4 }}>{p.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 10 }}>{p.desc}</div>
             <div className="pill" style={{ background: `${p.color}20`, color: p.color }}>{p.ideas} ideas</div>
             </div>

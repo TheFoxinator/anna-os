@@ -2,13 +2,13 @@
    LIGHT THEME — Warm editorial, Intelly-inspired
    ============================================ */
 :root {
-  --bg: #F5F0EA;
-  --bg-secondary: #E5E0D8;
+  --bg: #F8F4EE;
+  --bg-secondary: #F0EBE3;
   --card: #FFFFFF;
   --card-hover: #FEFEFE;
   --card-border: transparent;
-  --card-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.06);
-  --card-shadow-hover: 0 4px 24px rgba(0,0,0,0.1);
+  --card-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.04);
+  --card-shadow-hover: 0 4px 20px rgba(0,0,0,0.08);
   --sidebar-bg: #1A1A1A;
   --sidebar-text: #888888;
   --sidebar-text-active: #FFFFFF;
@@ -32,15 +32,19 @@
   --panel-bg: #FAF5ED;
   --panel-border: #DDD8D0;
   --skeleton: rgba(0,0,0,0.04);
-  /* Stat card fills — Intelly-matched soft pastels */
-  --card-yellow: #F2E8C4;
-  --card-yellow-text: #5A4A08;
-  --card-pink: #F3D1DA;
-  --card-pink-text: #7A2840;
-  --card-green: #C8DFC2;
-  --card-green-text: #1D5420;
-  --card-lavender: #D4CCE8;
-  --card-lavender-text: #3D2870;
+  /* Stat card fills — Intelly-matched */
+  --card-yellow: #F5EDCE;
+  --card-yellow-border: #E8D99E;
+  --card-yellow-text: #4A3D06;
+  --card-pink: #F9DDE5;
+  --card-pink-border: #F0C4D0;
+  --card-pink-text: #6B2038;
+  --card-green: #D4E8CE;
+  --card-green-border: #B8D5AE;
+  --card-green-text: #1A4A1E;
+  --card-lavender: #DDD5F0;
+  --card-lavender-border: #C8BDE0;
+  --card-lavender-text: #352060;
   --card-peach: #F0D4B8;
   --card-peach-text: #6A3A10;
   --card-blue: #B8D9D6;
@@ -124,16 +128,16 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
 
 /* ===== TYPOGRAPHY ===== */
-.font-display { font-family: 'DM Serif Display', serif; }
+.font-display { font-family: 'Playfair Display', serif; }
 .font-mono { font-family: 'JetBrains Mono', monospace; }
 
 .page-title {
-  font-family: 'DM Serif Display', serif;
-  font-size: 32px;
+  font-family: 'Playfair Display', serif;
+  font-size: 34px;
   font-weight: 400;
   color: var(--text);
-  margin-bottom: 4px;
-  line-height: 1.2;
+  margin-bottom: 6px;
+  line-height: 1.15;
   letter-spacing: -0.01em;
 }
 
@@ -204,7 +208,7 @@ body {
 }
 
 .sidebar-logo h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Playfair Display', serif;
   font-size: 22px;
   color: #F5F0EB;
   letter-spacing: 0.02em;
@@ -376,13 +380,13 @@ body {
 /* Stat cards — BOLD pastel fills in light, gradient+glow in dark */
 .stat-card {
   border-radius: 24px;
-  padding: 24px 28px;
-  border: none;
+  padding: 28px 30px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  box-shadow: none;
+  min-height: 140px;
 }
 
 .stat-card { position: relative; overflow: hidden; }
@@ -403,11 +407,11 @@ body {
 }
 
 .stat-card .stat-label {
-  font-family: 'DM Serif Display', serif;
-  font-size: 18px;
-  font-weight: 400;
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 500;
   color: var(--text);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .stat-card .stat-value {
@@ -429,17 +433,17 @@ body {
   gap: 4px;
 }
 
-/* Light mode bold pastel classes */
-.stat-yellow { background: var(--card-yellow); color: var(--card-yellow-text); }
+/* Light mode pastel classes — Intelly style with subtle borders */
+.stat-yellow { background: var(--card-yellow); color: var(--card-yellow-text); border: 1.5px solid var(--card-yellow-border); }
 .stat-yellow .stat-label, .stat-yellow .stat-value, .stat-yellow .stat-change { color: var(--card-yellow-text); }
 
-.stat-pink { background: var(--card-pink); color: var(--card-pink-text); }
+.stat-pink { background: var(--card-pink); color: var(--card-pink-text); border: 1.5px solid var(--card-pink-border); }
 .stat-pink .stat-label, .stat-pink .stat-value, .stat-pink .stat-change { color: var(--card-pink-text); }
 
-.stat-green { background: var(--card-green); color: var(--card-green-text); }
+.stat-green { background: var(--card-green); color: var(--card-green-text); border: 1.5px solid var(--card-green-border); }
 .stat-green .stat-label, .stat-green .stat-value, .stat-green .stat-change { color: var(--card-green-text); }
 
-.stat-lavender { background: var(--card-lavender); color: var(--card-lavender-text); }
+.stat-lavender { background: var(--card-lavender); color: var(--card-lavender-text); border: 1.5px solid var(--card-lavender-border); }
 .stat-lavender .stat-label, .stat-lavender .stat-value, .stat-lavender .stat-change { color: var(--card-lavender-text); }
 
 .stat-peach { background: var(--card-peach); color: var(--card-peach-text); }
@@ -727,27 +731,27 @@ textarea.input { min-height: 44px; }
 }
 
 .timeline-dot {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
-  opacity: 0.85;
+  font-size: 15px;
 }
 
 .timeline-item.active-event {
-  background: #FFF8E1;
+  background: #FEF9E7;
   border-radius: 16px;
-  padding: 12px !important;
-  border: 1px solid #F0E4B8;
+  padding: 14px !important;
+  border: 1.5px dashed #E8D48C;
+  margin: -2px -4px;
 }
 
 [data-theme="dark"] .timeline-item.active-event {
-  background: rgba(255,200,0,0.08);
-  border-color: rgba(255,200,0,0.15);
+  background: rgba(255,200,0,0.06);
+  border-color: rgba(255,200,0,0.2);
 }
 
 .timeline-content { flex: 1; }
@@ -871,7 +875,7 @@ textarea.input { min-height: 44px; }
 }
 
 .loading-screen h1 {
-  font-family: 'DM Serif Display', serif;
+  font-family: 'Playfair Display', serif;
   font-size: 28px;
   color: var(--text);
 }
@@ -982,12 +986,12 @@ textarea.input { min-height: 44px; }
 }
 
 .cal-header-month {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #C45068;
   background: #FDDFE6;
-  padding: 6px 18px;
-  border-radius: 20px;
+  padding: 8px 20px;
+  border-radius: 24px;
 }
 
 [data-theme="dark"] .cal-header-month {
@@ -1107,10 +1111,11 @@ textarea.input { min-height: 44px; }
 
 /* Schedule timeline in right panel */
 .rp-schedule-date {
-  font-family: 'DM Serif Display', serif;
-  font-size: 18px;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 500;
   color: var(--text);
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .rp-schedule-header {
@@ -1137,16 +1142,18 @@ textarea.input { min-height: 44px; }
 
 .stat-sub-item .stat-sub-value {
   font-family: 'DM Sans', sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--text);
+  line-height: 1.2;
 }
 
 .stat-sub-item .stat-sub-label {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
 }
 
 [data-theme="dark"] .stat-sub-item .stat-sub-value {

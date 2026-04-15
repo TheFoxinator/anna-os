@@ -411,7 +411,7 @@ function TodayView({ cycle, cycleDay, intention, saveIntention, habits, toggleHa
     <div style={{ maxWidth: 820 }}>
       {/* Greeting */}
       <div style={{ marginBottom: 32 }}>
-        <div className="page-title" style={{ fontSize: 36, marginBottom: 6 }}>{greeting}, Anna.</div>
+        <div className="page-title" style={{ fontSize: 36, fontWeight: 700, marginBottom: 6 }}>{greeting}, Anna.</div>
         <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
           {formatDate()}. {cycle.guidance}
         </div>

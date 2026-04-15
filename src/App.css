@@ -30,19 +30,19 @@
   --cal-today: #C4A46B;
   --cal-today-text: #FFFFFF;
   --skeleton: rgba(0,0,0,0.035);
-  /* Pastels */
-  --pastel-pink: #FCEAEA;
-  --pastel-pink-text: #A85656;
-  --pastel-yellow: #FFF5D6;
-  --pastel-yellow-text: #9A7D30;
-  --pastel-green: #E4F4E8;
-  --pastel-green-text: #4A8A56;
-  --pastel-purple: #F0EAF8;
-  --pastel-purple-text: #7A5BA0;
-  --pastel-blue: #E8F0FA;
-  --pastel-blue-text: #4A6FA0;
-  --pastel-peach: #FFF0E6;
-  --pastel-peach-text: #A07040;
+  /* Pastels — vivid, Intelly-inspired */
+  --pastel-pink: #FAD0D8;
+  --pastel-pink-text: #8C3A50;
+  --pastel-yellow: #F7E6A0;
+  --pastel-yellow-text: #6B5A10;
+  --pastel-green: #C8E6C0;
+  --pastel-green-text: #2D6A30;
+  --pastel-purple: #DDD0F0;
+  --pastel-purple-text: #5A3D8A;
+  --pastel-blue: #C8DCF4;
+  --pastel-blue-text: #2A4C7A;
+  --pastel-peach: #F8DCC8;
+  --pastel-peach-text: #7A4A20;
 }
 
 [data-theme="dark"] {
@@ -71,18 +71,18 @@
   --panel-bg: #121218;
   --panel-border: rgba(255,255,255,0.05);
   --skeleton: rgba(255,255,255,0.04);
-  --pastel-pink: rgba(168,86,86,0.15);
-  --pastel-pink-text: #D4A0A0;
-  --pastel-yellow: rgba(196,164,107,0.15);
-  --pastel-yellow-text: #D4C090;
-  --pastel-green: rgba(74,138,86,0.15);
-  --pastel-green-text: #90C4A0;
-  --pastel-purple: rgba(122,91,160,0.15);
-  --pastel-purple-text: #B8A0D4;
-  --pastel-blue: rgba(74,111,160,0.15);
-  --pastel-blue-text: #A0B8D4;
-  --pastel-peach: rgba(160,112,64,0.15);
-  --pastel-peach-text: #D4B890;
+  --pastel-pink: rgba(200,80,110,0.18);
+  --pastel-pink-text: #E0A0B0;
+  --pastel-yellow: rgba(220,180,60,0.18);
+  --pastel-yellow-text: #E0CC80;
+  --pastel-green: rgba(60,160,80,0.18);
+  --pastel-green-text: #80D0A0;
+  --pastel-purple: rgba(130,80,200,0.18);
+  --pastel-purple-text: #C0A0E0;
+  --pastel-blue: rgba(60,110,200,0.18);
+  --pastel-blue-text: #A0C0E0;
+  --pastel-peach: rgba(200,130,50,0.18);
+  --pastel-peach-text: #E0C090;
 }
 
 /* ===== BASE ===== */
@@ -147,7 +147,7 @@ body {
 .sidebar-logo h1 {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 700;
   color: var(--sidebar-accent);
   letter-spacing: 0.03em;
 }
@@ -253,14 +253,15 @@ body {
 .widget:hover { transform: translateY(-2px); }
 
 .widget .widget-header {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 16px;
 }
 
 .widget .widget-stats {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
@@ -270,24 +271,25 @@ body {
 }
 
 .widget .widget-stat-value {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 28px;
-  font-weight: 600;
-  line-height: 1;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.1;
 }
 
 .widget .widget-stat-label {
   font-size: 10px;
-  opacity: 0.6;
-  margin-top: 3px;
+  opacity: 0.55;
+  margin-top: 4px;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
+  font-weight: 500;
 }
 
 .widget .widget-footer {
   font-size: 11px;
-  opacity: 0.55;
-  margin-top: 12px;
+  opacity: 0.5;
+  margin-top: 14px;
   font-style: italic;
 }
 
@@ -295,7 +297,7 @@ body {
 .page-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: 32px;
-  font-weight: 400;
+  font-weight: 600;
   color: var(--text);
   margin-bottom: 4px;
 }
@@ -406,8 +408,8 @@ textarea.input { min-height: 44px; }
 .cal-header h3 {
   font-family: 'Cormorant Garamond', serif;
   font-size: 20px;
-  font-weight: 500;
-  color: var(--accent);
+  font-weight: 600;
+  color: var(--pastel-green-text);
 }
 
 .cal-nav-btn {

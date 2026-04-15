@@ -180,6 +180,62 @@ function CircleProgress({ size = 64, stroke = 5, progress = 0, color = 'var(--ac
   );
 }
 
+function MiniCalendar() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const today = now.getDate();
+  const monthStr = now.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+
+  const firstDow = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+  const startOffset = (firstDow + 6) % 7; // Monday-based
+
+  const cells = [];
+  for (let i = startOffset - 1; i >= 0; i--) cells.push({ day: daysInPrev - i, current: false });
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d, current: true, isToday: d === today });
+  while (cells.length % 7 !== 0) cells.push({ day: cells.length - startOffset - daysInMonth + 1, current: false });
+
+  // Week numbers (ISO)
+  const getWeek = (d) => {
+    const date = new Date(year, month, d);
+    const jan1 = new Date(date.getFullYear(), 0, 1);
+    return Math.ceil(((date - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+  };
+
+  const weeks = [];
+  for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+
+  return (
+    <div>
+      <div className="cal-header">
+        <button className="cal-nav-btn"><ChevronLeft size={16} /></button>
+        <span className="cal-header-month">{monthStr}</span>
+        <button className="cal-nav-btn"><ChevronRight size={16} /></button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr) 28px', gap: '2px' }}>
+        {['MO','TU','WE','TH','FR','SA','SU'].map(d => (
+          <div key={d} className="cal-day-label">{d}</div>
+        ))}
+        <div />
+        {weeks.map((week, wi) => {
+          const firstCurrent = week.find(c => c.current);
+          const weekNum = firstCurrent ? getWeek(firstCurrent.day) : '';
+          return [
+            ...week.map((c, ci) => (
+              <div key={`${wi}-${ci}`} className={`cal-day ${c.isToday ? 'today' : ''} ${!c.current ? 'other-month' : ''}`}>
+                {c.day}
+              </div>
+            )),
+            <div key={`w${wi}`} className="cal-week-num">W{weekNum}</div>
+          ];
+        })}
+      </div>
+    </div>
+  );
+}
+
 function getDaysSince(dateStr) {
   const d = new Date(dateStr);
   const now = new Date();
@@ -360,54 +416,97 @@ export default function App() {
 function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, intention, saveIntention, contacts }) {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const overdue = contacts.filter(c => getContactStatus(c) === 'overdue');
+  const d = ((cycleDay - 1) % ANNA.cycleLength) + 1;
+  const todayStr = new Date().toLocaleDateString('en-GB', { month: 'long', day: 'numeric' });
 
   return (
-    <div style={{ maxWidth: 1100 }}>
-      {/* Greeting */}
-      <div style={{ marginBottom: 28 }}>
-        <div className="page-title">{getGreeting()}, Anna.</div>
-        <div className="page-subtitle" style={{ marginBottom: 8 }}>
-          {formatDate()} {'\u00B7'} {cycle.phase} Phase (Day {((cycleDay - 1) % ANNA.cycleLength) + 1}) {'\u00B7'} {habitsCompleted}/{HABITS.length} habits done
-        </div>
-        <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontStyle: 'italic' }}>{cycle.guidance}</div>
-      </div>
-
-      {/* Quick Stats */}
-      <div className="grid-4 animate-in" style={{ marginBottom: 24 }}>
-        <div className="stat-card stat-yellow">
-          <div className="stat-label">Habits Today</div>
-          <div className="stat-value">{habitsCompleted}/{HABITS.length}</div>
-          <div className="stat-change">{Math.round(habitsCompleted / HABITS.length * 100)}% complete</div>
-        </div>
-        <div className="stat-card stat-pink">
-          <div className="stat-label">Cycle Phase</div>
-          <div className="stat-value" style={{ fontSize: 24 }}>{cycle.icon} {cycle.phase}</div>
-          <div className="stat-change">Day {((cycleDay - 1) % ANNA.cycleLength) + 1} of {ANNA.cycleLength}</div>
-        </div>
-        <div className="stat-card stat-green">
-          <div className="stat-label">Balance</div>
-          <div className="stat-value">AED 24.2K</div>
-          <div className="stat-change"><TrendingUp size={14} /> +3.2% this month</div>
-        </div>
-        <div className="stat-card stat-lavender">
-          <div className="stat-label">Content Queue</div>
-          <div className="stat-value">3</div>
-          <div className="stat-change">pieces scheduled this week</div>
-        </div>
-      </div>
-
-      {/* Two-column layout */}
-      <div className="grid-2" style={{ gap: 20 }}>
-        {/* Left column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* Intention */}
-          <div className="card animate-in animate-in-delay-1">
-            <div className="section-label">Today's Intention</div>
-            <input className="input" placeholder="What matters most today?" value={intention}
-              onChange={e => saveIntention(e.target.value)} />
+    <div className="home-layout">
+      {/* ======== CENTER CONTENT ======== */}
+      <div className="home-center">
+        {/* Greeting */}
+        <div style={{ marginBottom: 24 }}>
+          <div className="page-title">{getGreeting()}, Anna.</div>
+          <div className="page-subtitle" style={{ marginBottom: 8, maxWidth: 640 }}>
+            Anna OS wishes you a focused and intentional day. {cycle.phase} Phase (Day {d}) {'\u00B7'} {habitsCompleted}/{HABITS.length} habits done today.
           </div>
+          <div style={{ textAlign: 'right', marginTop: -8 }}>
+            <button className="btn btn-ghost" style={{ fontSize: 12 }}>Show all &hellip;</button>
+          </div>
+        </div>
 
-          {/* Today's Habits */}
+        {/* 2x2 Stat cards — Intelly layout */}
+        <div className="grid-2 animate-in" style={{ marginBottom: 8 }}>
+          <div className="stat-card stat-yellow">
+            <div className="stat-label">Habits Today:</div>
+            <div className="stat-sub-row">
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">{habitsCompleted}</div>
+                <div className="stat-sub-label">Done</div>
+              </div>
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">{HABITS.length - habitsCompleted}</div>
+                <div className="stat-sub-label">Remaining</div>
+              </div>
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">{Math.round(habitsCompleted / HABITS.length * 100)}%</div>
+                <div className="stat-sub-label">Complete</div>
+              </div>
+            </div>
+          </div>
+          <div className="stat-card stat-pink">
+            <div className="stat-label">Cycle Phase:</div>
+            <div className="stat-sub-row">
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">{cycle.phase}</div>
+                <div className="stat-sub-label">{cycle.icon} Phase</div>
+              </div>
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">Day {d}</div>
+                <div className="stat-sub-label">of {ANNA.cycleLength}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid-2 animate-in animate-in-delay-1" style={{ marginBottom: 28 }}>
+          <div className="stat-card stat-green">
+            <div className="stat-label">Balance:</div>
+            <div className="stat-sub-row">
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">24.2K</div>
+                <div className="stat-sub-label">AED Total</div>
+              </div>
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">7,000</div>
+                <div className="stat-sub-label">Income</div>
+              </div>
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">+3.2%</div>
+                <div className="stat-sub-label">This Month</div>
+              </div>
+            </div>
+          </div>
+          <div className="stat-card stat-lavender">
+            <div className="stat-label">Content Queue:</div>
+            <div className="stat-sub-row">
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">3</div>
+                <div className="stat-sub-label">Scheduled</div>
+              </div>
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">2</div>
+                <div className="stat-sub-label">In Progress</div>
+              </div>
+              <div className="stat-sub-item">
+                <div className="stat-sub-value">4</div>
+                <div className="stat-sub-label">Ideas</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Two-column below: Habits + Intention/Transactions */}
+        <div className="grid-2" style={{ gap: 20 }}>
+          {/* Habits checklist */}
           <div className="card card-tint-yellow animate-in animate-in-delay-2">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div className="section-label" style={{ marginBottom: 0 }}>Today's Habits</div>
@@ -427,63 +526,79 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
             </div>
           </div>
 
-          {/* Reach Out */}
-          {overdue.length > 0 && (
-            <div className="card card-tint-pink animate-in animate-in-delay-3">
-              <div className="section-label" style={{ color: '#E07A5F' }}>Reach Out To</div>
-              {overdue.slice(0, 3).map(c => (
-                <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{c.name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{getDaysSince(c.lastContact)} days ago {'\u00B7'} {c.type}</div>
+          {/* Right sub-column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            {/* Intention */}
+            <div className="card animate-in animate-in-delay-2">
+              <div className="section-label">Today's Intention</div>
+              <input className="input" placeholder="What matters most today?" value={intention}
+                onChange={e => saveIntention(e.target.value)} />
+            </div>
+
+            {/* Transactions */}
+            <div className="card animate-in animate-in-delay-3">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <div className="section-label" style={{ marginBottom: 0 }}>Recent Transactions</div>
+                <button className="btn btn-ghost" style={{ fontSize: 11, padding: '4px 8px' }}>View all <ArrowRight size={12} /></button>
+              </div>
+              {DEFAULT_TRANSACTIONS.slice(0, 4).map(tx => (
+                <div key={tx.id} className="transaction-row">
+                  <div className="tx-icon">{tx.icon}</div>
+                  <div className="tx-info">
+                    <div className="tx-label">{tx.name}</div>
+                    <div className="tx-date">{tx.date}</div>
                   </div>
-                  <button className="btn btn-ghost" style={{ fontSize: 11, padding: '6px 10px' }}>
-                    <Send size={12} /> Reached out
-                  </button>
+                  <div className={`tx-amount ${tx.amount > 0 ? 'positive' : 'negative'}`}>
+                    {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()} {tx.currency}
+                  </div>
                 </div>
               ))}
             </div>
-          )}
+
+            {/* Reach Out */}
+            {overdue.length > 0 && (
+              <div className="card card-tint-pink animate-in animate-in-delay-3">
+                <div className="section-label" style={{ color: 'var(--danger)' }}>Reach Out To</div>
+                {overdue.slice(0, 3).map(c => (
+                  <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
+                    <div>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{c.name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{getDaysSince(c.lastContact)} days ago {'\u00B7'} {c.type}</div>
+                    </div>
+                    <button className="btn btn-ghost" style={{ fontSize: 11, padding: '6px 10px' }}>
+                      <Send size={12} /> Reached out
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ======== RIGHT PANEL (Intelly-style) ======== */}
+      <div className="right-panel">
+        {/* Calendar */}
+        <div className="card animate-in" style={{ padding: 20, marginBottom: 20 }}>
+          <MiniCalendar />
         </div>
 
-        {/* Right column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* Schedule */}
-          <div className="card animate-in animate-in-delay-1">
-            <div className="section-label">Today's Schedule</div>
-            <div>
-              {DEFAULT_SCHEDULE.slice(0, 6).map((item, i) => (
-                <div key={i} className="timeline-item">
-                  <div className="timeline-time">{item.time}</div>
-                  <div className="timeline-dot" style={{ background: item.color }} />
-                  <div className="timeline-content">
-                    <div className="timeline-label">{item.label}</div>
-                    <div className="timeline-desc">{item.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
+        {/* Today's Schedule */}
+        <div className="card animate-in animate-in-delay-1" style={{ padding: 20 }}>
+          <div className="rp-schedule-header">
+            <div className="rp-schedule-date">{todayStr}</div>
           </div>
-
-          {/* Mini Finance */}
-          <div className="card animate-in animate-in-delay-2">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div className="section-label" style={{ marginBottom: 0 }}>Recent Transactions</div>
-              <button className="btn btn-ghost" style={{ fontSize: 11, padding: '4px 8px' }}>View all <ArrowRight size={12} /></button>
-            </div>
-            {DEFAULT_TRANSACTIONS.slice(0, 4).map(tx => (
-              <div key={tx.id} className="transaction-row">
-                <div className="tx-icon">{tx.icon}</div>
-                <div className="tx-info">
-                  <div className="tx-label">{tx.name}</div>
-                  <div className="tx-date">{tx.date}</div>
-                </div>
-                <div className={`tx-amount ${tx.amount > 0 ? 'positive' : 'negative'}`}>
-                  {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()} {tx.currency}
-                </div>
+          <div className="rp-timeline-label" style={{ marginBottom: 12 }}>Today's Timeline</div>
+          {DEFAULT_SCHEDULE.map((item, i) => (
+            <div key={i} className="timeline-item">
+              <div className="timeline-time">{item.time}</div>
+              <div className="timeline-dot" style={{ background: item.color }} />
+              <div className="timeline-content">
+                <div className="timeline-label">{item.label}</div>
+                <div className="timeline-desc">{item.desc}</div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

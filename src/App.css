@@ -390,11 +390,11 @@ body {
 }
 
 .stat-card .stat-label {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 8px;
+  font-family: 'DM Serif Display', serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 4px;
 }
 
 .stat-card .stat-value {
@@ -922,3 +922,147 @@ textarea.input { min-height: 44px; }
 [data-theme="dark"] .badge-youtube { background: #FF0033; color: #FFFFFF; }
 [data-theme="dark"] .badge-instagram { background: linear-gradient(135deg, #F77737, #E1306C, #C13584, #833AB4); color: #FFFFFF; }
 [data-theme="dark"] .badge-blog { background: #00D2FF; color: #000000; }
+
+/* ===== RIGHT PANEL (Intelly-style) ===== */
+.home-layout {
+  display: flex;
+  gap: 28px;
+}
+
+.home-center {
+  flex: 1;
+  min-width: 0;
+}
+
+.right-panel {
+  width: 320px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1200px) {
+  .home-layout { flex-direction: column; }
+  .right-panel { width: 100%; }
+}
+
+/* Calendar header */
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.cal-header-month {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.cal-nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.cal-nav-btn:hover { color: var(--text); }
+
+/* Calendar grid improvements */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.cal-day {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 7px 0;
+  border-radius: 50%;
+  cursor: default;
+  transition: background 0.15s;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-day.today {
+  background: var(--text);
+  color: var(--card);
+  font-weight: 700;
+}
+
+[data-theme="dark"] .cal-day.today {
+  background: #FFFFFF;
+  color: #09090B;
+}
+
+.cal-day.other-month {
+  opacity: 0.2;
+}
+
+/* Week row for week numbers */
+.cal-week-num {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 4px;
+}
+
+/* Schedule timeline in right panel */
+.rp-schedule-date {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.rp-schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.rp-timeline-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+/* Stat card sub-items (like "14 pers 5 pers 2 pers" in Intelly) */
+.stat-sub-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.stat-sub-item .stat-sub-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stat-sub-item .stat-sub-label {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+[data-theme="dark"] .stat-sub-item .stat-sub-value {
+  color: #FFFFFF;
+}

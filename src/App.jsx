@@ -77,13 +77,22 @@ const DEFAULT_TRANSACTIONS = [
   { id: 't8', name: 'Peptide supplies', amount: -620, currency: 'AED', date: 'Apr 14', icon: '\uD83D\uDC89', cat: 'Health' },
 ];
 
-const EXPENSE_CATEGORIES = [
+const EXPENSE_CATEGORIES_LIGHT = [
   { name: 'Rent', value: 8500, color: '#E07A5F' },
   { name: 'Food', value: 2100, color: '#457B9D' },
   { name: 'Health', value: 1070, color: '#2D6A4F' },
   { name: 'Transport', value: 800, color: '#E9C46A' },
   { name: 'Subscriptions', value: 450, color: '#7B68EE' },
   { name: 'Other', value: 680, color: '#F4845F' },
+];
+
+const EXPENSE_CATEGORIES_DARK = [
+  { name: 'Rent', value: 8500, color: '#FF64A0' },
+  { name: 'Food', value: 2100, color: '#00D2FF' },
+  { name: 'Health', value: 1070, color: '#00E676' },
+  { name: 'Transport', value: 800, color: '#FFC800' },
+  { name: 'Subscriptions', value: 450, color: '#A855F7' },
+  { name: 'Other', value: 680, color: '#FF6B35' },
 ];
 
 const MONTHLY_DATA = [
@@ -96,9 +105,9 @@ const MONTHLY_DATA = [
 ];
 
 const FINANCIAL_GOALS = [
-  { id: 'fg1', label: 'Amsterdam Move Fund', current: 12400, target: 25000, color: '#00D4FF' },
+  { id: 'fg1', label: 'Amsterdam Move Fund', current: 12400, target: 25000, color: '#00D2FF' },
   { id: 'fg2', label: 'Emergency Fund', current: 8200, target: 15000, color: '#00E676' },
-  { id: 'fg3', label: 'SyncHer Launch Budget', current: 3100, target: 5000, color: '#7B61FF' },
+  { id: 'fg3', label: 'SyncHer Launch Budget', current: 3100, target: 5000, color: '#A855F7' },
 ];
 
 const CONTACTS = [
@@ -485,6 +494,7 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
 
 function FinanceView({ wiseConnected }) {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const EXPENSE_CATEGORIES = isDark ? EXPENSE_CATEGORIES_DARK : EXPENSE_CATEGORIES_LIGHT;
 
   return (
     <div style={{ maxWidth: 1100 }}>
@@ -523,20 +533,20 @@ function FinanceView({ wiseConnected }) {
             <AreaChart data={MONTHLY_DATA}>
               <defs>
                 <linearGradient id="incGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={isDark ? '#00E676' : '#2D6A4F'} stopOpacity={0.3} />
+                  <stop offset="0%" stopColor={isDark ? '#00E676' : '#2D6A4F'} stopOpacity={isDark ? 0.15 : 0.3} />
                   <stop offset="100%" stopColor={isDark ? '#00E676' : '#2D6A4F'} stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="expGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={isDark ? '#FF6B9D' : '#E07A5F'} stopOpacity={0.3} />
-                  <stop offset="100%" stopColor={isDark ? '#FF6B9D' : '#E07A5F'} stopOpacity={0} />
+                  <stop offset="0%" stopColor={isDark ? '#FF64A0' : '#E07A5F'} stopOpacity={isDark ? 0.15 : 0.3} />
+                  <stop offset="100%" stopColor={isDark ? '#FF64A0' : '#E07A5F'} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke={isDark ? '#2A2A2A' : '#E8E4DF'} strokeDasharray="3 3" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: isDark ? '#5A5A5A' : '#9B9B9B' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 11, fill: isDark ? '#5A5A5A' : '#9B9B9B' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: isDark ? '#1A1A1A' : '#fff', border: `1px solid ${isDark ? '#2A2A2A' : '#E8E4DF'}`, borderRadius: 12, fontSize: 12 }} />
+              <CartesianGrid stroke={isDark ? '#222228' : '#E8E4DF'} strokeDasharray="3 3" />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: isDark ? '#45454F' : '#9B9B9B' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11, fill: isDark ? '#45454F' : '#9B9B9B' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ background: isDark ? '#1A1A1E' : '#fff', border: `1px solid ${isDark ? '#222228' : '#E8E4DF'}`, borderRadius: 12, fontSize: 12 }} />
               <Area type="monotone" dataKey="income" stroke={isDark ? '#00E676' : '#2D6A4F'} fill="url(#incGrad)" strokeWidth={2} />
-              <Area type="monotone" dataKey="expenses" stroke={isDark ? '#FF6B9D' : '#E07A5F'} fill="url(#expGrad)" strokeWidth={2} />
+              <Area type="monotone" dataKey="expenses" stroke={isDark ? '#FF64A0' : '#E07A5F'} fill="url(#expGrad)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -664,7 +674,7 @@ function HealthView({ habits, habitsCompleted, toggleHabit }) {
       <div className="grid-2" style={{ gap: 20, marginBottom: 20 }}>
         {/* Steps progress */}
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          <CircleProgress size={120} stroke={8} progress={Math.round(5201/8500*100)} color={isDark ? '#00D4FF' : '#2A4C7A'}>
+          <CircleProgress size={120} stroke={8} progress={Math.round(5201/8500*100)} color={isDark ? '#00D2FF' : '#2A4C7A'}>
             <div style={{ textAlign: 'center' }}>
               <div className="stat-number" style={{ fontSize: 22, color: 'var(--text)' }}>5,201</div>
               <div style={{ fontSize: 10, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>steps</div>
@@ -674,7 +684,7 @@ function HealthView({ habits, habitsCompleted, toggleHabit }) {
             <div style={{ fontSize: 18, fontWeight: 600, fontFamily: "'DM Serif Display', serif", color: 'var(--text)', marginBottom: 6 }}>Daily Steps</div>
             <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>61% of your 8,500 step goal</div>
             <div className="progress-bar" style={{ width: 200 }}>
-              <div className="progress-fill" style={{ width: '61%', background: isDark ? '#00D4FF' : '#2A4C7A' }} />
+              <div className="progress-fill" style={{ width: '61%', background: isDark ? '#00D2FF' : '#2A4C7A' }} />
             </div>
           </div>
         </div>
@@ -696,9 +706,9 @@ function HealthView({ habits, habitsCompleted, toggleHabit }) {
           <div className="section-label">Macros Today</div>
           <div style={{ display: 'flex', gap: 24, justifyContent: 'center' }}>
             {[
-              { label: 'Protein', current: 85, target: 120, color: isDark ? '#FF6B9D' : '#E07A5F' },
-              { label: 'Carbs', current: 145, target: 200, color: isDark ? '#00D4FF' : '#457B9D' },
-              { label: 'Fat', current: 52, target: 65, color: isDark ? '#FFD740' : '#E9C46A' },
+              { label: 'Protein', current: 85, target: 120, color: isDark ? '#FF64A0' : '#E07A5F' },
+              { label: 'Carbs', current: 145, target: 200, color: isDark ? '#00D2FF' : '#457B9D' },
+              { label: 'Fat', current: 52, target: 65, color: isDark ? '#FFC800' : '#E9C46A' },
             ].map(m => (
               <div key={m.label} style={{ textAlign: 'center' }}>
                 <CircleProgress size={72} stroke={5} progress={Math.round(m.current/m.target*100)} color={m.color}>
@@ -906,12 +916,21 @@ function RhythmView({ habits, habitsCompleted, toggleHabit }) {
                   <div style={{
                     height: 48, borderRadius: 12, marginBottom: 4,
                     background: weekAdherence[i] === 0 ? 'var(--skeleton)' :
-                      weekAdherence[i] >= 90 ? (isDark ? 'rgba(0,230,118,0.35)' : '#2D6A4F') :
-                      weekAdherence[i] >= 70 ? (isDark ? 'rgba(0,230,118,0.22)' : '#43A047') :
-                      weekAdherence[i] >= 50 ? (isDark ? 'rgba(255,215,64,0.25)' : '#E9C46A') :
-                      (isDark ? 'rgba(255,82,82,0.25)' : '#E07A5F'),
+                      weekAdherence[i] >= 80 ? (isDark ? 'rgba(0,230,118,0.2)' : '#2D6A4F') :
+                      weekAdherence[i] >= 60 ? (isDark ? 'rgba(255,200,0,0.2)' : '#43A047') :
+                      (isDark ? 'rgba(255,100,160,0.2)' : '#E07A5F'),
+                    border: isDark && weekAdherence[i] > 0 ? `1px solid ${
+                      weekAdherence[i] >= 80 ? 'rgba(0,230,118,0.3)' :
+                      weekAdherence[i] >= 60 ? 'rgba(255,200,0,0.3)' :
+                      'rgba(255,100,160,0.3)'
+                    }` : 'none',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 600, color: weekAdherence[i] >= 70 && !isDark ? '#FFFFFF' : 'var(--text)'
+                    fontSize: 11, fontWeight: 600,
+                    color: isDark ? (
+                      weekAdherence[i] >= 80 ? '#00E676' :
+                      weekAdherence[i] >= 60 ? '#FFC800' :
+                      weekAdherence[i] > 0 ? '#FF64A0' : 'var(--text)'
+                    ) : (weekAdherence[i] >= 60 ? '#FFFFFF' : 'var(--text)')
                   }}>
                     {weekAdherence[i] > 0 ? `${weekAdherence[i]}%` : '\u2014'}
                   </div>
@@ -932,9 +951,12 @@ function BusinessView() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
 
   const businesses = [
-    { name: 'Seraya Studio', tagline: 'Japandi stone furniture \u2014 Dubai to global', status: 'Active', color: '#C4A35A', emoji: '\uD83E\uDEA8', revenue: 'AED 4,200/mo', milestones: 3, totalMilestones: 8, statusBg: '#E8F5E4', statusText: '#2D6A4F' },
-    { name: 'SyncHer', tagline: 'Cycle-syncing wellness platform for women', status: 'Building', color: '#457B9D', emoji: '\uD83E\uDDEC', revenue: 'Pre-revenue', milestones: 2, totalMilestones: 7, statusBg: '#E0EEFB', statusText: '#457B9D' },
-    { name: 'Personal Brand', tagline: 'TikTok \u00B7 YouTube \u00B7 Instagram', status: 'Planning', color: '#E07A5F', emoji: '\uD83C\uDFAC', revenue: 'Pre-revenue', milestones: 0, totalMilestones: 6, statusBg: '#FDF6D8', statusText: '#B8941A' },
+    { name: 'Seraya Studio', tagline: 'Japandi stone furniture \u2014 Dubai to global', status: 'Active', color: isDark ? '#00E676' : '#C4A35A', emoji: '\uD83E\uDEA8', revenue: 'AED 4,200/mo', milestones: 3, totalMilestones: 8,
+      statusBg: isDark ? 'rgba(0,230,118,0.15)' : '#E8F5E4', statusText: isDark ? '#00E676' : '#2D6A4F', statusBorder: isDark ? 'rgba(0,230,118,0.3)' : 'transparent' },
+    { name: 'SyncHer', tagline: 'Cycle-syncing wellness platform for women', status: 'Building', color: isDark ? '#00D2FF' : '#457B9D', emoji: '\uD83E\uDDEC', revenue: 'Pre-revenue', milestones: 2, totalMilestones: 7,
+      statusBg: isDark ? 'rgba(0,210,255,0.15)' : '#E0EEFB', statusText: isDark ? '#00D2FF' : '#457B9D', statusBorder: isDark ? 'rgba(0,210,255,0.3)' : 'transparent' },
+    { name: 'Personal Brand', tagline: 'TikTok \u00B7 YouTube \u00B7 Instagram', status: 'Planning', color: isDark ? '#FFC800' : '#E07A5F', emoji: '\uD83C\uDFAC', revenue: 'Pre-revenue', milestones: 0, totalMilestones: 6,
+      statusBg: isDark ? 'rgba(255,200,0,0.15)' : '#FDF6D8', statusText: isDark ? '#FFC800' : '#B8941A', statusBorder: isDark ? 'rgba(255,200,0,0.3)' : 'transparent' },
   ];
 
   return (
@@ -949,7 +971,7 @@ function BusinessView() {
             <div style={{ padding: 28 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div style={{ fontSize: 28 }}>{b.emoji}</div>
-              <div className="pill" style={{ background: b.statusBg, color: b.statusText }}>{b.status}</div>
+              <div className="pill" style={{ background: b.statusBg, color: b.statusText, border: b.statusBorder !== 'transparent' ? `1px solid ${b.statusBorder}` : 'none' }}>{b.status}</div>
             </div>
             <div style={{ fontSize: 18, fontFamily: "'DM Serif Display', serif", fontWeight: 400, color: 'var(--text)', marginBottom: 4 }}>{b.name}</div>
             <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 16 }}>{b.tagline}</div>
@@ -1019,9 +1041,15 @@ function BusinessView() {
 function RelationshipsView({ contacts, markContacted }) {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
   const groups = [...new Set(contacts.map(c => c.group))];
-  const statusColors = { 'on-track': '#43A047', 'due-soon': '#F9A825', 'overdue': '#E53935' };
-  const avatarColors = ['#F5C6D0', '#C5E6C0', '#B8D4E8', '#D4C5F0', '#F5E6A3', '#F4C4A0'];
-  const avatarTextColors = ['#7A2840', '#1D5420', '#1A3C5A', '#3D2870', '#5A4A08', '#6A3A10'];
+  const statusColors = isDark
+    ? { 'on-track': '#00E676', 'due-soon': '#FFC800', 'overdue': '#EF4444' }
+    : { 'on-track': '#43A047', 'due-soon': '#F9A825', 'overdue': '#E53935' };
+  const avatarColors = isDark
+    ? ['rgba(0,210,255,0.2)', 'rgba(255,100,160,0.2)', 'rgba(0,230,118,0.2)', 'rgba(255,200,0,0.2)', 'rgba(168,85,247,0.2)', 'rgba(255,107,53,0.2)']
+    : ['#F5C6D0', '#C5E6C0', '#B8D4E8', '#D4C5F0', '#F5E6A3', '#F4C4A0'];
+  const avatarTextColors = isDark
+    ? ['#00D2FF', '#FF64A0', '#00E676', '#FFC800', '#A855F7', '#FF6B35']
+    : ['#7A2840', '#1D5420', '#1A3C5A', '#3D2870', '#5A4A08', '#6A3A10'];
 
   const sorted = [...contacts].sort((a, b) => {
     const order = { overdue: 0, 'due-soon': 1, 'on-track': 2 };
@@ -1042,7 +1070,7 @@ function RelationshipsView({ contacts, markContacted }) {
             <div key={g} className="card">
               <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{g}</div>
               <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 8 }}>{groupContacts.length} contacts</div>
-              {overdue > 0 && <div className="pill" style={{ background: isDark ? 'rgba(255,82,82,0.12)' : '#FDE8EE', color: '#E53935', fontSize: 11 }}>{overdue} overdue</div>}
+              {overdue > 0 && <div className="pill" style={{ background: isDark ? 'rgba(239,68,68,0.15)' : '#FDE8EE', color: isDark ? '#EF4444' : '#E53935', border: isDark ? '1px solid rgba(239,68,68,0.3)' : 'none', fontSize: 11 }}>{overdue} overdue</div>}
             </div>
           );
         })}
@@ -1064,7 +1092,7 @@ function RelationshipsView({ contacts, markContacted }) {
           const avatarIdx = ci % avatarColors.length;
           return (
             <div key={c.id} className="contact-row" style={{ borderBottom: '1px solid var(--border)' }}>
-              <div className="contact-avatar" style={{ background: isDark ? `${avatarColors[avatarIdx]}30` : avatarColors[avatarIdx], color: avatarTextColors[avatarIdx] }}>
+              <div className="contact-avatar" style={{ background: avatarColors[avatarIdx], color: avatarTextColors[avatarIdx] }}>
                 {c.name[0]}
               </div>
               <div style={{ flex: 1 }}>
@@ -1107,9 +1135,9 @@ function DevelopmentView() {
           <div className="section-label">Life Balance</div>
           <ResponsiveContainer width="100%" height={260}>
             <RadarChart data={DEV_GOALS}>
-              <PolarGrid stroke={isDark ? '#2A2A2A' : '#E8E4DF'} />
-              <PolarAngleAxis dataKey="area" tick={{ fontSize: 12, fill: isDark ? '#8A8A8A' : '#6B6B6B' }} />
-              <Radar dataKey="score" stroke={isDark ? '#00D4FF' : '#E8D44D'} fill={isDark ? '#00D4FF' : '#E8D44D'} fillOpacity={0.2} strokeWidth={2} />
+              <PolarGrid stroke={isDark ? '#222228' : '#E8E4DF'} />
+              <PolarAngleAxis dataKey="area" tick={{ fontSize: 12, fill: isDark ? '#78788A' : '#6B6B6B' }} />
+              <Radar dataKey="score" stroke={isDark ? '#00D2FF' : '#E8D44D'} fill={isDark ? '#00D2FF' : '#E8D44D'} fillOpacity={isDark ? 0.1 : 0.2} strokeWidth={2} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
@@ -1144,7 +1172,7 @@ function DevelopmentView() {
                 <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)' }}>{item.title}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{item.author} {'\u00B7'} {item.type}</div>
               </div>
-              {item.progress === 100 && <div className="pill" style={{ background: isDark ? 'rgba(0,230,118,0.1)' : 'rgba(76,175,80,0.1)', color: 'var(--success)', fontSize: 10 }}>Done</div>}
+              {item.progress === 100 && <div className="pill" style={{ background: isDark ? 'rgba(0,230,118,0.15)' : 'rgba(76,175,80,0.1)', color: 'var(--success)', border: isDark ? '1px solid rgba(0,230,118,0.3)' : 'none', fontSize: 10 }}>Done</div>}
             </div>
           ))}
         </div>
@@ -1202,7 +1230,7 @@ function ContentCalendarView() {
                   <div className={`pill ${platformBadges[item.platform] || ''}`} style={{ fontSize: 10, padding: '3px 10px' }}>
                     {item.platform}
                   </div>
-                  {item.priority === 'high' && <Star size={14} style={{ color: isDark ? '#FFD740' : '#FF9800' }} />}
+                  {item.priority === 'high' && <Star size={14} style={{ color: isDark ? '#FFC800' : '#FF9800' }} />}
                 </div>
                 <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', lineHeight: 1.4 }}>{item.title}</div>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>{item.pillar}</div>
@@ -1316,7 +1344,7 @@ function ContentStrategyView() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {CONTENT_IDEAS.map(idea => (
             <div key={idea.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderRadius: 12, background: 'var(--skeleton)' }}>
-              {idea.priority === 'high' && <Star size={14} style={{ color: isDark ? '#FFD740' : '#FF9800', flexShrink: 0 }} />}
+              {idea.priority === 'high' && <Star size={14} style={{ color: isDark ? '#FFC800' : '#FF9800', flexShrink: 0 }} />}
               {idea.priority === 'medium' && <Star size={14} style={{ color: 'var(--text-tertiary)', flexShrink: 0 }} />}
               {idea.priority === 'low' && <div style={{ width: 14 }} />}
               <div style={{ flex: 1 }}>

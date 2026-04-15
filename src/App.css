@@ -1,59 +1,59 @@
 /* ============================================
-   LIGHT THEME — Warm editorial, Intelly-inspired
+   LIGHT THEME — Intelly-inspired warm pastels
    ============================================ */
 :root {
-  --bg: #F8F4EE;
-  --bg-secondary: #F0EBE3;
+  --bg: #F2ECDD;
+  --bg-secondary: #EBE5D5;
   --card: #FFFFFF;
   --card-hover: #FEFEFE;
   --card-border: transparent;
-  --card-shadow: 0 1px 4px rgba(0,0,0,0.04), 0 2px 12px rgba(0,0,0,0.04);
-  --card-shadow-hover: 0 4px 20px rgba(0,0,0,0.08);
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  --card-shadow-hover: 0 4px 16px rgba(0,0,0,0.06);
   --sidebar-bg: #1A1A1A;
-  --sidebar-text: #888888;
+  --sidebar-text: #7A7A7A;
   --sidebar-text-active: #FFFFFF;
-  --sidebar-accent: #C4A24D;
-  --sidebar-hover: rgba(255,255,255,0.04);
-  --sidebar-active: rgba(196,162,77,0.15);
-  --sidebar-active-border: #C4A24D;
+  --sidebar-accent: #E85880;
+  --sidebar-hover: rgba(255,255,255,0.06);
+  --sidebar-active: rgba(255,255,255,0.10);
+  --sidebar-active-border: transparent;
   --text: #1A1A1A;
-  --text-secondary: #5C5C5C;
+  --text-secondary: #6B6B6B;
   --text-tertiary: #9A9A9A;
-  --accent: #C4A24D;
-  --accent-soft: rgba(196,162,77,0.12);
-  --border: #DDD8D0;
-  --input-bg: #F5F0E8;
-  --input-border: #DDD8D0;
-  --input-focus: rgba(196,162,77,0.5);
-  --scrollbar-thumb: rgba(0,0,0,0.1);
+  --accent: #1A1A1A;
+  --accent-soft: rgba(0,0,0,0.06);
+  --border: #E2DDD0;
+  --input-bg: #EBE5D8;
+  --input-border: #DDD8CA;
+  --input-focus: rgba(0,0,0,0.15);
+  --scrollbar-thumb: rgba(0,0,0,0.08);
   --success: #3D7A47;
   --danger: #C45042;
   --warning: #C4A24D;
-  --panel-bg: #FAF5ED;
-  --panel-border: #DDD8D0;
+  --panel-bg: #EDE7D8;
+  --panel-border: #E2DDD0;
   --skeleton: rgba(0,0,0,0.04);
-  /* Stat card fills — Intelly-matched */
-  --card-yellow: #F5EDCE;
-  --card-yellow-border: #E8D99E;
-  --card-yellow-text: #4A3D06;
-  --card-pink: #F9DDE5;
-  --card-pink-border: #F0C4D0;
-  --card-pink-text: #6B2038;
-  --card-green: #D4E8CE;
-  --card-green-border: #B8D5AE;
+  /* Stat card fills — exact Intelly pastels */
+  --card-yellow: #E8DDA0;
+  --card-yellow-border: #D8CC88;
+  --card-yellow-text: #3A3508;
+  --card-pink: #F5C2D0;
+  --card-pink-border: #E8A8B8;
+  --card-pink-text: #5C1830;
+  --card-green: #D0E8C5;
+  --card-green-border: #B8D8A8;
   --card-green-text: #1A4A1E;
-  --card-lavender: #DDD5F0;
-  --card-lavender-border: #C8BDE0;
-  --card-lavender-text: #352060;
-  --card-peach: #F0D4B8;
-  --card-peach-text: #6A3A10;
-  --card-blue: #B8D9D6;
+  --card-lavender: #D8CCE8;
+  --card-lavender-border: #C4B5D8;
+  --card-lavender-text: #2E1A55;
+  --card-peach: #F0C8A0;
+  --card-peach-text: #5A3010;
+  --card-blue: #A0CCC8;
   --card-blue-text: #1A3C5A;
-  /* Tinted card backgrounds for variety */
-  --card-tint-yellow: #FBF5E0;
-  --card-tint-pink: #FDF0F3;
-  --card-tint-lavender: #F3F0FA;
-  --card-tint-green: #F0F7EE;
+  /* Tinted card backgrounds */
+  --card-tint-yellow: #F5EDD0;
+  --card-tint-pink: #FADDE6;
+  --card-tint-lavender: #E8E0F5;
+  --card-tint-green: #D8ECD2;
 }
 
 /* ============================================
@@ -116,7 +116,7 @@
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -132,12 +132,12 @@ body {
 .font-mono { font-family: 'JetBrains Mono', monospace; }
 
 .page-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 34px;
+  font-family: 'DM Serif Display', 'Playfair Display', serif;
+  font-size: 32px;
   font-weight: 400;
   color: var(--text);
   margin-bottom: 6px;
-  line-height: 1.15;
+  line-height: 1.2;
   letter-spacing: -0.01em;
 }
 
@@ -150,7 +150,7 @@ body {
 }
 
 .section-label {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.10em;
@@ -167,7 +167,7 @@ body {
 }
 
 /* ===== LAYOUT ===== */
-.app-shell { display: flex; height: 100vh; overflow: hidden; }
+.app-shell { display: flex; height: 100vh; overflow: hidden; padding: 12px; gap: 0; background: var(--bg); }
 
 .sidebar {
   width: 260px;
@@ -179,6 +179,7 @@ body {
   overflow-y: auto;
   transition: width 0.3s ease, background 0.3s ease;
   z-index: 10;
+  border-radius: 24px;
 }
 
 .sidebar.collapsed {
@@ -204,12 +205,13 @@ body {
 }
 
 [data-theme="dark"] .sidebar {
-  border-right: 1px solid #12121A;
+  border-right: none;
 }
 
 .sidebar-logo h1 {
   font-family: 'Playfair Display', serif;
   font-size: 22px;
+  font-style: italic;
   color: #F5F0EB;
   letter-spacing: 0.02em;
 }
@@ -250,30 +252,28 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
   width: 100%;
   text-align: left;
   background: none;
   border: none;
-  border-left: 3px solid transparent;
   cursor: pointer;
   transition: all 0.15s ease;
   color: var(--sidebar-text);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 14px;
   position: relative;
   margin-bottom: 2px;
 }
 
-.nav-btn:hover { background: rgba(255,255,255,0.04); color: var(--sidebar-text-active); }
+.nav-btn:hover { background: rgba(255,255,255,0.06); color: var(--sidebar-text-active); }
 [data-theme="dark"] .nav-btn:hover { color: #8888A0; }
 
 .nav-btn.active {
-  background: var(--sidebar-active);
+  background: rgba(255,255,255,0.10);
   color: var(--sidebar-text-active);
   font-weight: 600;
-  border-left-color: var(--sidebar-active-border);
 }
 
 [data-theme="dark"] .nav-btn.active {
@@ -342,7 +342,7 @@ body {
   transition: all 0.15s;
   font-size: 12px;
   color: rgba(255,255,255,0.45);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .theme-toggle:hover { background: rgba(255,255,255,0.08); }
@@ -357,7 +357,7 @@ body {
 .card {
   background: var(--card);
   border: none;
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 28px;
   box-shadow: var(--card-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -373,45 +373,45 @@ body {
 }
 
 .card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-1px);
   box-shadow: var(--card-shadow-hover);
 }
 
 /* Stat cards — BOLD pastel fills in light, gradient+glow in dark */
 .stat-card {
-  border-radius: 24px;
-  padding: 28px 30px;
+  border-radius: 28px;
+  padding: 26px 28px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   box-shadow: none;
-  min-height: 140px;
+  position: relative;
+  overflow: hidden;
 }
 
-.stat-card { position: relative; overflow: hidden; }
-.stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
 
 .stat-card-deco {
   position: absolute;
-  right: -4px;
-  bottom: -8px;
-  opacity: 0.25;
+  right: 8px;
+  bottom: 4px;
+  opacity: 0.35;
   pointer-events: none;
 }
 
-[data-theme="dark"] .stat-card-deco { opacity: 0.12; }
+[data-theme="dark"] .stat-card-deco { opacity: 0.15; }
 
 [data-theme="dark"] .stat-card {
   box-shadow: none;
 }
 
 .stat-card .stat-label {
-  font-family: 'Playfair Display', serif;
-  font-size: 20px;
-  font-weight: 500;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
   color: var(--text);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .stat-card .stat-value {
@@ -433,7 +433,7 @@ body {
   gap: 4px;
 }
 
-/* Light mode pastel classes — Intelly style with subtle borders */
+/* Light mode pastel classes — Intelly style with thin colored borders */
 .stat-yellow { background: var(--card-yellow); color: var(--card-yellow-text); border: 1.5px solid var(--card-yellow-border); }
 .stat-yellow .stat-label, .stat-yellow .stat-value, .stat-yellow .stat-change { color: var(--card-yellow-text); }
 
@@ -446,10 +446,10 @@ body {
 .stat-lavender { background: var(--card-lavender); color: var(--card-lavender-text); border: 1.5px solid var(--card-lavender-border); }
 .stat-lavender .stat-label, .stat-lavender .stat-value, .stat-lavender .stat-change { color: var(--card-lavender-text); }
 
-.stat-peach { background: var(--card-peach); color: var(--card-peach-text); }
+.stat-peach { background: var(--card-peach); color: var(--card-peach-text); border: 1.5px solid var(--card-peach-border, transparent); }
 .stat-peach .stat-label, .stat-peach .stat-value, .stat-peach .stat-change { color: var(--card-peach-text); }
 
-.stat-blue { background: var(--card-blue); color: var(--card-blue-text); }
+.stat-blue { background: var(--card-blue); color: var(--card-blue-text); border: 1.5px solid var(--card-blue-border, transparent); }
 .stat-blue .stat-label, .stat-blue .stat-value, .stat-blue .stat-change { color: var(--card-blue-text); }
 
 /* Dark mode gradient stat cards — neon glow aesthetic */
@@ -525,8 +525,9 @@ body {
 
 @media (max-width: 768px) {
   .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-  .sidebar { width: 72px; padding: 24px 8px; }
+  .sidebar { width: 72px; padding: 24px 8px; border-radius: 20px; }
   .main-content { padding: 20px 16px; }
+  .app-shell { padding: 8px; }
 }
 
 /* ===== INPUTS ===== */
@@ -536,7 +537,7 @@ body {
   border-radius: 14px;
   color: var(--text);
   padding: 14px 18px;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 13px;
   width: 100%;
   resize: none;
@@ -558,7 +559,7 @@ textarea.input { min-height: 44px; }
   border-radius: 12px;
   border: none;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 13px;
   font-weight: 500;
   transition: all 0.15s ease;
@@ -602,7 +603,7 @@ textarea.input { min-height: 44px; }
   cursor: pointer;
   transition: background 0.15s;
   text-align: left;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .habit-btn:hover { background: var(--skeleton); }
@@ -986,12 +987,13 @@ textarea.input { min-height: 44px; }
 }
 
 .cal-header-month {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #C45068;
   background: #FDDFE6;
-  padding: 8px 20px;
+  padding: 8px 22px;
   border-radius: 24px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 [data-theme="dark"] .cal-header-month {
@@ -1075,7 +1077,7 @@ textarea.input { min-height: 44px; }
   color: var(--card);
   border: none;
   cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 13px;
   font-weight: 500;
   transition: opacity 0.15s;
@@ -1111,9 +1113,9 @@ textarea.input { min-height: 44px; }
 
 /* Schedule timeline in right panel */
 .rp-schedule-date {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  font-weight: 500;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
   color: var(--text);
   margin-bottom: 8px;
 }
@@ -1141,7 +1143,7 @@ textarea.input { min-height: 44px; }
 }
 
 .stat-sub-item .stat-sub-value {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: var(--text);

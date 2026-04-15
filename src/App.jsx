@@ -445,7 +445,7 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
         </div>
 
         {/* 2x2 Stat cards — Intelly layout */}
-        <div className="grid-2 animate-in" style={{ marginBottom: 8 }}>
+        <div className="grid-2 animate-in" style={{ marginBottom: 6, gap: 14 }}>
           <div className="stat-card stat-yellow">
             <div className="stat-label">Habits Today:</div>
             <div className="stat-sub-row">
@@ -463,12 +463,14 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
               </div>
             </div>
             {/* Decorative bar chart */}
-            <svg className="stat-card-deco" width="80" height="70" viewBox="0 0 80 70">
-              <rect x="4" y="30" width="10" height="40" rx="3" fill="currentColor" />
-              <rect x="18" y="15" width="10" height="55" rx="3" fill="currentColor" />
-              <rect x="32" y="40" width="10" height="30" rx="3" fill="currentColor" />
-              <rect x="46" y="8" width="10" height="62" rx="3" fill="currentColor" />
-              <rect x="60" y="22" width="10" height="48" rx="3" fill="currentColor" />
+            <svg className="stat-card-deco" width="120" height="90" viewBox="0 0 120 90">
+              <rect x="4" y="50" width="12" height="35" rx="3" fill="currentColor" />
+              <rect x="20" y="30" width="12" height="55" rx="3" fill="currentColor" />
+              <rect x="36" y="55" width="12" height="30" rx="3" fill="currentColor" />
+              <rect x="52" y="15" width="12" height="70" rx="3" fill="currentColor" />
+              <rect x="68" y="38" width="12" height="47" rx="3" fill="currentColor" />
+              <rect x="84" y="22" width="12" height="63" rx="3" fill="currentColor" />
+              <rect x="100" y="45" width="12" height="40" rx="3" fill="currentColor" />
             </svg>
           </div>
           <div className="stat-card stat-pink">
@@ -483,14 +485,15 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
                 <div className="stat-sub-label">of {ANNA.cycleLength}</div>
               </div>
             </div>
-            {/* Decorative line chart */}
-            <svg className="stat-card-deco" width="100" height="60" viewBox="0 0 100 60">
-              <path d="M5 45 Q20 20 35 30 Q50 40 65 15 Q80 5 95 25" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-              <circle cx="65" cy="15" r="4" fill="currentColor" />
+            {/* Decorative line chart + pink blob */}
+            <svg className="stat-card-deco" width="140" height="100" viewBox="0 0 140 100">
+              <ellipse cx="100" cy="55" rx="40" ry="40" fill="currentColor" opacity="0.3" />
+              <path d="M5 65 Q25 30 45 45 Q65 60 85 25 Q105 8 130 35" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              <circle cx="85" cy="25" r="5" fill="currentColor" />
             </svg>
           </div>
         </div>
-        <div className="grid-2 animate-in animate-in-delay-1" style={{ marginBottom: 28 }}>
+        <div className="grid-2 animate-in animate-in-delay-1" style={{ marginBottom: 20, gap: 14 }}>
           <div className="stat-card stat-green">
             <div className="stat-label">Balance:</div>
             <div className="stat-sub-row">
@@ -507,10 +510,10 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
                 <div className="stat-sub-label">This Month</div>
               </div>
             </div>
-            {/* Decorative abstract blob */}
-            <svg className="stat-card-deco" width="80" height="70" viewBox="0 0 80 70">
-              <ellipse cx="45" cy="40" rx="32" ry="28" fill="currentColor" />
-              <ellipse cx="30" cy="30" rx="20" ry="22" fill="currentColor" opacity="0.5" />
+            {/* Decorative abstract shape */}
+            <svg className="stat-card-deco" width="120" height="90" viewBox="0 0 120 90">
+              <ellipse cx="70" cy="50" rx="45" ry="38" fill="currentColor" opacity="0.4" />
+              <ellipse cx="45" cy="35" rx="28" ry="30" fill="currentColor" opacity="0.25" />
             </svg>
           </div>
           <div className="stat-card stat-lavender">
@@ -530,9 +533,9 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
               </div>
             </div>
             {/* Decorative abstract blob */}
-            <svg className="stat-card-deco" width="90" height="70" viewBox="0 0 90 70">
-              <circle cx="50" cy="38" r="28" fill="currentColor" />
-              <circle cx="35" cy="28" r="18" fill="currentColor" opacity="0.5" />
+            <svg className="stat-card-deco" width="120" height="90" viewBox="0 0 120 90">
+              <circle cx="70" cy="48" r="38" fill="currentColor" opacity="0.35" />
+              <circle cx="48" cy="32" r="24" fill="currentColor" opacity="0.2" />
             </svg>
           </div>
         </div>
@@ -540,7 +543,7 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
         {/* Two-column below: Habits + Intention/Transactions */}
         <div className="grid-2" style={{ gap: 20 }}>
           {/* Habits checklist */}
-          <div className="card card-tint-yellow animate-in animate-in-delay-2">
+          <div className="card animate-in animate-in-delay-2">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <div className="section-label" style={{ marginBottom: 0 }}>Today's Habits</div>
               <div className="stat-number" style={{ fontSize: 13, color: 'var(--accent)' }}>{habitsCompleted}/{HABITS.length}</div>
@@ -590,7 +593,7 @@ function HomeView({ cycle, cycleDay, habits, habitsCompleted, toggleHabit, inten
 
             {/* Reach Out */}
             {overdue.length > 0 && (
-              <div className="card card-tint-pink animate-in animate-in-delay-3">
+              <div className="card animate-in animate-in-delay-3">
                 <div className="section-label" style={{ color: 'var(--danger)' }}>Reach Out To</div>
                 {overdue.slice(0, 3).map(c => (
                   <div key={c.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>

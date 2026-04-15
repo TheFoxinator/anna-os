@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
+import './App.css';
 
-const ANNA = {
-  lastPeriod: "2026-03-17",
-  cycleLength: 29,
-};
+/* ===== DATA ===== */
+
+const ANNA = { lastPeriod: "2026-03-17", cycleLength: 29 };
 
 const getDayOfCycle = () => {
   const start = new Date(ANNA.lastPeriod);
@@ -14,10 +14,10 @@ const getDayOfCycle = () => {
 
 const getCyclePhase = (day) => {
   const d = ((day - 1) % ANNA.cycleLength) + 1;
-  if (d <= 5) return { phase: "Menstrual", moon: "\u{1F311}", color: "#9b7fa8", bg: "rgba(155,127,168,0.1)", energy: "Inward & restorative", guidance: "Rest without guilt. Reflect. No output pressure.", schedule: "Minimum viable work. More rest blocks. No forcing." };
-  if (d <= 13) return { phase: "Follicular", moon: "\u{1F312}", color: "#7fa88a", bg: "rgba(127,168,138,0.1)", energy: "Rising & sharp", guidance: "Start new things. Build. Think strategically.", schedule: "Maximum deep work. Begin new SyncHer modules. Strategy." };
-  if (d <= 17) return { phase: "Ovulatory", moon: "\u{1F315}", color: "#c4a46b", bg: "rgba(196,164,107,0.12)", energy: "Peak & magnetic", guidance: "Be seen. Film everything. Connect and pitch.", schedule: "Film TikToks + YouTube. All calls + collaborations." };
-  return { phase: "Luteal", moon: "\u{1F317}", color: "#a48b6b", bg: "rgba(164,139,107,0.1)", energy: "Focused & finishing", guidance: "Complete, edit, wrap up. Protect your energy.", schedule: "Admin, editing, Seraya tasks. Wind down early." };
+  if (d <= 5) return { phase: "Menstrual", moon: "\u{1F311}", color: "#9b7fa8", energy: "Inward & restorative", guidance: "Rest without guilt. Reflect. No output pressure.", schedule: "Minimum viable work. More rest blocks. No forcing.", pastel: "var(--pastel-purple)" };
+  if (d <= 13) return { phase: "Follicular", moon: "\u{1F312}", color: "#7fa88a", energy: "Rising & sharp", guidance: "Start new things. Build. Think strategically.", schedule: "Maximum deep work. Begin new SyncHer modules. Strategy.", pastel: "var(--pastel-green)" };
+  if (d <= 17) return { phase: "Ovulatory", moon: "\u{1F315}", color: "#c4a46b", energy: "Peak & magnetic", guidance: "Be seen. Film everything. Connect and pitch.", schedule: "Film TikToks + YouTube. All calls + collaborations.", pastel: "var(--pastel-yellow)" };
+  return { phase: "Luteal", moon: "\u{1F317}", color: "#a48b6b", energy: "Focused & finishing", guidance: "Complete, edit, wrap up. Protect your energy.", schedule: "Admin, editing, Seraya tasks. Wind down early.", pastel: "var(--pastel-yellow)" };
 };
 
 const formatDate = () => new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
@@ -140,82 +140,111 @@ const PILLARS = [
   { id: 'structure', emoji: '\u{1F5D3}\uFE0F', name: 'Structure & Rhythm', color: '#8a9fbf', desc: 'No more chaos. Channel the power.', actions: ['Morning practice before phone', 'Transition rituals between blocks', 'Protected evenings \u2014 no electronics', 'Sunday weekly reset'], note: 'Fix: reactive all day + lost transition time \u2192 clear blocks + 10-min transition rituals.' },
 ];
 
-const CSS = `@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap'); *{box-sizing:border-box;margin:0;padding:0} body{background:#0a0906} ::-webkit-scrollbar{width:3px} ::-webkit-scrollbar-thumb{background:rgba(196,164,107,0.2);border-radius:2px} .nb{background:none;border:none;cursor:pointer;transition:all 0.18s} .nav-item{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:8px;width:100%;text-align:left} .nav-item:hover{background:rgba(196,164,107,0.07)} .nav-item.active{background:rgba(196,164,107,0.11)} .card{background:rgba(255,255,255,0.028);border:1px solid rgba(196,164,107,0.11);border-radius:12px;padding:18px} .hb{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:7px;width:100%;background:none;border:none;cursor:pointer;transition:background 0.15s;text-align:left} .hb:hover{background:rgba(255,255,255,0.03)} .chk{width:19px;height:19px;border-radius:4px;border:1.5px solid rgba(196,164,107,0.28);display:flex;align-items:center;justify-content:center;transition:all 0.18s;flex-shrink:0} .chk.on{background:#c4a46b;border-color:#c4a46b} .inp{background:rgba(255,255,255,0.04);border:1px solid rgba(196,164,107,0.14);border-radius:8px;color:#e8dcc8;padding:9px 13px;font-family:'DM Sans',sans-serif;font-size:12px;width:100%;resize:none;outline:none;transition:border-color 0.2s} .inp:focus{border-color:rgba(196,164,107,0.35)} .bar{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden} .fill{height:100%;border-radius:2px;transition:width 0.5s ease} .tag{font-size:10px;letter-spacing:0.09em;margin-bottom:11px} .label{font-size:10px;color:#8a7d6a;margin-bottom:3px} .pill{padding:8px 10px;background:rgba(255,255,255,0.03);border-radius:7px} .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px} .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px} textarea.inp{min-height:48px}`;
+const DAILY_RHYTHM = [
+  { t: '5\u20136 AM', l: 'Wake & Stillness', d: 'No phone. Water. Arrive slowly.', c: '#9b7fa8' },
+  { t: '6\u20137 AM', l: 'Morning Practice', d: 'Meditation, movement, altar', c: '#c4a46b' },
+  { t: '7\u20139:30', l: 'Deep Work I', d: 'Peak energy \u2014 SyncHer, strategy', c: '#bf8a8a' },
+  { t: '9:45\u201312', l: 'Deep Work II', d: 'Seraya Studio, calls, build', c: '#bf8a8a' },
+  { t: '12\u20131:30', l: 'Lunch & Rest', d: 'No screens. Legs up the wall.', c: '#7fa88a' },
+  { t: '1:30\u20133:30', l: 'Light Work', d: 'Email, admin, research', c: '#8a9fbf' },
+  { t: '3:45\u20135:30', l: 'Creative / Body', d: 'Content, movement, play', c: '#7fa88a' },
+  { t: '7:30 PM+', l: 'Protected Evening', d: 'No electronics. Reading. Rest.', c: '#9b7fa8' },
+];
 
-function loadFromStorage(key) {
-  try {
-    return localStorage.getItem(key);
-  } catch (e) {
-    return null;
-  }
+const DEFAULT_FINANCE = {
+  accounts: [
+    { id: 'wise_eur', name: 'Wise EUR', balance: 4250.00, currency: 'EUR', icon: '\u{1F4B6}', color: '#00B3A4' },
+    { id: 'wise_usd', name: 'Wise USD', balance: 1820.50, currency: 'USD', icon: '\u{1F4B5}', color: '#6B4FBB' },
+    { id: 'wio', name: 'Wio Business', balance: 12500.00, currency: 'AED', icon: '\u{1F3E6}', color: '#C4A46B' },
+  ],
+  transactions: [
+    { id: 't1', label: 'Seraya supplier payment', amount: -3200, currency: 'AED', date: 'Apr 14', cat: 'business', icon: '\u{1FAA8}' },
+    { id: 't2', label: 'Freelance income', amount: 1500, currency: 'EUR', date: 'Apr 13', cat: 'income', icon: '\u{1F4B0}' },
+    { id: 't3', label: 'Wise transfer', amount: -500, currency: 'EUR', date: 'Apr 12', cat: 'transfer', icon: '\u{1F4B3}' },
+    { id: 't4', label: 'Gym membership', amount: -89, currency: 'AED', date: 'Apr 10', cat: 'health', icon: '\u{1F4AA}' },
+    { id: 't5', label: 'Domain renewal', amount: -24, currency: 'USD', date: 'Apr 9', cat: 'business', icon: '\u{1F310}' },
+  ],
+};
+
+const CALENDAR_EVENTS = [
+  { time: '06:00', name: 'Morning Practice', detail: 'Meditation + movement', color: '#c4a46b' },
+  { time: '09:00', name: 'SyncHer deep work', detail: 'Landing page copy', color: '#8a9fbf' },
+  { time: '11:00', name: 'Seraya call', detail: 'Supplier follow-up', color: '#c4a46b' },
+  { time: '15:00', name: 'Content block', detail: 'Film + edit', color: '#bf8a8a' },
+];
+
+/* ===== HELPERS ===== */
+
+function load(key) {
+  try { return localStorage.getItem(key); } catch { return null; }
 }
 
-function saveToStorage(key, value) {
-  try {
-    localStorage.setItem(key, value);
-  } catch (e) {
-    // silently fail
-  }
+function save(key, val) {
+  try { localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val)); } catch {}
 }
+
+function getCalendarDays(year, month) {
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  const startDay = (first.getDay() + 6) % 7; // Monday = 0
+  const days = [];
+  // Previous month fill
+  const prevLast = new Date(year, month, 0).getDate();
+  for (let i = startDay - 1; i >= 0; i--) days.push({ d: prevLast - i, current: false });
+  // Current month
+  for (let i = 1; i <= last.getDate(); i++) days.push({ d: i, current: true });
+  // Next month fill
+  const remaining = 42 - days.length;
+  for (let i = 1; i <= remaining; i++) days.push({ d: i, current: false });
+  return days;
+}
+
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+/* ===== MAIN APP ===== */
 
 export default function AnnaOS() {
   const [view, setView] = useState('today');
+  const [theme, setTheme] = useState(() => load('anna:theme') || 'light');
+  const [calOpen, setCalOpen] = useState(true);
   const [habits, setHabits] = useState({});
   const [dubai, setDubai] = useState({});
   const [projects, setProjects] = useState(DEFAULT_PROJECTS);
   const [weekNotes, setWeekNotes] = useState({});
   const [intention, setIntention] = useState('');
+  const [finance, setFinance] = useState(DEFAULT_FINANCE);
   const [loaded, setLoaded] = useState(false);
 
   const dateKey = new Date().toISOString().split('T')[0];
   const cycleDay = getDayOfCycle();
   const cycle = getCyclePhase(cycleDay);
 
+  // Apply theme to document
   useEffect(() => {
-    const loadState = () => {
-      try {
-        const habitsData = loadFromStorage(`anna:habits:${dateKey}`);
-        if (habitsData) setHabits(JSON.parse(habitsData));
-      } catch (e) {}
+    document.documentElement.setAttribute('data-theme', theme);
+    save('anna:theme', theme);
+  }, [theme]);
 
-      try {
-        const dubaiData = loadFromStorage('anna:dubai');
-        if (dubaiData) setDubai(JSON.parse(dubaiData));
-      } catch (e) {}
-
-      try {
-        const weekData = loadFromStorage('anna:weeknotes');
-        if (weekData) setWeekNotes(JSON.parse(weekData));
-      } catch (e) {}
-
-      try {
-        const intentionData = loadFromStorage(`anna:intention:${dateKey}`);
-        if (intentionData) setIntention(intentionData);
-      } catch (e) {}
-
-      try {
-        const projectsData = loadFromStorage('anna:projects');
-        if (projectsData) {
-          const saved = JSON.parse(projectsData);
-          setProjects(prev => prev.map(p => {
-            const sp = saved.find(s => s.id === p.id);
-            if (!sp) return p;
-            return { ...p, milestones: p.milestones.map(m => { const sm = sp.milestones?.find(x => x.id === m.id); return sm ? { ...m, done: sm.done } : m; }) };
-          }));
-        }
-      } catch (e) {}
-
-      setLoaded(true);
-    };
-
-    loadState();
-  }, []);
-
-  const save = (key, val) => {
+  // Load persisted data
+  useEffect(() => {
+    try { const d = load(`anna:habits:${dateKey}`); if (d) setHabits(JSON.parse(d)); } catch {}
+    try { const d = load('anna:dubai'); if (d) setDubai(JSON.parse(d)); } catch {}
+    try { const d = load('anna:weeknotes'); if (d) setWeekNotes(JSON.parse(d)); } catch {}
+    try { const d = load(`anna:intention:${dateKey}`); if (d) setIntention(d); } catch {}
     try {
-      saveToStorage(key, typeof val === 'string' ? val : JSON.stringify(val));
-    } catch (e) {}
-  };
+      const d = load('anna:projects');
+      if (d) {
+        const saved = JSON.parse(d);
+        setProjects(prev => prev.map(p => {
+          const sp = saved.find(s => s.id === p.id);
+          if (!sp) return p;
+          return { ...p, milestones: p.milestones.map(m => { const sm = sp.milestones?.find(x => x.id === m.id); return sm ? { ...m, done: sm.done } : m; }) };
+        }));
+      }
+    } catch {}
+    try { const d = load('anna:finance'); if (d) setFinance(JSON.parse(d)); } catch {}
+    setLoaded(true);
+  }, []);
 
   const toggleHabit = (id) => { const n = { ...habits, [id]: !habits[id] }; setHabits(n); save(`anna:habits:${dateKey}`, n); };
   const toggleDubai = (id) => { const n = { ...dubai, [id]: !dubai[id] }; setDubai(n); save('anna:dubai', n); };
@@ -229,134 +258,203 @@ export default function AnnaOS() {
 
   const NAV = [
     { id: 'today', label: 'Today', icon: '\u25C9' },
-    { id: 'week', label: 'Week', icon: '\u2B1C' },
+    { id: 'week', label: 'Week', icon: '\u25A1' },
     { id: 'habits', label: 'Habits', icon: '\u25C8' },
     { id: 'projects', label: 'Projects', icon: '\u25EB' },
+    { id: 'finance', label: 'Finance', icon: '\u{1F4B0}' },
     { id: 'pillars', label: 'Pillars', icon: '\u25E7' },
     { id: 'checklist', label: 'Dubai Exit', icon: '\u2713' },
     { id: 'profile', label: 'Profile', icon: '\u25CE' },
   ];
 
-  const S = {
-    root: { display: 'flex', height: '100vh', background: '#0a0906', color: '#e8dcc8', fontFamily: "'DM Sans', sans-serif", overflow: 'hidden', position: 'relative' },
-    sidebar: { width: '176px', flexShrink: 0, borderRight: '1px solid rgba(196,164,107,0.09)', padding: '22px 10px', display: 'flex', flexDirection: 'column', gap: '3px' },
-    main: { flex: 1, overflow: 'auto', padding: '28px 30px' },
-    logo: { padding: '0 4px 18px', borderBottom: '1px solid rgba(196,164,107,0.09)', marginBottom: '10px' },
-    logoText: { fontFamily: "'Cormorant Garamond', serif", fontSize: '17px', color: '#c4a46b', letterSpacing: '0.05em' },
-    logoSub: { fontSize: '9px', color: '#8a7d6a', marginTop: '2px', letterSpacing: '0.12em' },
-    cycleWidget: { marginTop: 'auto', padding: '11px', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: `1px solid ${cycle.color}20`, textAlign: 'center' },
-    pageTitle: { fontFamily: "'Cormorant Garamond', serif", fontSize: '28px', fontWeight: 300, color: '#e8dcc8', marginBottom: '6px' },
-    pageSub: { fontSize: '11px', color: '#8a7d6a', marginBottom: '22px' },
-  };
+  if (!loaded) return <div className="loading-screen">ANNA OS</div>;
 
-  if (!loaded) return <div style={{ ...S.root, alignItems: 'center', justifyContent: 'center', fontFamily: "'Cormorant Garamond', serif", color: '#c4a46b', letterSpacing: '0.2em', fontSize: '13px' }}>ANNA OS</div>;
+  return (
+    <div className="app-shell">
+      {/* Sidebar */}
+      <nav className="sidebar">
+        <div className="sidebar-logo">
+          <h1>Anna OS</h1>
+          <span>2026 FOUNDATIONS</span>
+        </div>
+
+        <div className="nav-section-label">Overview</div>
+        {NAV.slice(0, 4).map(n => (
+          <button key={n.id} className={`nav-btn ${view === n.id ? 'active' : ''}`} onClick={() => setView(n.id)}>
+            <span className="nav-icon">{n.icon}</span>
+            <span>{n.label}</span>
+          </button>
+        ))}
+
+        <div className="nav-section-label">Manage</div>
+        {NAV.slice(4).map(n => (
+          <button key={n.id} className={`nav-btn ${view === n.id ? 'active' : ''}`} onClick={() => setView(n.id)}>
+            <span className="nav-icon">{n.icon}</span>
+            <span>{n.label}</span>
+          </button>
+        ))}
+
+        <div className="sidebar-bottom">
+          <div className="cycle-badge" style={{ borderColor: `${cycle.color}30` }}>
+            <div className="moon">{cycle.moon}</div>
+            <div className="phase-name" style={{ color: cycle.color }}>{cycle.phase.toUpperCase()}</div>
+            <div className="day-num">Day {cycleDay}</div>
+          </div>
+          <button className="theme-toggle" onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}>
+            {theme === 'dark' ? '\u2600\uFE0F' : '\u{1F319}'} {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          </button>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="main-content">
+        {view === 'today' && <TodayView {...{ cycle, cycleDay, intention, saveIntention, habits, toggleHabit }} />}
+        {view === 'week' && <WeekView {...{ weekNotes, saveWeekNote, cycleDay, cycle }} />}
+        {view === 'habits' && <HabitsView {...{ habits, toggleHabit }} />}
+        {view === 'projects' && <ProjectsView {...{ projects, toggleMilestone }} />}
+        {view === 'finance' && <FinanceView finance={finance} />}
+        {view === 'pillars' && <PillarsView />}
+        {view === 'checklist' && <ChecklistView {...{ dubai, toggleDubai }} />}
+        {view === 'profile' && <ProfileView />}
+      </main>
+
+      {/* Calendar Panel */}
+      <aside className={`calendar-panel ${calOpen ? '' : 'collapsed'}`}>
+        <CalendarPanel />
+      </aside>
+
+      {/* Toggle Calendar Button */}
+      <button className="toggle-panel-btn" onClick={() => setCalOpen(c => !c)}>
+        {calOpen ? '\u{1F4C5} \u2715' : '\u{1F4C5}'}
+      </button>
+    </div>
+  );
+}
+
+/* ===== CALENDAR PANEL ===== */
+
+function CalendarPanel() {
+  const now = new Date();
+  const [month, setMonth] = useState(now.getMonth());
+  const [year, setYear] = useState(now.getFullYear());
+  const today = now.getDate();
+  const isCurrentMonth = month === now.getMonth() && year === now.getFullYear();
+  const days = getCalendarDays(year, month);
+
+  const prev = () => { if (month === 0) { setMonth(11); setYear(y => y - 1); } else setMonth(m => m - 1); };
+  const next = () => { if (month === 11) { setMonth(0); setYear(y => y + 1); } else setMonth(m => m + 1); };
 
   return (
     <>
-      <style>{CSS}</style>
-      <div style={S.root}>
-        {/* Sidebar */}
-        <div style={S.sidebar}>
-          <div style={S.logo}>
-            <div style={S.logoText}>Anna OS</div>
-            <div style={S.logoSub}>2026 FOUNDATIONS</div>
+      <div className="cal-header">
+        <button className="cal-nav-btn" onClick={prev}>{'\u2039'}</button>
+        <h3>{MONTH_NAMES[month]} {year}</h3>
+        <button className="cal-nav-btn" onClick={next}>{'\u203A'}</button>
+      </div>
+      <div className="cal-grid">
+        {['Mo','Tu','We','Th','Fr','Sa','Su'].map(d => <div key={d} className="cal-day-label">{d}</div>)}
+        {days.map((d, i) => (
+          <div key={i} className={`cal-day ${d.current && d.d === today && isCurrentMonth ? 'today' : ''} ${!d.current ? 'other-month' : ''}`}>
+            {d.d}
           </div>
-          {NAV.map(n => (
-            <button key={n.id} className={`nb nav-item ${view === n.id ? 'active' : ''}`} onClick={() => setView(n.id)}>
-              <span style={{ fontSize: '13px', color: view === n.id ? '#c4a46b' : '#6a6055' }}>{n.icon}</span>
-              <span style={{ fontSize: '12px', color: view === n.id ? '#e8dcc8' : '#7a7060' }}>{n.label}</span>
-            </button>
-          ))}
-          <div style={S.cycleWidget}>
-            <div style={{ fontSize: '22px', marginBottom: '3px' }}>{cycle.moon}</div>
-            <div style={{ fontSize: '10px', color: cycle.color, letterSpacing: '0.07em' }}>{cycle.phase.toUpperCase()}</div>
-            <div style={{ fontSize: '10px', color: '#6a6055', marginTop: '2px' }}>Day {cycleDay}</div>
-          </div>
-        </div>
+        ))}
+      </div>
 
-        {/* Main */}
-        <div style={S.main}>
-          {view === 'today' && <TodayView {...{ cycle, cycleDay, intention, saveIntention, habits, toggleHabit, S }} />}
-          {view === 'week' && <WeekView {...{ weekNotes, saveWeekNote, cycleDay, cycle, S }} />}
-          {view === 'habits' && <HabitsView {...{ habits, toggleHabit, S }} />}
-          {view === 'projects' && <ProjectsView {...{ projects, toggleMilestone, S }} />}
-          {view === 'pillars' && <PillarsView S={S} />}
-          {view === 'checklist' && <ChecklistView {...{ dubai, toggleDubai, S }} />}
-          {view === 'profile' && <ProfileView S={S} />}
+      <div className="cal-events-title">Today's schedule</div>
+      {CALENDAR_EVENTS.map((e, i) => (
+        <div key={i} className="cal-event">
+          <div className="cal-event-time">{e.time}</div>
+          <div className="cal-event-dot" style={{ background: e.color }} />
+          <div className="cal-event-info">
+            <div className="event-name">{e.name}</div>
+            <div className="event-detail">{e.detail}</div>
+          </div>
         </div>
+      ))}
+
+      <div style={{ marginTop: 20, padding: '12px 14px', background: 'var(--skeleton)', borderRadius: 10, fontSize: 11, color: 'var(--text-tertiary)', lineHeight: 1.6 }}>
+        {'\u{1F4A1}'} Connect Google Calendar for live events. Go to Settings to set up.
       </div>
     </>
   );
 }
 
-function TodayView({ cycle, cycleDay, intention, saveIntention, habits, toggleHabit, S }) {
+/* ===== TODAY VIEW ===== */
+
+function TodayView({ cycle, cycleDay, intention, saveIntention, habits, toggleHabit }) {
   const done = HABITS.filter(h => habits[h.id]).length;
   const h = new Date().getHours();
   const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
 
   return (
-    <div style={{ maxWidth: '680px' }}>
-      <div style={{ marginBottom: '26px' }}>
-        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '30px', fontWeight: 300, lineHeight: 1.2 }}>{greeting}, Anna.</div>
-        <div style={{ fontSize: '11px', color: '#8a7d6a', marginTop: '4px' }}>{formatDate()}</div>
+    <div style={{ maxWidth: 760 }}>
+      {/* Greeting */}
+      <div style={{ marginBottom: 28 }}>
+        <div className="page-title" style={{ fontSize: 34 }}>{greeting}, Anna.</div>
+        <div className="page-subtitle" style={{ marginBottom: 0 }}>{formatDate()}</div>
       </div>
 
-      {/* Cycle card */}
-      <div style={{ background: cycle.bg, border: `1px solid ${cycle.color}28`, borderRadius: '12px', padding: '18px', marginBottom: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-          <span style={{ fontSize: '26px' }}>{cycle.moon}</span>
-          <div>
-            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px', color: cycle.color }}>{cycle.phase} Phase {'\u00B7'} Day {cycleDay}</div>
-            <div style={{ fontSize: '11px', color: '#8a7d6a', marginTop: '1px' }}>{cycle.energy}</div>
-          </div>
+      {/* Stat Cards Row */}
+      <div className="grid-3" style={{ marginBottom: 16 }}>
+        <div className="stat-card card-colored" style={{ background: cycle.pastel }}>
+          <div className="stat-label" style={{ color: cycle.color }}>{cycle.phase} Phase</div>
+          <div className="stat-value" style={{ color: cycle.color }}>{cycle.moon} Day {cycleDay}</div>
+          <div className="stat-sub" style={{ color: cycle.color }}>{cycle.energy}</div>
         </div>
-        <div style={{ fontSize: '13px', color: '#e8dcc8', marginBottom: '7px', lineHeight: 1.65 }}>{cycle.guidance}</div>
-        <div style={{ fontSize: '11px', color: '#8a7d6a', fontStyle: 'italic' }}>{'\u2192'} {cycle.schedule}</div>
+        <div className="stat-card card-colored" style={{ background: 'var(--pastel-green)' }}>
+          <div className="stat-label" style={{ color: '#7fa88a' }}>Habits Today</div>
+          <div className="stat-value" style={{ color: '#7fa88a' }}>{done}/{HABITS.length}</div>
+          <div className="stat-sub" style={{ color: '#7fa88a' }}>{done === HABITS.length ? 'All done!' : `${HABITS.length - done} remaining`}</div>
+        </div>
+        <div className="stat-card card-colored" style={{ background: 'var(--pastel-pink)' }}>
+          <div className="stat-label" style={{ color: '#bf8a8a' }}>Projects Active</div>
+          <div className="stat-value" style={{ color: '#bf8a8a' }}>5</div>
+          <div className="stat-sub" style={{ color: '#bf8a8a' }}>Seraya focus this week</div>
+        </div>
+      </div>
+
+      {/* Cycle Guidance */}
+      <div className="card" style={{ marginBottom: 14, borderLeft: `3px solid ${cycle.color}` }}>
+        <div className="section-tag" style={{ color: cycle.color }}>CYCLE GUIDANCE</div>
+        <div style={{ fontSize: 13, color: 'var(--text)', lineHeight: 1.7, marginBottom: 6 }}>{cycle.guidance}</div>
+        <div style={{ fontSize: 11, color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{'\u2192'} {cycle.schedule}</div>
       </div>
 
       {/* Intention */}
-      <div className="card" style={{ marginBottom: '14px' }}>
-        <div className="tag" style={{ color: '#8a7d6a' }}>TODAY'S INTENTION</div>
-        <input className="inp" placeholder="What matters most today?" value={intention} onChange={e => saveIntention(e.target.value)} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '15px' }} />
+      <div className="card" style={{ marginBottom: 14 }}>
+        <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>TODAY'S INTENTION</div>
+        <input className="input" placeholder="What matters most today?" value={intention} onChange={e => saveIntention(e.target.value)} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 16 }} />
       </div>
 
-      {/* Habits quick */}
-      <div className="card" style={{ marginBottom: '14px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
-          <div className="tag" style={{ color: '#8a7d6a', marginBottom: 0 }}>TODAY'S HABITS</div>
-          <span style={{ fontSize: '11px', color: '#c4a46b' }}>{done}/{HABITS.length}</span>
+      {/* Habits Quick */}
+      <div className="card" style={{ marginBottom: 14 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div className="section-tag" style={{ color: 'var(--text-tertiary)', marginBottom: 0 }}>TODAY'S HABITS</div>
+          <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 500 }}>{done}/{HABITS.length}</span>
         </div>
-        <div className="grid2">
+        <div className="grid-2">
           {HABITS.map(h => (
-            <button key={h.id} className="hb" onClick={() => toggleHabit(h.id)}>
-              <div className={`chk ${habits[h.id] ? 'on' : ''}`}>{habits[h.id] && <span style={{ fontSize: '9px', color: '#0a0906' }}>{'\u2713'}</span>}</div>
-              <span style={{ fontSize: '11px', color: habits[h.id] ? '#e8dcc8' : '#7a7060' }}>{h.icon} {h.label}</span>
+            <button key={h.id} className="habit-btn" onClick={() => toggleHabit(h.id)}>
+              <div className={`check ${habits[h.id] ? 'checked' : ''}`}>{habits[h.id] && '\u2713'}</div>
+              <span style={{ fontSize: 12, color: habits[h.id] ? 'var(--text)' : 'var(--text-secondary)' }}>{h.icon} {h.label}</span>
             </button>
           ))}
         </div>
-        <div className="bar" style={{ marginTop: '10px' }}>
-          <div className="fill" style={{ width: `${(done/HABITS.length)*100}%`, background: '#c4a46b' }} />
+        <div className="progress-bar" style={{ marginTop: 12, height: 5 }}>
+          <div className="progress-fill" style={{ width: `${(done/HABITS.length)*100}%`, background: 'linear-gradient(90deg, #c4a46b, #dbb87a)' }} />
         </div>
       </div>
 
-      {/* Rhythm */}
+      {/* Daily Rhythm */}
       <div className="card">
-        <div className="tag" style={{ color: '#8a7d6a' }}>DAILY RHYTHM</div>
-        {[
-          { t: '5\u20136 AM', l: 'Wake & Stillness', d: 'No phone. Water. Arrive slowly.', c: '#9b7fa8' },
-          { t: '6\u20137 AM', l: 'Morning Practice', d: 'Meditation, movement, altar \u2014 before everything', c: '#c4a46b' },
-          { t: '7\u20139:30', l: 'Deep Work I \u{1F534}', d: 'Peak energy \u2014 SyncHer, strategy', c: '#bf8a8a' },
-          { t: '9:45\u201312', l: 'Deep Work II \u{1F534}', d: 'Seraya Studio, calls, build', c: '#bf8a8a' },
-          { t: '12\u20131:30', l: 'Lunch & Real Rest', d: 'No screens. Legs up. Let the morning land.', c: '#7fa88a' },
-          { t: '1:30\u20133:30', l: 'Light Work \u{1F7E1}', d: 'Email, admin, research', c: '#8a9fbf' },
-          { t: '3:45\u20135:30', l: 'Creative / Body \u{1F7E2}', d: 'Content, movement, practice, play', c: '#7fa88a' },
-          { t: '7:30 PM+', l: 'Protected Evening \u{1F319}', d: 'No electronics. Reading. Rest.', c: '#9b7fa8' },
-        ].map((r, i, arr) => (
-          <div key={i} style={{ display: 'flex', gap: '12px', padding: '7px 0', borderBottom: i < arr.length-1 ? '1px solid rgba(255,255,255,0.04)' : 'none' }}>
-            <div style={{ fontSize: '10px', color: '#6a6055', width: '72px', flexShrink: 0, paddingTop: '2px', fontVariantNumeric: 'tabular-nums' }}>{r.t}</div>
-            <div>
-              <div style={{ fontSize: '12px', color: r.c, marginBottom: '1px' }}>{r.l}</div>
-              <div style={{ fontSize: '11px', color: '#6a6055' }}>{r.d}</div>
+        <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>DAILY RHYTHM</div>
+        {DAILY_RHYTHM.map((r, i) => (
+          <div key={i} className="rhythm-item">
+            <div className="rhythm-time">{r.t}</div>
+            <div className="rhythm-dot" style={{ background: r.c }} />
+            <div className="rhythm-info">
+              <div className="rhythm-label">{r.l}</div>
+              <div className="rhythm-desc">{r.d}</div>
             </div>
           </div>
         ))}
@@ -365,24 +463,26 @@ function TodayView({ cycle, cycleDay, intention, saveIntention, habits, toggleHa
   );
 }
 
-function WeekView({ weekNotes, saveWeekNote, cycleDay, cycle, S }) {
+/* ===== WEEK VIEW ===== */
+
+function WeekView({ weekNotes, saveWeekNote, cycleDay, cycle }) {
   const todayIdx = (() => { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; })();
   return (
-    <div style={{ maxWidth: '760px' }}>
-      <div style={S.pageTitle}>This Week</div>
-      <div style={S.pageSub}>{cycle.moon} {cycle.phase} {'\u00B7'} Day {cycleDay} {'\u2014'} {cycle.schedule}</div>
-      <div style={{ display: 'grid', gap: '10px' }}>
+    <div style={{ maxWidth: 760 }}>
+      <div className="page-title">This Week</div>
+      <div className="page-subtitle">{cycle.moon} {cycle.phase} {'\u00B7'} Day {cycleDay} {'\u2014'} {cycle.schedule}</div>
+      <div style={{ display: 'grid', gap: 10 }}>
         {WEEK_PLAN.map((d, i) => (
-          <div key={d.day} className="card" style={{ borderColor: i === todayIdx ? 'rgba(196,164,107,0.28)' : 'rgba(196,164,107,0.1)', background: i === todayIdx ? 'rgba(196,164,107,0.05)' : 'rgba(255,255,255,0.028)' }}>
-            <div style={{ display: 'flex', gap: '14px' }}>
-              <div style={{ width: '34px', flexShrink: 0 }}>
-                <div style={{ fontSize: '11px', color: i === todayIdx ? '#c4a46b' : '#8a7d6a', fontWeight: 500 }}>{d.day}</div>
-                {i === todayIdx && <div style={{ fontSize: '8px', color: '#c4a46b', letterSpacing: '0.07em' }}>TODAY</div>}
+          <div key={d.day} className="card" style={{ borderLeft: i === todayIdx ? '3px solid var(--accent)' : '3px solid transparent' }}>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <div style={{ width: 40, flexShrink: 0 }}>
+                <div style={{ fontSize: 12, color: i === todayIdx ? 'var(--accent)' : 'var(--text-secondary)', fontWeight: 600 }}>{d.day}</div>
+                {i === todayIdx && <div style={{ fontSize: 9, color: 'var(--accent)', letterSpacing: '0.07em', marginTop: 2 }}>TODAY</div>}
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '13px', color: '#e8dcc8', marginBottom: '2px', fontWeight: 500 }}>{d.focus}</div>
-                <div style={{ fontSize: '11px', color: '#6a6055', marginBottom: '8px' }}>{d.detail}</div>
-                <textarea className="inp" placeholder="Notes\u2026" value={weekNotes[d.day] || ''} onChange={e => saveWeekNote(d.day, e.target.value)} style={{ minHeight: '36px', fontSize: '11px' }} />
+                <div style={{ fontSize: 14, color: 'var(--text)', marginBottom: 2, fontWeight: 500 }}>{d.focus}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>{d.detail}</div>
+                <textarea className="input" placeholder="Notes\u2026" value={weekNotes[d.day] || ''} onChange={e => saveWeekNote(d.day, e.target.value)} style={{ minHeight: 36, fontSize: 12 }} />
               </div>
             </div>
           </div>
@@ -392,79 +492,90 @@ function WeekView({ weekNotes, saveWeekNote, cycleDay, cycle, S }) {
   );
 }
 
-function HabitsView({ habits, toggleHabit, S }) {
+/* ===== HABITS VIEW ===== */
+
+function HabitsView({ habits, toggleHabit }) {
   const done = HABITS.filter(h => habits[h.id]).length;
   const groups = [
-    { key: 'spiritual', label: 'SPIRITUAL', color: '#9b7fa8' },
-    { key: 'body', label: 'BODY', color: '#7fa88a' },
-    { key: 'structure', label: 'STRUCTURE', color: '#8a9fbf' },
-    { key: 'business', label: 'BUSINESS', color: '#c4a46b' },
+    { key: 'spiritual', label: 'SPIRITUAL', color: '#9b7fa8', pastel: 'var(--pastel-purple)' },
+    { key: 'body', label: 'BODY', color: '#7fa88a', pastel: 'var(--pastel-green)' },
+    { key: 'structure', label: 'STRUCTURE', color: '#8a9fbf', pastel: 'var(--pastel-blue)' },
+    { key: 'business', label: 'BUSINESS', color: '#c4a46b', pastel: 'var(--pastel-yellow)' },
   ];
   return (
-    <div style={{ maxWidth: '580px' }}>
-      <div style={S.pageTitle}>Daily Habits</div>
-      <div style={{ fontSize: '11px', color: '#8a7d6a', marginBottom: '18px' }}>{done} of {HABITS.length} complete today</div>
-      <div className="bar" style={{ height: '5px', marginBottom: '22px' }}>
-        <div className="fill" style={{ width: `${(done/HABITS.length)*100}%`, background: 'linear-gradient(90deg,#c4a46b,#dbb87a)' }} />
+    <div style={{ maxWidth: 620 }}>
+      <div className="page-title">Daily Habits</div>
+      <div className="page-subtitle">{done} of {HABITS.length} complete today</div>
+      <div className="progress-bar" style={{ height: 6, marginBottom: 24 }}>
+        <div className="progress-fill" style={{ width: `${(done/HABITS.length)*100}%`, background: 'linear-gradient(90deg,#c4a46b,#dbb87a)' }} />
       </div>
-      {groups.map(g => (
-        <div key={g.key} className="card" style={{ marginBottom: '10px', borderColor: `${g.color}22` }}>
-          <div className="tag" style={{ color: g.color }}>{g.label}</div>
-          {HABITS.filter(h => h.pillar === g.key).map(h => (
-            <button key={h.id} className="hb" onClick={() => toggleHabit(h.id)}>
-              <div className={`chk ${habits[h.id] ? 'on' : ''}`} style={{ borderColor: habits[h.id] ? g.color : 'rgba(196,164,107,0.28)', background: habits[h.id] ? g.color : 'transparent' }}>
-                {habits[h.id] && <span style={{ fontSize: '9px', color: '#0a0906' }}>{'\u2713'}</span>}
-              </div>
-              <span style={{ fontSize: '12px', color: habits[h.id] ? '#e8dcc8' : '#7a7060' }}>{h.icon} {h.label}</span>
-            </button>
-          ))}
-        </div>
-      ))}
+      {groups.map(g => {
+        const items = HABITS.filter(h => h.pillar === g.key);
+        const groupDone = items.filter(h => habits[h.id]).length;
+        return (
+          <div key={g.key} className="card" style={{ marginBottom: 12, borderLeft: `3px solid ${g.color}` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div className="section-tag" style={{ color: g.color, marginBottom: 0 }}>{g.label}</div>
+              <span style={{ fontSize: 11, color: g.color }}>{groupDone}/{items.length}</span>
+            </div>
+            {items.map(h => (
+              <button key={h.id} className="habit-btn" onClick={() => toggleHabit(h.id)}>
+                <div className={`check ${habits[h.id] ? 'checked' : ''}`} style={{ borderColor: habits[h.id] ? g.color : undefined, background: habits[h.id] ? g.color : undefined }}>
+                  {habits[h.id] && '\u2713'}
+                </div>
+                <span style={{ fontSize: 13, color: habits[h.id] ? 'var(--text)' : 'var(--text-secondary)' }}>{h.icon} {h.label}</span>
+              </button>
+            ))}
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function ProjectsView({ projects, toggleMilestone, S }) {
+/* ===== PROJECTS VIEW ===== */
+
+function ProjectsView({ projects, toggleMilestone }) {
   const [expanded, setExpanded] = useState(null);
   return (
-    <div style={{ maxWidth: '740px' }}>
-      <div style={S.pageTitle}>Projects</div>
-      <div style={S.pageSub}>2026 build map {'\u2014'} click a project to expand milestones</div>
-      <div style={{ display: 'grid', gap: '14px' }}>
+    <div style={{ maxWidth: 760 }}>
+      <div className="page-title">Projects</div>
+      <div className="page-subtitle">2026 build map {'\u2014'} click to expand milestones</div>
+      <div style={{ display: 'grid', gap: 14 }}>
         {projects.map(p => {
           const done = p.milestones.filter(m => m.done).length;
           const pct = Math.round((done / p.milestones.length) * 100);
           const open = expanded === p.id;
           return (
-            <div key={p.id} className="card" style={{ borderColor: `${p.color}22` }}>
-              <button className="nb" style={{ width: '100%', textAlign: 'left' }} onClick={() => setExpanded(open ? null : p.id)}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
-                    <span style={{ fontSize: '20px' }}>{p.emoji}</span>
+            <div key={p.id} className="card">
+              <button style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }} onClick={() => setExpanded(open ? null : p.id)}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: 22 }}>{p.emoji}</span>
                     <div>
-                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '19px', color: p.color }}>{p.name}</div>
-                      <div style={{ fontSize: '11px', color: '#6a6055' }}>{p.tagline}</div>
+                      <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 20, color: p.color, fontWeight: 500 }}>{p.name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>{p.tagline}</div>
                     </div>
                   </div>
-                  <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: '12px' }}>
-                    <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '24px', color: p.color, lineHeight: 1 }}>{pct}%</div>
-                    <div style={{ fontSize: '10px', color: '#6a6055', marginTop: '2px' }}>{'\u2197\uFE0F'} {p.deadline}</div>
+                  <div style={{ textAlign: 'right', flexShrink: 0, paddingLeft: 12 }}>
+                    <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 26, color: p.color, lineHeight: 1, fontWeight: 500 }}>{pct}%</div>
+                    <div style={{ fontSize: 10, color: 'var(--text-tertiary)', marginTop: 2 }}>{'\u2197\uFE0F'} {p.deadline}</div>
                   </div>
                 </div>
-                <div className="bar">
-                  <div className="fill" style={{ width: `${pct}%`, background: p.color }} />
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${pct}%`, background: p.color }} />
                 </div>
-                <div style={{ fontSize: '10px', color: '#6a6055', marginTop: '5px' }}>{done}/{p.milestones.length} milestones {'\u00B7'} {open ? '\u25B2 collapse' : '\u25BC expand'}</div>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 6 }}>{done}/{p.milestones.length} milestones {'\u00B7'} {open ? '\u25B2 collapse' : '\u25BC expand'}</div>
               </button>
               {open && (
-                <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div className="grid2">
+                <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid var(--border)' }}>
+                  <div className="grid-2">
                     {p.milestones.map(m => (
-                      <button key={m.id} className="hb" style={{ padding: '7px 8px' }} onClick={() => toggleMilestone(p.id, m.id)}>
-                        <div className={`chk ${m.done ? 'on' : ''}`} style={{ width: '16px', height: '16px', borderColor: m.done ? p.color : 'rgba(196,164,107,0.24)', background: m.done ? p.color : 'transparent' }}>
-                          {m.done && <span style={{ fontSize: '8px', color: '#0a0906' }}>{'\u2713'}</span>}
+                      <button key={m.id} className="habit-btn" style={{ padding: '7px 8px' }} onClick={() => toggleMilestone(p.id, m.id)}>
+                        <div className={`check ${m.done ? 'checked' : ''}`} style={{ width: 18, height: 18, borderColor: m.done ? p.color : undefined, background: m.done ? p.color : undefined }}>
+                          {m.done && <span style={{ fontSize: 9 }}>{'\u2713'}</span>}
                         </div>
-                        <span style={{ fontSize: '11px', color: m.done ? '#8a7d6a' : '#e8dcc8', textDecoration: m.done ? 'line-through' : 'none' }}>{m.label}</span>
+                        <span style={{ fontSize: 12, color: m.done ? 'var(--text-tertiary)' : 'var(--text)', textDecoration: m.done ? 'line-through' : 'none' }}>{m.label}</span>
                       </button>
                     ))}
                   </div>
@@ -478,27 +589,98 @@ function ProjectsView({ projects, toggleMilestone, S }) {
   );
 }
 
-function PillarsView({ S }) {
+/* ===== FINANCE VIEW ===== */
+
+function FinanceView({ finance }) {
+  const totalEUR = finance.accounts.find(a => a.id === 'wise_eur')?.balance || 0;
+  const totalUSD = finance.accounts.find(a => a.id === 'wise_usd')?.balance || 0;
+  const totalAED = finance.accounts.find(a => a.id === 'wio')?.balance || 0;
+
   return (
-    <div style={{ maxWidth: '680px' }}>
-      <div style={S.pageTitle}>Five Pillars</div>
-      <div style={S.pageSub}>2026 Foundation Year {'\u2014'} the structure under everything</div>
-      <div style={{ display: 'grid', gap: '12px' }}>
+    <div style={{ maxWidth: 760 }}>
+      <div className="page-title">Finance</div>
+      <div className="page-subtitle">Account balances & recent transactions</div>
+
+      {/* Account Cards */}
+      <div className="grid-3" style={{ marginBottom: 20 }}>
+        {finance.accounts.map(a => (
+          <div key={a.id} className="stat-card card-colored" style={{ background: `${a.color}12`, border: `1px solid ${a.color}20` }}>
+            <div className="stat-label" style={{ color: a.color }}>{a.icon} {a.name}</div>
+            <div className="stat-value" style={{ color: a.color }}>{a.currency === 'EUR' ? '\u20AC' : a.currency === 'USD' ? '$' : 'AED '}{a.balance.toLocaleString('en', { minimumFractionDigits: 2 })}</div>
+            <div className="stat-sub" style={{ color: a.color }}>Current balance</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Total Overview */}
+      <div className="card" style={{ marginBottom: 16, borderLeft: '3px solid var(--accent)' }}>
+        <div className="section-tag" style={{ color: 'var(--accent)' }}>TOTAL OVERVIEW</div>
+        <div className="grid-3">
+          <div className="pill">
+            <div className="pill-label">EUR Balance</div>
+            <div className="pill-value" style={{ fontWeight: 500 }}>{'\u20AC'}{totalEUR.toLocaleString('en', { minimumFractionDigits: 2 })}</div>
+          </div>
+          <div className="pill">
+            <div className="pill-label">USD Balance</div>
+            <div className="pill-value" style={{ fontWeight: 500 }}>${totalUSD.toLocaleString('en', { minimumFractionDigits: 2 })}</div>
+          </div>
+          <div className="pill">
+            <div className="pill-label">AED Balance</div>
+            <div className="pill-value" style={{ fontWeight: 500 }}>AED {totalAED.toLocaleString('en', { minimumFractionDigits: 2 })}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Transactions */}
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>RECENT TRANSACTIONS</div>
+        {finance.transactions.map(tx => (
+          <div key={tx.id} className="transaction-row">
+            <div className="tx-icon" style={{ background: 'var(--skeleton)' }}>{tx.icon}</div>
+            <div className="tx-info">
+              <div className="tx-label">{tx.label}</div>
+              <div className="tx-date">{tx.date} {'\u00B7'} {tx.cat}</div>
+            </div>
+            <div className={`tx-amount ${tx.amount > 0 ? 'positive' : 'negative'}`}>
+              {tx.amount > 0 ? '+' : ''}{tx.currency === 'EUR' ? '\u20AC' : tx.currency === 'USD' ? '$' : 'AED '}{Math.abs(tx.amount).toLocaleString()}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* API Connection Note */}
+      <div className="card" style={{ background: 'var(--skeleton)', border: 'none', boxShadow: 'none' }}>
+        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7 }}>
+          {'\u{1F4A1}'} <strong>Connect your accounts:</strong> Wise API is available for live balances. Wio requires manual entry for now. Balances shown above are placeholder data {'\u2014'} update them in the Finance settings once API keys are configured.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== PILLARS VIEW ===== */
+
+function PillarsView() {
+  return (
+    <div style={{ maxWidth: 700 }}>
+      <div className="page-title">Five Pillars</div>
+      <div className="page-subtitle">2026 Foundation Year {'\u2014'} the structure under everything</div>
+      <div style={{ display: 'grid', gap: 14 }}>
         {PILLARS.map(p => (
-          <div key={p.id} className="card" style={{ borderColor: `${p.color}22` }}>
-            <div style={{ display: 'flex', gap: '11px', marginBottom: '11px' }}>
-              <span style={{ fontSize: '22px' }}>{p.emoji}</span>
+          <div key={p.id} className="card" style={{ borderLeft: `3px solid ${p.color}` }}>
+            <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+              <span style={{ fontSize: 24 }}>{p.emoji}</span>
               <div>
-                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '18px', color: p.color }}>{p.name}</div>
-                <div style={{ fontSize: '11px', color: '#6a6055', marginTop: '1px' }}>{p.desc}</div>
+                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 19, color: p.color, fontWeight: 500 }}>{p.name}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>{p.desc}</div>
               </div>
             </div>
-            <div className="grid2" style={{ gap: '6px', marginBottom: '10px' }}>
+            <div className="grid-2" style={{ gap: 6, marginBottom: 12 }}>
               {p.actions.map((a, i) => (
-                <div key={i} style={{ fontSize: '11px', color: '#8a7d6a', padding: '6px 9px', background: 'rgba(255,255,255,0.025)', borderRadius: '6px', borderLeft: `2px solid ${p.color}35` }}>{a}</div>
+                <div key={i} style={{ fontSize: 12, color: 'var(--text-secondary)', padding: '8px 10px', background: 'var(--skeleton)', borderRadius: 8, borderLeft: `2px solid ${p.color}40` }}>{a}</div>
               ))}
             </div>
-            <div style={{ fontSize: '11px', color: '#5a5548', fontStyle: 'italic', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: '9px', lineHeight: 1.65 }}>{p.note}</div>
+            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', fontStyle: 'italic', borderTop: '1px solid var(--border)', paddingTop: 10, lineHeight: 1.7 }}>{p.note}</div>
           </div>
         ))}
       </div>
@@ -506,30 +688,32 @@ function PillarsView({ S }) {
   );
 }
 
-function ChecklistView({ dubai, toggleDubai, S }) {
+/* ===== CHECKLIST VIEW ===== */
+
+function ChecklistView({ dubai, toggleDubai }) {
   const cats = [...new Set(DUBAI.map(d => d.cat))];
   const done = DUBAI.filter(d => dubai[d.id]).length;
   const pct = Math.round((done / DUBAI.length) * 100);
   return (
-    <div style={{ maxWidth: '580px' }}>
-      <div style={S.pageTitle}>Dubai Exit</div>
-      <div style={S.pageSub}>Out by May 21, 2026 {'\u00B7'} Back in Dubai May 8</div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '22px' }}>
-        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '36px', color: '#c4a46b', lineHeight: 1 }}>{pct}%</div>
+    <div style={{ maxWidth: 620 }}>
+      <div className="page-title">Dubai Exit</div>
+      <div className="page-subtitle">Out by May 21, 2026 {'\u00B7'} Back in Dubai May 8</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 24 }}>
+        <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 40, color: 'var(--accent)', lineHeight: 1, fontWeight: 500 }}>{pct}%</div>
         <div style={{ flex: 1 }}>
-          <div className="bar" style={{ height: '5px' }}>
-            <div className="fill" style={{ width: `${pct}%`, background: 'linear-gradient(90deg,#c4a46b,#dbb87a)' }} />
+          <div className="progress-bar" style={{ height: 6 }}>
+            <div className="progress-fill" style={{ width: `${pct}%`, background: 'linear-gradient(90deg,#c4a46b,#dbb87a)' }} />
           </div>
-          <div style={{ fontSize: '10px', color: '#8a7d6a', marginTop: '4px' }}>{done} of {DUBAI.length} complete</div>
+          <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginTop: 5 }}>{done} of {DUBAI.length} complete</div>
         </div>
       </div>
       {cats.map(cat => (
-        <div key={cat} className="card" style={{ marginBottom: '10px' }}>
-          <div className="tag" style={{ color: '#c4a46b' }}>{cat.toUpperCase()}</div>
+        <div key={cat} className="card" style={{ marginBottom: 12 }}>
+          <div className="section-tag" style={{ color: 'var(--accent)' }}>{cat.toUpperCase()}</div>
           {DUBAI.filter(d => d.cat === cat).map(item => (
-            <button key={item.id} className="hb" onClick={() => toggleDubai(item.id)}>
-              <div className={`chk ${dubai[item.id] ? 'on' : ''}`}>{dubai[item.id] && <span style={{ fontSize: '9px', color: '#0a0906' }}>{'\u2713'}</span>}</div>
-              <span style={{ fontSize: '12px', color: dubai[item.id] ? '#6a6055' : '#e8dcc8', textDecoration: dubai[item.id] ? 'line-through' : 'none' }}>{item.label}</span>
+            <button key={item.id} className="habit-btn" onClick={() => toggleDubai(item.id)}>
+              <div className={`check ${dubai[item.id] ? 'checked' : ''}`}>{dubai[item.id] && '\u2713'}</div>
+              <span style={{ fontSize: 13, color: dubai[item.id] ? 'var(--text-tertiary)' : 'var(--text)', textDecoration: dubai[item.id] ? 'line-through' : 'none' }}>{item.label}</span>
             </button>
           ))}
         </div>
@@ -538,62 +722,64 @@ function ChecklistView({ dubai, toggleDubai, S }) {
   );
 }
 
-function ProfileView({ S }) {
-  return (
-    <div style={{ maxWidth: '660px' }}>
-      <div style={S.pageTitle}>Anna</div>
-      <div style={S.pageSub}>The full picture</div>
+/* ===== PROFILE VIEW ===== */
 
-      <div className="card" style={{ marginBottom: '12px', borderColor: 'rgba(196,164,107,0.2)' }}>
-        <div className="tag" style={{ color: '#c4a46b' }}>HUMAN DESIGN</div>
-        <div className="grid2" style={{ marginBottom: '10px' }}>
+function ProfileView() {
+  return (
+    <div style={{ maxWidth: 700 }}>
+      <div className="page-title">Anna</div>
+      <div className="page-subtitle">The full picture</div>
+
+      <div className="card" style={{ marginBottom: 14, borderLeft: '3px solid var(--accent)' }}>
+        <div className="section-tag" style={{ color: 'var(--accent)' }}>HUMAN DESIGN</div>
+        <div className="grid-2" style={{ marginBottom: 12 }}>
           {[['Type','Manifesting Generator'],['Profile','4/1 \u2014 Opportunist / Investigator'],['Authority','Emotional Solar Plexus'],['Strategy','Respond \u2014 wait for the sacral yes']].map(([k,v]) => (
-            <div key={k} className="pill"><div className="label">{k}</div><div style={{ fontSize: '13px', color: '#e8dcc8' }}>{v}</div></div>
+            <div key={k} className="pill"><div className="pill-label">{k}</div><div className="pill-value">{v}</div></div>
           ))}
         </div>
-        <div style={{ fontSize: '11px', color: '#6a6055', lineHeight: 1.7, fontStyle: 'italic' }}>The 4/1 MG needs depth before breadth. The 1-line investigator: your foundation must be real, not decorative. You only flourish when you respond {'\u2014'} not force. Your sacral knows before your mind does.</div>
+        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7, fontStyle: 'italic' }}>The 4/1 MG needs depth before breadth. Your foundation must be real, not decorative. You only flourish when you respond {'\u2014'} not force.</div>
       </div>
 
-      <div className="card" style={{ marginBottom: '12px' }}>
-        <div className="tag" style={{ color: '#9b7fa8' }}>ASTROLOGY {'\u2014'} Born 25 Sept 1995, 12:45 PM {'\u00B7'} Rohrbach-Berg, Austria</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '7px', marginBottom: '10px' }}>
+      <div className="card" style={{ marginBottom: 14, borderLeft: '3px solid #9b7fa8' }}>
+        <div className="section-tag" style={{ color: '#9b7fa8' }}>ASTROLOGY {'\u2014'} Born 25 Sept 1995, 12:45 PM {'\u00B7'} Rohrbach-Berg</div>
+        <div className="grid-3" style={{ marginBottom: 12 }}>
           {[
             ['Sun \u264E','Libra'],['Moon \u264E','Libra'],['Rising \u2650','Sagittarius'],
             ['Venus \u264E','Libra'],['Mercury \u264E','Libra'],['Mars \u264F','Scorpio'],
             ['Jupiter \u2650','Sagittarius'],['Midheaven \u264E','Libra'],['Pluto \u264F','Scorpio'],
           ].map(([k,v]) => (
-            <div key={k} className="pill" style={{ textAlign: 'center' }}><div className="label">{k}</div><div style={{ fontSize: '12px', color: '#e8dcc8' }}>{v}</div></div>
+            <div key={k} className="pill" style={{ textAlign: 'center' }}><div className="pill-label">{k}</div><div className="pill-value">{v}</div></div>
           ))}
         </div>
-        <div style={{ fontSize: '11px', color: '#6a6055', lineHeight: 1.7, fontStyle: 'italic' }}>
-          Quadruple Libra (Sun, Moon, Venus, Mercury) {'\u2014'} beauty, balance, harmony and relationships are the core operating system. Jupiter in Sagittarius conjunct Ascendant (16{'\u00B0'}47'): expansion, luck, and philosophy are literally written into how you enter every room. Mars in Scorpio: intensity and depth underneath all that Libra grace. Midheaven Libra: your public purpose is beauty, balance, and harmony.
+        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7, fontStyle: 'italic' }}>
+          Quadruple Libra {'\u2014'} beauty, balance, harmony are the core operating system. Jupiter in Sagittarius conjunct Ascendant: expansion and philosophy written into how you enter every room.
         </div>
       </div>
 
-      <div className="card" style={{ marginBottom: '12px' }}>
-        <div className="tag" style={{ color: '#c4a46b' }}>2026 COSMIC FRAMEWORK</div>
-        <div className="grid2" style={{ marginBottom: '10px' }}>
+      <div className="card" style={{ marginBottom: 14, borderLeft: '3px solid var(--accent)' }}>
+        <div className="section-tag" style={{ color: 'var(--accent)' }}>2026 COSMIC FRAMEWORK</div>
+        <div className="grid-2" style={{ marginBottom: 12 }}>
           {[
-            ['Personal Year','8 \u2014 Power & Harvest','Claim your authority. Manifest. Financial abundance.'],
-            ['Universal Year','1 \u2014 New Terrain','Everyone restarting \u2014 build on fresh ground'],
-            ['Chinese Year','Wood Horse','Momentum, instinct, bold steps, heart-opening'],
-            ['Synthesis','Power + Structure','Reap what you\'ve built. Step into authority. Be seen.'],
+            ['Personal Year','8 \u2014 Power & Harvest','Claim authority. Financial abundance.'],
+            ['Universal Year','1 \u2014 New Terrain','Build on fresh ground'],
+            ['Chinese Year','Wood Horse','Momentum, bold steps'],
+            ['Synthesis','Power + Structure','Step into authority. Be seen.'],
           ].map(([k,v,n]) => (
-            <div key={k} className="pill"><div className="label">{k}</div><div style={{ fontSize: '13px', color: '#c4a46b', marginBottom: '3px' }}>{v}</div><div style={{ fontSize: '10px', color: '#6a6055', fontStyle: 'italic' }}>{n}</div></div>
+            <div key={k} className="pill"><div className="pill-label">{k}</div><div className="pill-value" style={{ color: 'var(--accent)', marginBottom: 2 }}>{v}</div><div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontStyle: 'italic' }}>{n}</div></div>
           ))}
         </div>
-        <div style={{ fontSize: '11px', color: '#6a6055', lineHeight: 1.7, fontStyle: 'italic', borderTop: '1px solid rgba(255,255,255,0.04)', paddingTop: '9px' }}>Year 8 is the harvest year {'\u2014'} you've been planting. Now you claim the power and recognition. The filter: "Does my 2030 self thank me for this decision?"</div>
+        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', lineHeight: 1.7, fontStyle: 'italic', borderTop: '1px solid var(--border)', paddingTop: 10 }}>Year 8 is the harvest year {'\u2014'} you've been planting. The filter: "Does my 2030 self thank me for this decision?"</div>
       </div>
 
-      <div className="card">
-        <div className="tag" style={{ color: '#8a7d6a' }}>THE WOMAN</div>
-        <div className="grid2" style={{ marginBottom: '12px' }}>
+      <div className="card" style={{ borderLeft: '3px solid var(--text-tertiary)' }}>
+        <div className="section-tag" style={{ color: 'var(--text-tertiary)' }}>THE WOMAN</div>
+        <div className="grid-2" style={{ marginBottom: 14 }}>
           {[['Base','Dubai \u2192 Amsterdam \u2192 Zug'],['Partner','Enrica'],['Companion','Ruby the dachshund \u{1F43E}'],['Passport','Austrian (EU citizen)'],['Teaching','Sound healing at HWH Dubai'],['Trained in','PT \u00B7 Yoga \u00B7 Reiki \u00B7 Somatic \u00B7 Meditation'],['Vipassanas','5 completed'],['Facilitating','Africa Burn Apr 2026']].map(([k,v]) => (
-            <div key={k} className="pill"><div className="label">{k}</div><div style={{ fontSize: '12px', color: '#e8dcc8' }}>{v}</div></div>
+            <div key={k} className="pill"><div className="pill-label">{k}</div><div className="pill-value">{v}</div></div>
           ))}
         </div>
-        <div style={{ padding: '11px', background: 'rgba(196,164,107,0.05)', borderRadius: '8px', borderLeft: '2px solid rgba(196,164,107,0.3)', fontSize: '12px', color: '#8a7d6a', lineHeight: 1.75, fontStyle: 'italic' }}>
-          "Women run on 28-day cycles, not 24-hour cycles." {'\u2014'} The core message and the spine of everything. The transformation arc from overtraining and inflammation to somatic healer and educator is the story she tells, lives, and teaches.
+        <div style={{ padding: 14, background: 'var(--accent-soft)', borderRadius: 10, borderLeft: '2px solid var(--accent)', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.75, fontStyle: 'italic' }}>
+          "Women run on 28-day cycles, not 24-hour cycles." {'\u2014'} The core message and the spine of everything.
         </div>
       </div>
     </div>

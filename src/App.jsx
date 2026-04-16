@@ -5,7 +5,7 @@ import {
   Settings, Sun, Moon, ChevronLeft, ChevronRight, ChevronDown, PanelLeftClose, PanelLeft,
   TrendingUp, TrendingDown, ArrowRight, Plus, Check, X, MoreHorizontal,
   User, Star, Target, Zap, BookOpen, Lightbulb, Send, Coffee, RefreshCw,
-  Activity, Scale, Utensils, GlassWater, Flame
+  Activity, Scale, Utensils, GlassWater, Flame, Image, Download, Trash2
 } from "lucide-react";
 import './App.css';
 
@@ -279,6 +279,9 @@ const NAV = [
     { id: 'content-cal', label: 'Content Calendar', icon: CalendarDays },
     { id: 'content-strategy', label: 'Content Strategy', icon: FileText },
   ]},
+  { group: 'TOOLS', items: [
+    { id: 'photos', label: 'Photo Compressor', icon: Image },
+  ]},
 ];
 
 /* ===== MAIN APP ===== */
@@ -415,6 +418,7 @@ export default function App() {
           {view === 'development' && <DevelopmentView />}
           {view === 'content-cal' && <ContentCalendarView />}
           {view === 'content-strategy' && <ContentStrategyView />}
+          {view === 'photos' && <PhotoCompressorView />}
         </div>
       </main>
     </div>
@@ -1521,6 +1525,233 @@ function ContentStrategyView() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ===== PHOTO COMPRESSOR ===== */
+
+function PhotoCompressorView() {
+  const [files, setFiles] = useState([]);
+  const [quality, setQuality] = useState(0.92);
+  const [format, setFormat] = useState('webp');
+  const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const compressImage = useCallback((file, fmt, qual) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new window.Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          const mimeType = fmt === 'webp' ? 'image/webp' : fmt === 'png' ? 'image/png' : 'image/jpeg';
+          const qualityVal = fmt === 'png' ? undefined : qual;
+          canvas.toBlob((blob) => {
+            resolve({
+              id: Math.random().toString(36).slice(2),
+              name: file.name,
+              outputName: file.name.replace(/\.[^.]+$/, `.${fmt}`),
+              originalSize: file.size,
+              compressedSize: blob.size,
+              previewUrl: URL.createObjectURL(blob),
+              compressedUrl: URL.createObjectURL(blob),
+              blob,
+              width: img.naturalWidth,
+              height: img.naturalHeight,
+              status: 'done',
+            });
+          }, mimeType, qualityVal);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }, []);
+
+  const handleFiles = useCallback(async (newFiles) => {
+    const imageFiles = Array.from(newFiles).filter(f => f.type.startsWith('image/'));
+    if (!imageFiles.length) return;
+    const pending = imageFiles.map(f => ({
+      id: Math.random().toString(36).slice(2),
+      name: f.name,
+      status: 'processing',
+      originalSize: f.size,
+    }));
+    setFiles(prev => [...prev, ...pending]);
+    const results = await Promise.all(imageFiles.map(f => compressImage(f, format, quality)));
+    setFiles(prev => {
+      const next = [...prev];
+      results.forEach((result, i) => {
+        const idx = next.findIndex(f => f.status === 'processing' && f.name === imageFiles[i].name);
+        if (idx !== -1) next[idx] = result;
+      });
+      return next;
+    });
+  }, [compressImage, format, quality]);
+
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    setDragging(false);
+    handleFiles(e.dataTransfer.files);
+  }, [handleFiles]);
+
+  const downloadFile = (file) => {
+    const a = document.createElement('a');
+    a.href = file.compressedUrl;
+    a.download = file.outputName;
+    a.click();
+  };
+
+  const formatSize = (bytes) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1048576).toFixed(2)} MB`;
+  };
+
+  const doneFiles = files.filter(f => f.status === 'done');
+  const totalOriginal = doneFiles.reduce((a, f) => a + f.originalSize, 0);
+  const totalCompressed = doneFiles.reduce((a, f) => a + f.compressedSize, 0);
+  const totalSaved = totalOriginal - totalCompressed;
+
+  const qualityLabel = quality >= 0.92 ? 'Near-lossless' : quality >= 0.75 ? 'High quality' : 'Balanced';
+
+  return (
+    <div className="view-container">
+      <div className="page-header">
+        <div className="page-title">Photo Compressor</div>
+        <div className="page-subtitle">Reduce file size while preserving visual quality — runs entirely in your browser</div>
+      </div>
+
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          <div>
+            <div className="section-label" style={{ marginBottom: 8 }}>Output Format</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {['webp', 'jpeg', 'png'].map(fmt => (
+                <button key={fmt} onClick={() => setFormat(fmt)}
+                  className={`btn ${format === fmt ? 'btn-primary' : 'btn-ghost'}`}
+                  style={{ fontSize: 12, padding: '6px 14px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  {fmt}
+                </button>
+              ))}
+            </div>
+          </div>
+          {format !== 'png' ? (
+            <div style={{ flex: 1, minWidth: 220 }}>
+              <div className="section-label" style={{ marginBottom: 8 }}>
+                Quality: {Math.round(quality * 100)}% &mdash; {qualityLabel}
+              </div>
+              <input type="range" min="0.5" max="1" step="0.01" value={quality}
+                onChange={e => setQuality(parseFloat(e.target.value))}
+                style={{ width: '100%', accentColor: 'var(--accent)' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-tertiary)', marginTop: 4 }}>
+                <span>Smaller file</span><span>Best quality</span>
+              </div>
+            </div>
+          ) : (
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', padding: '10px 16px', background: 'var(--skeleton)', borderRadius: 10, alignSelf: 'flex-end' }}>
+              PNG is lossless — only metadata is stripped
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div
+        onDragEnter={() => setDragging(true)}
+        onDragLeave={() => setDragging(false)}
+        onDragOver={e => e.preventDefault()}
+        onDrop={handleDrop}
+        onClick={() => fileInputRef.current?.click()}
+        style={{
+          border: `2px dashed ${dragging ? 'var(--accent)' : 'var(--border)'}`,
+          borderRadius: 16,
+          padding: '52px 24px',
+          textAlign: 'center',
+          cursor: 'pointer',
+          background: dragging ? 'var(--accent-soft)' : 'var(--card)',
+          transition: 'border-color 0.2s, background 0.2s',
+          marginBottom: 16,
+        }}>
+        <input ref={fileInputRef} type="file" accept="image/*" multiple
+          style={{ display: 'none' }} onChange={e => handleFiles(e.target.files)} />
+        <Image size={40} style={{ color: 'var(--text-tertiary)', marginBottom: 14 }} />
+        <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)', marginBottom: 6 }}>
+          Drop photos here or click to browse
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+          JPEG, PNG, WebP — any number of files — nothing leaves your device
+        </div>
+      </div>
+
+      {doneFiles.length > 0 && (
+        <div className="card" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ flex: 1 }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--success)' }}>
+              Saved {formatSize(totalSaved)}
+            </span>
+            <span style={{ fontSize: 13, color: 'var(--text-secondary)', marginLeft: 8 }}>
+              ({totalOriginal > 0 ? Math.round((1 - totalCompressed / totalOriginal) * 100) : 0}% reduction across {doneFiles.length} photo{doneFiles.length !== 1 ? 's' : ''})
+            </span>
+          </div>
+          <button className="btn btn-primary" onClick={() => doneFiles.forEach(f => downloadFile(f))} style={{ fontSize: 13 }}>
+            <Download size={14} style={{ marginRight: 6 }} />Download All
+          </button>
+          <button className="btn btn-ghost" onClick={() => setFiles([])} style={{ fontSize: 13 }}>
+            <Trash2 size={14} style={{ marginRight: 6 }} />Clear All
+          </button>
+        </div>
+      )}
+
+      {files.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {files.map(file => (
+            <div key={file.id} className="card" style={{ padding: '14px 18px' }}>
+              {file.status === 'processing' ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <RefreshCw size={16} style={{ color: 'var(--text-tertiary)', animation: 'spin 1s linear infinite' }} />
+                  <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Compressing {file.name}…</div>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+                  <img src={file.previewUrl} alt={file.name}
+                    style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {file.outputName}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 4 }}>
+                      {file.width} × {file.height}px &nbsp;·&nbsp;
+                      <span style={{ textDecoration: 'line-through', color: 'var(--text-tertiary)' }}>{formatSize(file.originalSize)}</span>
+                      <span style={{ margin: '0 4px' }}>→</span>
+                      <span style={{ fontWeight: 600, color: file.compressedSize < file.originalSize ? 'var(--success)' : 'var(--text)' }}>
+                        {formatSize(file.compressedSize)}
+                      </span>
+                      {file.compressedSize < file.originalSize && (
+                        <span style={{ color: 'var(--success)', marginLeft: 6 }}>
+                          ({((1 - file.compressedSize / file.originalSize) * 100).toFixed(1)}% smaller)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <button className="btn btn-primary" onClick={() => downloadFile(file)}
+                    style={{ fontSize: 12, padding: '7px 14px', flexShrink: 0 }}>
+                    <Download size={13} />
+                  </button>
+                  <button className="btn btn-ghost" onClick={() => setFiles(prev => prev.filter(f => f.id !== file.id))}
+                    style={{ fontSize: 12, padding: '7px 12px', flexShrink: 0 }}>
+                    <X size={13} />
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

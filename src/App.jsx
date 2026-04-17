@@ -281,6 +281,56 @@ const NAV = [
   ]},
 ];
 
+/* ===== PASSWORD GATE ===== */
+const PASS_HASH = '524b8b'; // lightweight check
+function hashPass(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(16).slice(0, 6);
+}
+
+function PasswordGate({ children }) {
+  const [unlocked, setUnlocked] = useState(() => load('anna_auth') === 'yes');
+  const [pw, setPw] = useState('');
+  const [error, setError] = useState(false);
+
+  if (unlocked) return children;
+
+  const submit = (e) => {
+    e.preventDefault();
+    if (hashPass(pw) === PASS_HASH) {
+      save('anna_auth', 'yes');
+      setUnlocked(true);
+    } else {
+      setError(true);
+      setPw('');
+      setTimeout(() => setError(false), 1500);
+    }
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--bg)', gap: 16 }}>
+      <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: 'italic', fontSize: 28, color: 'var(--text)' }}>Anna OS</h1>
+      <p style={{ fontSize: 13, color: 'var(--text-tertiary)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Private</p>
+      <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 12, width: 280, marginTop: 8 }}>
+        <input
+          type="password"
+          className="input"
+          placeholder="Enter password"
+          value={pw}
+          onChange={e => setPw(e.target.value)}
+          autoFocus
+          style={{ textAlign: 'center', borderColor: error ? 'var(--danger)' : undefined }}
+        />
+        <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', background: 'var(--text)', color: 'var(--card)', borderRadius: 14, padding: '12px 0' }}>
+          Enter
+        </button>
+      </form>
+      {error && <p style={{ fontSize: 12, color: 'var(--danger)' }}>Wrong password</p>}
+    </div>
+  );
+}
+
 /* ===== MAIN APP ===== */
 
 export default function App() {
@@ -358,6 +408,7 @@ export default function App() {
   }
 
   return (
+    <PasswordGate>
     <div className="app-shell">
       {/* Sidebar */}
       <nav className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
@@ -418,6 +469,7 @@ export default function App() {
         </div>
       </main>
     </div>
+    </PasswordGate>
   );
 }
 
